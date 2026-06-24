@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<title>Журка — Рецепты (мил-преп)</title>
+<style>
+  :root{--green:#4A7C2F;--green-dark:#2D5016;--green-light:#EEF4E6;--bg:#F5F0E8;--white:#FDFAF4;--text:#1C1C1A;--muted:#6b7260;--border:#DDD8CC;--r:16px}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);padding:16px;max-width:680px;margin:0 auto;padding-bottom:60px}
+  h1{font-size:1.4rem;color:var(--green-dark);margin-bottom:4px}
+  .sub{color:var(--muted);font-size:.85rem;margin-bottom:16px}
+  .card{background:var(--white);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
+  .card-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:10px}
+  .row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
+  .row:last-child{border-bottom:none}
+  .row label{font-size:.9rem;color:var(--muted)}
+  input,select{width:110px;border:1.5px solid var(--border);border-radius:10px;padding:7px 10px;font-size:.95rem;font-weight:600;text-align:right;font-family:inherit;background:var(--bg);color:var(--text);outline:none}
+  input:focus{border-color:var(--green)}
+  .btn{display:block;width:100%;padding:14px;border:none;border-radius:99px;font-size:1rem;font-weight:600;cursor:pointer;font-family:inherit;background:var(--green-dark);color:#fff;margin:8px 0}
+  .btn:active{opacity:.85}
+  .btn:disabled{opacity:.5}
+  .day{background:var(--white);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
+  .day-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .day-title{font-weight:700;color:var(--green-dark)}
+  .kbju{font-size:.78rem;color:var(--muted)}
+  .meal{padding:8px 0;border-top:1px solid var(--border)}
+  .meal-label{font-weight:600;font-size:.88rem}
+  .meal-items{font-size:.82rem;color:var(--muted);margin-top:2px;line-height:1.5}
+  .badge{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--green-light);color:var(--green-dark);margin-left:6px}
+  .session{background:var(--green-light);border-radius:12px;padding:10px 14px;margin-bottom:8px;font-size:.85rem}
+  .shop li{font-size:.85rem;padding:3px 0;color:var(--text)}
+  .shop{margin-left:18px}
+  .spin{text-align:center;padding:30px;color:var(--muted)}
+  .pill{display:inline-block;font-size:.7rem;background:var(--border);color:var(--muted);border-radius:99px;padding:2px 8px;margin-left:6px}
+  .bk{display:flex;gap:12px;align-items:flex-start}
+  .bk-thumb{width:84px;height:84px;border-radius:12px;object-fit:cover;flex-shrink:0;cursor:pointer;background:var(--green-light);border:1px solid var(--border)}
+  .bk-thumb-empty{width:84px;height:84px;border-radius:12px;flex-shrink:0;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1.8rem}
+  .lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:1000;padding:16px}
+  .lb.show{display:flex}
+  .lb img{max-width:100%;max-height:90vh;border-radius:12px}
+  .lb-close{position:fixed;top:14px;right:18px;color:#fff;font-size:2rem;cursor:pointer;line-height:1}
+</style>
+</head>
+<body>
+<h1>🍳 Рецепты — мил-преп</h1>
+<div class="sub">Готовка обедов и ужинов 2 раза в неделю, завтраки — быстрые каждый день</div>
+
+<div class="card">
+  <div class="card-title">Твои КБЖУ на день</div>
+  <div class="row"><label>Калории</label><input id="kcal" type="number" value="1950"/></div>
+  <div class="row"><label>Белки, г</label><input id="protein" type="number" value="153"/></div>
+  <div class="row"><label>Жиры, г</label><input id="fat" type="number" value="68"/></div>
+  <div class="row"><label>Углеводы, г</label><input id="carbs" type="number" value="160"/></div>
+</div>
+
+<div class="card">
+  <div class="card-title">Настройки</div>
+  <div class="row"><label>Готовлю раз в неделю</label>
+    <select id="sessions"><option>1</option><option selected>2</option><option>3</option></select></div>
+  <div class="row"><label>Завтрак не дольше, мин</label>
+    <select id="bt"><option>10</option><option>15</option><option selected>20</option><option>30</option></select></div>
+</div>
+
+<button class="btn" id="go" onclick="build()">Собрать неделю</button>
+
+<div id="out"></div>
+
+<div class="lb" id="lb" onclick="closeLb()"><span class="lb-close">×</span><img id="lbimg" src=""/></div>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+
+async function build(){
+  const btn=$('go'); btn.disabled=true; btn.textContent='Считаю...';
+  $('out').innerHTML='<div class="spin">Собираю меню и корзину…</div>';
+  try{
+    const body={
+      kcal:+$('kcal').value, protein:+$('protein').value, fat:+$('fat').value, carbs:+$('carbs').value,
+      sessions:+$('sessions').value, breakfast_max_time:+$('bt').value, days:7
+    };
+    const res=await fetch('/api/mealprep/plan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!res.ok) throw new Error('Ошибка '+res.status);
+    render(await res.json());
+  }catch(e){ $('out').innerHTML='<div class="card" style="color:#c62828">'+e.message+'</div>'; }
+  finally{ btn.disabled=false; btn.textContent='Собрать неделю'; }
+}
+
+const WD=['пн','вт','ср','чт','пт','сб','вс'];
+function openLb(src){ $('lbimg').src=src; $('lb').classList.add('show'); }
+function closeLb(){ $('lb').classList.remove('show'); }
+
+function mealBlock(m, emoji){
+  const ings=(m.ingredients||[]).map(x=>x.name+(x.amount?(' '+x.amount+' '+x.unit):'')).join(', ');
+  const time=m.time_min?`<span class="pill">${m.time_min} мин</span>`:'';
+  const est=m.estimated?'<span class="pill">КБЖУ ~</span>':'';
+  const thumb=m.image
+    ? `<img class="bk-thumb" src="${m.image}" onclick="openLb('${m.image}')" title="Открыть рецепт"/>`
+    : `<div class="bk-thumb-empty">${emoji}</div>`;
+  return `<div class="meal"><div class="meal-label">${m.label} ${time}${est}<span class="badge">${m.nutrition.kcal} ккал · Б${m.nutrition.protein}</span></div>
+    <div class="bk" style="margin-top:6px">${thumb}
+      <div class="meal-items"><b>${m.title}</b>${m.factor&&m.factor!==1?` ×${m.factor}`:''}<br>${ings}
+      ${m.image?'<br><span style="color:var(--green-dark)">👆 нажми на фото — рецепт</span>':''}</div></div></div>`;
+}
+
+function render(p){
+  let h='';
+  // варочные сессии
+  h+='<div class="card"><div class="card-title">🔥 Варочные сессии</div>';
+  p.cook_sessions.forEach(s=>{
+    const dd=s.days.map(d=>WD[(d-1)%7]).join(', ');
+    h+=`<div class="session"><b>Сессия ${s.session}</b> — готовим обеды и ужины на дни: ${dd}</div>`;
+  });
+  h+='</div>';
+
+  // меню по дням
+  p.days.forEach((day,i)=>{
+    const t=day.day_total;
+    h+=`<div class="day"><div class="day-head"><span class="day-title">День ${i+1} (${WD[i%7]})</span>
+        <span class="kbju">${t.kcal} ккал · Б${t.protein} Ж${t.fat} У${t.carbs}</span></div>`;
+    h+=mealBlock(day.breakfast, '🍳');
+    day.meals.forEach(m=> h+=mealBlock(m, m.label==='Обед'?'🥗':'🍽'));
+    h+='</div>';
+  });
+
+  // корзина
+  h+='<div class="card"><div class="card-title">🛒 Закупка на неделю (ВкусВилл, сырой вес)</div><ul class="shop">';
+  for(const [name,g] of Object.entries(p.shopping_raw_g)){
+    h+=`<li>${name} — ~${g>=1000?(g/1000).toFixed(1)+' кг':g+' г'}</li>`;
+  }
+  h+='</ul><div class="sub" style="margin-top:8px">Дальше подключим автосборку корзины ВкусВилл по этому списку.</div></div>';
+
+  $('out').innerHTML=h;
+}
+</script>
+</body>
+</html>

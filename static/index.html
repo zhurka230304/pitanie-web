@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <title>Журка</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green: #4A7C2F;
+      --green-light: #EEF4E6;
+      --green-dark: #2D5016;
+      --bg: #F5F0E8;
+      --white: #FDFAF4;
+      --text: #1C1C1A;
+      --muted: #6b7260;
+      --border: #DDD8CC;
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--tg-theme-bg-color, var(--bg));
+      color: var(--tg-theme-text-color, var(--text));
+      min-height: 100vh;
+      padding-bottom: env(safe-area-inset-bottom, 24px);
+    }
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 16px 8px;
+      position: sticky;
+      top: 0;
+      background: var(--tg-theme-bg-color, var(--bg));
+      z-index: 10;
+    }
+    .topbar-back {
+      width: 32px; height: 32px;
+      border: none; background: none;
+      font-size: 1.2rem; cursor: pointer;
+      color: var(--green-dark);
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px;
+    }
+    .topbar-back:hover { background: var(--green-light); }
+    .topbar-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      flex: 1;
+    }
+
+    .card {
+      background: var(--tg-theme-secondary-bg-color, var(--white));
+      border-radius: var(--radius);
+      padding: 16px;
+      margin: 0 16px 12px;
+    }
+    .card-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .client-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .client-row:last-child { border-bottom: none; }
+    .client-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--green-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 700;
+      color: var(--green-dark);
+      flex-shrink: 0;
+    }
+    .client-info { flex: 1; min-width: 0; }
+    .client-name { font-weight: 600; font-size: 0.95rem; }
+    .client-meta { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+    .badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 99px;
+    }
+    .badge-red { background: #fdecea; color: #c62828; }
+    .badge-green { background: var(--green-light); color: var(--green-dark); }
+    .badge-gray { background: var(--border); color: var(--muted); }
+
+    .btn {
+      display: block;
+      width: calc(100% - 32px);
+      margin: 0 16px 12px;
+      padding: 14px;
+      border: none;
+      border-radius: 99px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: center;
+      transition: opacity 0.15s;
+    }
+    .btn:active { opacity: 0.8; }
+    .btn-primary { background: var(--green-dark); color: #fff; }
+    .btn-outline { background: none; color: var(--green-dark); border: 2px solid var(--green-dark); }
+    .btn-logout { background: none; color: var(--muted); border: 1.5px solid var(--border); margin-top: 8px; }
+    .btn-sm {
+      display: inline-block;
+      padding: 7px 16px;
+      border: none;
+      border-radius: 99px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-sm-outline { background: none; color: var(--green-dark); border: 1.5px solid var(--green-dark); }
+
+    .field-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .field-row:last-child { border-bottom: none; }
+    .field-label { font-size: 0.875rem; color: var(--muted); }
+    .field-input {
+      width: 100px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-align: right;
+      font-family: inherit;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+    }
+    .field-input:focus { border-color: var(--green); }
+    .field-select {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      font-size: 0.875rem;
+      font-family: inherit;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+    }
+
+    .meal-block {
+      margin: 0 16px 12px;
+      background: var(--tg-theme-secondary-bg-color, var(--white));
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .meal-block-header {
+      padding: 12px 16px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .meal-label { font-weight: 700; font-size: 0.95rem; }
+    .meal-kbju { font-size: 0.75rem; color: var(--muted); }
+
+    .dish-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+    }
+    .dish-img {
+      width: 48px; height: 48px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: var(--green-light);
+    }
+    .dish-img-empty {
+      width: 48px; height: 48px;
+      border-radius: 8px;
+      background: var(--green-light);
+      flex-shrink: 0;
+    }
+    .dish-info { flex: 1; min-width: 0; }
+    .dish-name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .dish-meta { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+    .dish-replace-btn {
+      width: 28px; height: 28px;
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      background: var(--bg);
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: var(--muted);
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .dish-replace-btn:hover { border-color: var(--green); color: var(--green-dark); }
+    .dish-replace-btn:active { opacity: 0.6; }
+    .dish-replace-btn.loading {
+      animation: spin 0.8s linear infinite;
+      pointer-events: none;
+      opacity: 0.4;
+    }
+    .seg-group { display: flex; gap: 4px; }
+    .seg-btn {
+      padding: 5px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 99px;
+      background: var(--bg);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--muted);
+    }
+    .seg-btn.active { background: var(--green-dark); color: #fff; border-color: var(--green-dark); }
+
+    .plan-hero {
+      padding: 20px 16px 8px;
+      text-align: center;
+    }
+    .plan-hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 4px;
+    }
+    .plan-hero-sub { font-size: 0.875rem; color: var(--muted); }
+
+    .empty {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--muted);
+    }
+    .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty-title { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .empty-sub { font-size: 0.875rem; line-height: 1.5; }
+
+    .spinner-wrap {
+      display: flex; align-items: center; justify-content: center;
+      padding: 60px 0;
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .toast {
+      position: fixed;
+      bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1a1a1a;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 99px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      z-index: 1000;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.ok { background: var(--green-dark); }
+    .toast.err { background: #c62828; }
+
+    .input-full {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+    }
+    .input-full:focus { border-color: var(--green); }
+
+    .tabs {
+      display: flex;
+      padding: 0 16px;
+      margin-bottom: 12px;
+      border-bottom: 2px solid var(--border);
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      cursor: pointer;
+    }
+    .tab.active { color: var(--green-dark); border-bottom-color: var(--green); }
+  </style>
+</head>
+<body>
+
+<div class="screen active" id="scrLoading">
+  <div class="spinner-wrap"><div class="spinner"></div></div>
+</div>
+
+<!-- ===== ONBOARDING: CHOOSE ROLE ===== -->
+<div class="screen" id="scrOnboarding">
+  <div style="padding: 48px 24px 32px; text-align: center;">
+    <div style="font-size:3.5rem; margin-bottom:20px">🦢</div>
+    <div style="font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:700; color:var(--green-dark); margin-bottom:8px">Привет!</div>
+    <div style="font-size:0.95rem; color:var(--muted); line-height:1.6; margin-bottom:36px">
+      Журка помогает тренерам составлять планы питания из блюд ВкусВилла, а клиентам — получать их и заказывать.
+    </div>
+    <div style="font-size:1rem; font-weight:600; margin-bottom:20px">Кто ты?</div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <button onclick="chooseRole('trainer')" style="
+        background: var(--green-dark); color: #fff;
+        border: none; border-radius: 99px;
+        padding: 18px 24px; font-size: 1rem; font-weight: 600;
+        cursor: pointer; font-family: inherit; text-align: left;
+        display: flex; align-items: center; gap: 14px;">
+        <span style="font-size:1.6rem">💪</span>
+        <div>
+          <div>Я тренер</div>
+          <div style="font-size:0.8rem; opacity:0.75; font-weight:400">Составляю планы питания клиентам</div>
+        </div>
+      </button>
+      <button onclick="chooseRole('client')" style="
+        background: var(--white); color: var(--green-dark);
+        border: 2px solid var(--green-dark); border-radius: 99px;
+        padding: 18px 24px; font-size: 1rem; font-weight: 600;
+        cursor: pointer; font-family: inherit; text-align: left;
+        display: flex; align-items: center; gap: 14px;">
+        <span style="font-size:1.6rem">🥗</span>
+        <div>
+          <div>Я клиент</div>
+          <div style="font-size:0.8rem; opacity:0.65; font-weight:400">Получаю план питания от тренера</div>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="scrNoTrainer">
+  <div class="empty">
+    <div class="empty-icon">👋</div>
+    <div class="empty-title">Ждём тренера</div>
+    <div class="empty-sub">Попроси тренера добавить тебя в приложение — и ты увидишь свой план питания.</div>
+  </div>
+  <button class="btn btn-logout" onclick="doLogout()">Выйти из личного кабинета</button>
+</div>
+
+<div class="screen" id="scrClientPlan">
+  <div class="plan-hero">
+    <div class="plan-hero-title">Мой план</div>
+    <div class="plan-hero-sub" id="clientPlanDate"></div>
+  </div>
+  <div id="clientDayChips" style="display:flex;gap:4px;flex-wrap:wrap;padding:0 16px 10px;justify-content:center"></div>
+  <div id="clientProgress" style="display:none">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+        <span style="font-size:0.875rem;font-weight:600">Съедено <span id="streakBadge" style="font-weight:700;color:#e8590c"></span></span>
+        <span style="font-size:0.875rem;color:var(--muted)"><span id="eatenKcal">0</span> / <span id="targetKcal">0</span> ккал</span>
+      </div>
+      <div style="height:8px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:10px">
+        <div id="progressFill" style="height:100%;background:var(--green);border-radius:99px;width:0%;transition:width 0.3s"></div>
+      </div>
+      <div style="display:flex;gap:16px;font-size:0.75rem;color:var(--muted)">
+        <span>Б: <span id="eatenP">0</span> / <span id="targetP">0</span> г</span>
+        <span>Ж: <span id="eatenF">0</span> / <span id="targetF">0</span> г</span>
+        <span>У: <span id="eatenC">0</span> / <span id="targetC">0</span> г</span>
+      </div>
+    </div>
+  </div>
+  <div id="clientPlanContent"></div>
+  <div id="clientDiaryActions" style="display:none">
+    <button class="btn btn-primary" id="btnCart" onclick="openCart()">Собрать корзину ВкусВилл</button>
+    <div id="cartLinkSection" style="display:none;margin:0 16px 12px">
+      <div class="card" style="background:var(--green-light)">
+        <div class="card-title">Ссылка на корзину</div>
+        <div id="cartLinkText" style="font-size:0.78rem;color:var(--green-dark);word-break:break-all;padding:8px;background:var(--white);border-radius:8px;margin-bottom:10px;line-height:1.5"></div>
+        <button class="btn btn-primary" onclick="copyCartLink()" style="margin:0 0 8px">Скопировать ссылку</button>
+        <p style="font-size:0.75rem;color:var(--muted);text-align:center">Открой в браузере без VPN</p>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Мой вес</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input class="input-full" type="number" step="0.1" inputmode="decimal" id="weightInput" placeholder="72.5" style="flex:1"/>
+      <button class="btn-sm btn-sm-outline" onclick="saveWeight()" style="flex-shrink:0">Сохранить</button>
+    </div>
+    <div id="weightHistory" style="margin-top:10px;font-size:0.78rem;color:var(--muted);line-height:1.6"></div>
+  </div>
+  <button class="btn btn-outline" onclick="openHistory()">История планов</button>
+  <button class="btn btn-outline" onclick="openBotChat()" style="border-width:1.5px">🔔 Включить уведомления</button>
+  <button class="btn btn-logout" onclick="doLogout()">Выйти из личного кабинета</button>
+</div>
+
+<div class="screen" id="scrClientHistory">
+  <div class="topbar">
+    <button class="topbar-back" onclick="showScreen('scrClientPlan')">←</button>
+    <div class="topbar-title">История планов</div>
+  </div>
+  <div id="historyContent"></div>
+</div>
+
+<div class="screen" id="scrTrainerHome">
+  <div class="topbar">
+    <div class="topbar-title">Мои клиенты</div>
+    <button class="btn-sm btn-sm-outline" onclick="showScreen('scrAddClient')">+ Добавить</button>
+  </div>
+  <div id="clientList"></div>
+  <button class="btn btn-logout" onclick="doLogout()">Выйти из личного кабинета</button>
+</div>
+
+<div class="screen" id="scrAddClient">
+  <div class="topbar">
+    <button class="topbar-back" onclick="showScreen('scrTrainerHome')">←</button>
+    <div class="topbar-title">Новый клиент</div>
+  </div>
+
+  <div id="addClientForm">
+    <div class="card">
+      <div class="card-title">Данные клиента</div>
+      <div class="field-row">
+        <span class="field-label">Имя</span>
+        <input class="field-input" type="text" id="newFirstName" placeholder="Анна" style="width:160px;text-align:left"/>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Фамилия</span>
+        <input class="field-input" type="text" id="newLastName" placeholder="Иванова" style="width:160px;text-align:left"/>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Дата рождения</span>
+        <input class="field-input" type="date" id="newBirthDate" style="width:160px;text-align:left"/>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="doCreateInvite()">Создать и получить ссылку</button>
+  </div>
+
+  <div id="inviteLinkBlock" style="display:none">
+    <div class="card" style="background:var(--green-light)">
+      <div class="card-title">Ссылка для клиента</div>
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px;line-height:1.5">
+        Отправь эту ссылку клиенту. Когда он откроет её — автоматически попадёт к тебе с заполненным профилем.
+      </p>
+      <div id="inviteLinkText" style="font-size:0.8rem;color:var(--green-dark);word-break:break-all;margin-bottom:12px;padding:10px;background:var(--white);border-radius:10px"></div>
+      <button class="btn btn-primary" onclick="copyGeneratedLink()" style="margin:0">Скопировать ссылку</button>
+    </div>
+    <button class="btn btn-outline" onclick="resetAddClient()" style="margin-top:4px">Добавить ещё одного</button>
+  </div>
+</div>
+
+<div class="screen" id="scrClientDetail">
+  <div class="topbar">
+    <button class="topbar-back" onclick="showScreen('scrTrainerHome')">←</button>
+    <div class="topbar-title" id="detailClientName"></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" id="tabProfile" onclick="switchDetailTab('profile')">Профиль</div>
+    <div class="tab" id="tabPlan" onclick="switchDetailTab('plan')">План</div>
+    <div class="tab" id="tabDiary" onclick="switchDetailTab('diary')">Дневник</div>
+  </div>
+
+  <div id="detailTabProfile">
+    <div class="card">
+      <div class="card-title">Расчёт КБЖУ</div>
+      <div class="field-row">
+        <span class="field-label">Дата рождения</span>
+        <input class="field-input" type="date" id="profBirthDate" style="width:160px;text-align:left"/>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Вес, кг</span>
+        <input class="field-input" type="number" id="calcWeight" placeholder="70"/>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Рост, см</span>
+        <input class="field-input" type="number" id="calcHeight" placeholder="170"/>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Пол</span>
+        <div class="seg-group">
+          <button class="seg-btn sex-btn" data-sex="male" onclick="setSex('male')">М</button>
+          <button class="seg-btn sex-btn" data-sex="female" onclick="setSex('female')">Ж</button>
+        </div>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Активность</span>
+        <select class="field-select" id="calcActivity" style="width:160px">
+          <option value="1.2">Сидячий</option>
+          <option value="1.375">Лёгкая (1-3 раза/нед)</option>
+          <option value="1.55" selected>Умеренная (3-5)</option>
+          <option value="1.725">Высокая (6-7)</option>
+          <option value="1.9">Очень высокая</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Цель</span>
+        <select class="field-select" id="profGoal">
+          <option value="">—</option>
+          <option value="похудение">Похудение</option>
+          <option value="поддержание">Поддержание</option>
+          <option value="набор массы">Набор массы</option>
+        </select>
+      </div>
+      <div class="field-row" style="border-bottom:none;padding-top:6px">
+        <span class="field-label" style="font-size:0.75rem">Формула</span>
+        <div class="seg-group">
+          <button class="seg-btn formula-btn active" data-formula="mifflin" onclick="setFormula('mifflin')">Mifflin</button>
+          <button class="seg-btn formula-btn" data-formula="harris" onclick="setFormula('harris')">Harris</button>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calcKbju()" style="margin-bottom:4px">Рассчитать КБЖУ</button>
+
+    <div class="card">
+      <div class="card-title">КБЖУ на день</div>
+      <div class="field-row">
+        <span class="field-label">Калории</span>
+        <input class="field-input" type="number" id="profKcal" placeholder="2000"/>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Белки, г</span>
+        <input class="field-input" type="number" id="profProtein" placeholder="150"/>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Жиры, г</span>
+        <input class="field-input" type="number" id="profFat" placeholder="60"/>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Углеводы, г</span>
+        <input class="field-input" type="number" id="profCarbs" placeholder="200"/>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Ограничения</div>
+      <div class="field-row" style="border-bottom:none">
+        <span class="field-label">Ограничения</span>
+        <select class="field-select" id="profRestrictions">
+          <option value="">Нет</option>
+          <option value="вегетариан">Вегетариан</option>
+          <option value="веган">Веган</option>
+          <option value="без мяса">Без мяса</option>
+          <option value="без рыбы">Без рыбы</option>
+          <option value="без курицы">Без курицы</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-outline" onclick="saveProfile()">Сохранить профиль</button>
+    <div class="card">
+      <div class="card-title">Параметры плана</div>
+      <div class="field-row">
+        <span class="field-label">Приёмов пищи</span>
+        <div class="seg-group" id="mealCountGroup">
+          <button class="seg-btn" onclick="setMealCount(2)">2</button>
+          <button class="seg-btn active" onclick="setMealCount(3)">3</button>
+          <button class="seg-btn" onclick="setMealCount(4)">4</button>
+          <button class="seg-btn" onclick="setMealCount(5)">5</button>
+        </div>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Период</span>
+        <div class="seg-group">
+          <button class="seg-btn period-btn active" data-period="day" onclick="setPeriod('day')">День</button>
+          <button class="seg-btn period-btn" data-period="week" onclick="setPeriod('week')">Неделя</button>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="btnGenerate" onclick="generatePlan()">Подобрать план</button>
+  </div>
+
+  <div id="detailTabPlan" style="display:none">
+    <div id="planContent"></div>
+    <div id="planActions" style="display:none">
+      <button class="btn btn-primary" onclick="savePlan()">Сохранить план</button>
+      <button class="btn btn-outline" id="btnSend" onclick="sendPlan()" style="display:none">Отправить клиенту</button>
+    </div>
+  </div>
+
+  <div id="detailTabDiary" style="display:none">
+    <div id="diaryContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+const tg = window.Telegram.WebApp;
+tg.ready();
+tg.expand();
+
+let token = null;
+let myRole = null;
+let currentClientId = null;
+let currentPlanId = null;
+let selectedMealCount = 3;
+let selectedPeriod = 'day';
+let generatedPlan = null;
+let generatedWeek = null;
+let generatedWeekCoverage = null;
+let weekActiveDay = 0;
+let weekPlanIds = [];
+let calcSex = null;
+let calcFormula = 'mifflin';
+let eatenState = {};
+let currentPlanData = null;
+
+// читаем invite-токен из Telegram deep link
+const startParam = tg.initDataUnsafe?.start_param || '';
+let pendingInviteToken = null;
+if (startParam.startsWith('invite_')) {
+  pendingInviteToken = startParam.replace('invite_', '');
+}
+
+async function init() {
+  try {
+    const res = await api('/api/tg/auth', 'POST', { init_data: tg.initData || '' });
+    token = res.token;
+    myRole = res.role;
+    if (myRole === 'pending') {
+      showScreen('scrOnboarding');
+    } else if (myRole === 'trainer') {
+      await loadTrainerHome();
+    } else {
+      // existing client opening via invite link — join even without onboarding
+      if (pendingInviteToken) {
+        try { await api('/api/client/join', 'POST', { token: pendingInviteToken }); } catch (_) {}
+      }
+      await loadClientView();
+    }
+  } catch (e) {
+    showToast('Ошибка авторизации', 'err');
+  }
+}
+
+async function chooseRole(role) {
+  try {
+    await api('/api/tg/set-role', 'POST', { role });
+    myRole = role;
+    if (role === 'client' && pendingInviteToken) {
+      try { await api('/api/client/join', 'POST', { token: pendingInviteToken }); } catch (_) {}
+    }
+    if (role === 'trainer') {
+      await loadTrainerHome();
+    } else {
+      await loadClientView();
+    }
+  } catch (e) {
+    showToast(e.message, 'err');
+  }
+}
+
+function doLogout() {
+  const proceed = async () => {
+    try {
+      await flushDiary();
+      await api('/api/tg/logout', 'POST');
+      myRole = 'pending';
+      currentClientId = null;
+      currentPlanId = null;
+      generatedPlan = null;
+      currentPlanData = null;
+      eatenState = {};
+      showScreen('scrOnboarding');
+      showToast('Вы вышли из кабинета', 'ok');
+    } catch (e) {
+      showToast(e.message, 'err');
+    }
+  };
+  try {
+    tg.showConfirm('Выйти из личного кабинета?', (ok) => { if (ok) proceed(); });
+  } catch (_) {
+    if (confirm('Выйти из личного кабинета?')) proceed();
+  }
+}
+
+async function api(url, method = 'GET', body = null) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (token) opts.headers['Authorization'] = `Bearer ${token}`;
+  if (body) opts.body = JSON.stringify(body);
+  let res;
+  try {
+    res = await fetch(url, opts);
+  } catch (_) {
+    throw new Error('Нет соединения с сервером');
+  }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `Ошибка ${res.status}`);
+  }
+  return res.json();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+let toastTimer = null;
+function showToast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+function esc(str) {
+  return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// фактические калории приёма — сумма по блюдам (не цель)
+function mealActualKcal(meal) {
+  return Math.round((meal.dishes || []).reduce((s, d) => s + ((d.nutrition && d.nutrition.calories) || 0), 0));
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+}
+
+// ——— CLIENT ———
+let botUsername = 'pitanie_zhurka_bot';
+
+function openBotChat() {
+  // после Start у бота начнут доходить уведомления о новых планах
+  const url = `https://t.me/${botUsername}`;
+  try { tg.openTelegramLink(url); } catch (_) { window.open(url, '_blank'); }
+}
+
+let clientUpcoming = [];
+let clientSelectedDate = null;  // iso; по умолчанию — сегодня
+let diaryEditable = true;       // галочки только за сегодняшний день
+
+function todayIso() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+async function loadClientView() {
+  showScreen('scrLoading');
+  try {
+    const me = await api('/api/client/me');
+    if (me.bot_username) botUsername = me.bot_username;
+    if (!me.trainer) { showScreen('scrNoTrainer'); return; }
+    const data = await api('/api/client/plan/today');
+    clientUpcoming = data.upcoming || [];
+    clientSelectedDate = todayIso();
+    diaryEditable = true;
+    renderClientDayChips();
+    renderClientPlan(data);
+    showScreen('scrClientPlan');
+    loadWeightHistory();
+  } catch (e) {
+    showToast(e.message, 'err');
+    showScreen('scrNoTrainer');
+  }
+}
+
+function renderClientDayChips() {
+  const el = document.getElementById('clientDayChips');
+  const today = todayIso();
+  // чипы показываем, когда есть будущие дни (заказ еды заранее)
+  const dates = clientUpcoming.includes(today) ? clientUpcoming : [today, ...clientUpcoming];
+  if (dates.length < 2) { el.innerHTML = ''; return; }
+  el.innerHTML = dates.map(d =>
+    `<button class="seg-btn${d === clientSelectedDate ? ' active' : ''}" onclick="selectClientDay('${d}')">${d === today ? 'сегодня' : weekDayChipLabel(d)}</button>`
+  ).join('');
+}
+
+async function selectClientDay(d) {
+  await flushDiary();
+  clientSelectedDate = d;
+  diaryEditable = (d === todayIso());
+  renderClientDayChips();
+  document.getElementById('clientPlanContent').innerHTML = `<div class="spinner-wrap"><div class="spinner"></div></div>`;
+  try {
+    const data = diaryEditable
+      ? await api('/api/client/plan/today')
+      : await api(`/api/client/plan/${d}`);
+    renderClientPlan(data);
+  } catch (e) {
+    showToast(e.message, 'err');
+  }
+}
+
+function renderClientPlan({ plan, logged, streak }) {
+  currentPlanData = { plan, logged };
+  if (streak !== undefined) {
+    const sb = document.getElementById('streakBadge');
+    sb.textContent = streak >= 2 ? `🔥 ${streak}` : '';
+    sb.title = streak >= 2 ? `${streak} дней подряд с дневником` : '';
+  }
+  document.getElementById('clientPlanDate').textContent = plan ? formatDate(plan.plan_date) : 'на сегодня';
+  const el = document.getElementById('clientPlanContent');
+  document.getElementById('cartLinkSection').style.display = 'none';
+  if (!plan) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">🕐</div><div class="empty-title">Плана пока нет</div><div class="empty-sub">Тренер ещё не составил план на этот день.</div></div>`;
+    document.getElementById('clientProgress').style.display = 'none';
+    document.getElementById('clientDiaryActions').style.display = 'none';
+    return;
+  }
+  initEatenStateFromLog(plan, logged);
+  renderClientPlanContent();
+  updateEatenProgress();
+  // прогресс и галочки — только за сегодня; корзина доступна и на будущие дни
+  document.getElementById('clientProgress').style.display = diaryEditable ? 'block' : 'none';
+  document.getElementById('clientDiaryActions').style.display = 'block';
+  if (plan.cart_url) showCartLink(plan.cart_url);
+}
+
+function initEatenStateFromLog(plan, logged) {
+  eatenState = {};
+  if (!logged || !plan) return;
+  const loggedIds = new Set(logged.map(d => d.xml_id).filter(Boolean));
+  plan.items.forEach((meal, mi) => {
+    meal.dishes.forEach((d, di) => {
+      if (d.xml_id && loggedIds.has(String(d.xml_id))) eatenState[`${mi}_${di}`] = true;
+    });
+  });
+}
+
+function renderClientPlanContent() {
+  const plan = currentPlanData?.plan;
+  if (!plan) return;
+  let html = plan.items.map((meal, mi) => `
+    <div class="meal-block">
+      <div class="meal-block-header">
+        <span class="meal-label">${esc(meal.meal_label)}</span>
+        <span class="meal-kbju">${mealActualKcal(meal)} ккал</span>
+      </div>
+      ${meal.dishes.map((d, di) => clientDishHtml(d, mi, di)).join('')}
+    </div>`).join('');
+  if (plan.notes) {
+    html += `<div class="card"><div class="card-title">Комментарий тренера</div><p style="font-size:0.9rem">${esc(plan.notes)}</p></div>`;
+  }
+  document.getElementById('clientPlanContent').innerHTML = html;
+}
+
+function clientDishHtml(d, mi, di) {
+  const eaten = eatenState[`${mi}_${di}`] || false;
+  const check = diaryEditable
+    ? `<div style="width:26px;height:26px;border-radius:50%;border:2px solid ${eaten ? 'var(--green)' : 'var(--border)'};background:${eaten ? 'var(--green)' : 'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0;color:${eaten ? '#fff' : 'transparent'};font-size:0.8rem;font-weight:700;transition:all 0.15s">✓</div>`
+    : '';
+  return `<div class="dish-row" ${diaryEditable ? `onclick="toggleDish(${mi},${di})" style="cursor:pointer"` : ''}>
+    ${d.image_url ? `<img class="dish-img" src="${esc(d.image_url)}" loading="lazy" style="${eaten ? 'opacity:0.4' : ''}"/>` : `<div class="dish-img-empty"></div>`}
+    <div class="dish-info" style="${eaten ? 'opacity:0.45' : ''}">
+      <div class="dish-name" style="${eaten ? 'text-decoration:line-through' : ''}">${esc(d.name)}</div>
+      <div class="dish-meta">${d.needed_g} г · ${d.portion_hint || ''}</div>
+      ${d.nutrition ? `<div class="dish-meta">б${d.nutrition.protein} · ж${d.nutrition.fat} · у${d.nutrition.carbohydrates} · ${d.nutrition.calories} ккал</div>` : ''}
+      ${d.carryover ? `<div class="dish-meta" style="color:var(--green-dark)">↩ ${esc(d.carryover_note || 'вторая половина')}</div>` : ''}
+    </div>
+    ${check}
+  </div>`;
+}
+
+let diarySaveTimer = null;
+let diaryDirty = false;
+
+function toggleDish(mi, di) {
+  if (!diaryEditable) return;
+  const key = `${mi}_${di}`;
+  eatenState[key] = !eatenState[key];
+  renderClientPlanContent();
+  updateEatenProgress();
+  // автосохранение с дебаунсом — кнопка «Сохранить» не нужна
+  diaryDirty = true;
+  clearTimeout(diarySaveTimer);
+  diarySaveTimer = setTimeout(() => { diaryDirty = false; saveDiary(true); }, 1200);
+}
+
+async function flushDiary() {
+  // несохранённые галочки сбрасываются при смене дня/экрана — доcохраняем
+  clearTimeout(diarySaveTimer);
+  if (diaryDirty && diaryEditable && currentPlanData?.plan) {
+    diaryDirty = false;
+    await saveDiary(true);
+  }
+}
+
+function updateEatenProgress() {
+  const plan = currentPlanData?.plan;
+  if (!plan) return;
+  let kcal = 0, p = 0, f = 0, c = 0;
+  let target = 0, tP = 0, tF = 0, tC = 0;
+  plan.items.forEach((meal, mi) => {
+    if (meal.kbju) {
+      target += meal.kbju.kcal || 0;
+      tP += meal.kbju.protein || 0;
+      tF += meal.kbju.fat || 0;
+      tC += meal.kbju.carbs || 0;
+    }
+    meal.dishes.forEach((d, di) => {
+      if (eatenState[`${mi}_${di}`] && d.nutrition) {
+        kcal += d.nutrition.calories || 0;
+        p    += d.nutrition.protein || 0;
+        f    += d.nutrition.fat || 0;
+        c    += d.nutrition.carbohydrates || 0;
+      }
+    });
+  });
+  document.getElementById('eatenKcal').textContent  = Math.round(kcal);
+  document.getElementById('targetKcal').textContent = Math.round(target);
+  document.getElementById('eatenP').textContent = Math.round(p);
+  document.getElementById('eatenF').textContent = Math.round(f);
+  document.getElementById('eatenC').textContent = Math.round(c);
+  document.getElementById('targetP').textContent = Math.round(tP);
+  document.getElementById('targetF').textContent = Math.round(tF);
+  document.getElementById('targetC').textContent = Math.round(tC);
+  const pct = target > 0 ? Math.min(100, (kcal / target) * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+async function saveDiary(silent) {
+  const plan = currentPlanData?.plan;
+  if (!plan) return;
+  const items = [];
+  plan.items.forEach((meal, mi) => {
+    meal.dishes.forEach((d, di) => {
+      if (eatenState[`${mi}_${di}`]) {
+        items.push({ name: d.name, xml_id: d.xml_id, needed_g: d.needed_g, nutrition: d.nutrition });
+      }
+    });
+  });
+  try {
+    await api('/api/client/log', 'POST', { plan_id: plan.id, ordered_items: items });
+    if (!silent) showToast('Дневник сохранён', 'ok');
+  } catch (e) {
+    showToast(e.message, 'err');
+  }
+}
+
+async function loadWeightHistory() {
+  try {
+    const logs = await api('/api/client/weight');
+    const el = document.getElementById('weightHistory');
+    if (!logs.length) {
+      el.textContent = 'Записей пока нет — отмечай вес хотя бы раз в неделю.';
+      return;
+    }
+    document.getElementById('weightInput').placeholder = logs[0].weight_kg;
+    const delta = logs.length > 1 ? logs[0].weight_kg - logs[logs.length - 1].weight_kg : null;
+    el.innerHTML = logs.slice(0, 5).map(w => `${formatDate(w.log_date)}: <b>${w.weight_kg}</b> кг`).join(' · ')
+      + (delta !== null ? `<div>Изменение за период: <b>${delta > 0 ? '+' : ''}${delta.toFixed(1)} кг</b></div>` : '');
+  } catch (_) { /* не критично */ }
+}
+
+async function saveWeight() {
+  const v = parseFloat(document.getElementById('weightInput').value);
+  if (!v) { showToast('Введите вес', 'err'); return; }
+  try {
+    await api('/api/client/weight', 'POST', { weight_kg: v });
+    showToast('Вес сохранён', 'ok');
+    document.getElementById('weightInput').value = '';
+    await loadWeightHistory();
+  } catch (e) {
+    showToast(e.message, 'err');
+  }
+}
+
+async function openHistory() {
+  await flushDiary();
+  showScreen('scrClientHistory');
+  const el = document.getElementById('historyContent');
+  el.innerHTML = `<div class="spinner-wrap"><div class="spinner"></div></div>`;
+  try {
+    const plans = await api('/api/client/plans');
+    if (!plans.length) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Пока пусто</div><div class="empty-sub">Здесь появятся планы от тренера.</div></div>`;
+      return;
+    }
+    el.innerHTML = plans.map(p => `
+      <div class="card">
+        <div class="card-title">${formatDate(p.plan_date)}</div>
+        ${(p.items || []).map(m => `
+          <div style="margin-bottom:8px">
+            <div style="font-size:0.82rem;font-weight:700">${esc(m.meal_label)} · ${mealActualKcal(m)} ккал</div>
+            ${(m.dishes || []).map(d => `<div style="font-size:0.8rem;color:var(--muted);padding-left:8px">• ${esc(d.name)} — ${d.needed_g} г${d.carryover ? ' ↩' : ''}</div>`).join('')}
+          </div>`).join('')}
+      </div>`).join('');
+  } catch (e) {
+    showToast(e.message, 'err');
+    el.innerHTML = '';
+  }
+}
+
+function showCartLink(url) {
+  document.getElementById('cartLinkText').textContent = url;
+  document.getElementById('cartLinkSection').style.display = 'block';
+}
+
+function copyCartLink() {
+  const url = document.getElementById('cartLinkText').textContent;
+  const ta = document.createElement('textarea');
+  ta.value = url;
+  ta.style.cssText = 'position:fixed;opacity:0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  showToast('Ссылка скопирована', 'ok');
+}
+
+async function openCart() {
+  const plan = currentPlanData?.plan;
+  if (!plan) return;
+  let url = plan.cart_url;
+  if (url) { showCartLink(url); return; }
+  const btn = document.getElementById('btnCart');
+  btn.disabled = true; btn.textContent = 'Собираем...';
+  try {
+    const res = await api(`/api/client/plans/${plan.id}/cart`, 'POST');
+    url = res.cart_url;
+    if (url) { currentPlanData.plan.cart_url = url; showCartLink(url); }
+  } catch (e) {
+    showToast(e.message, 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Собрать корзину ВкусВилл';
+  }
+}
+
+function dishHtml(d, mealIdx, dishIdx, isWeek) {
+  const canReplace = mealIdx !== undefined && dishIdx !== undefined;
+  const replaceFn = isWeek ? 'replaceWeekDish' : 'replaceDish';
+  const replaceBtn = canReplace
+    ? `<button class="dish-replace-btn" id="rbtn_${mealIdx}_${dishIdx}" onclick="${replaceFn}(${mealIdx},${dishIdx})" title="Заменить блюдо">↺</button>`
+    : '';
+  return `<div class="dish-row">
+    ${d.image_url ? `<img class="dish-img" src="${esc(d.image_url)}" loading="lazy"/>` : `<div class="dish-img-empty"></div>`}
+    <div class="dish-info">
+      <div class="dish-name"><a href="${esc(d.url)}" target="_blank" style="color:inherit;text-decoration:none">${esc(d.name)}</a></div>
+      <div class="dish-meta">${d.needed_g} г · ${d.portion_hint || ''}</div>
+      ${d.nutrition ? `<div class="dish-meta">б${d.nutrition.protein} · ж${d.nutrition.fat} · у${d.nutrition.carbohydrates} · ${d.nutrition.calories} ккал</div>` : ''}
+      ${d.carryover ? `<div class="dish-meta" style="color:var(--green-dark)">↩ ${esc(d.carryover_note || 'вторая половина')}</div>` : ''}
+    </div>
+    ${replaceBtn}
+  </div>`;
+}
+
+// ——— TRAINER HOME ———
+async function loadTrainerHome() {
+  showScreen('scrLoading');
+  try {
+    const clients = await api('/api/trainer/clients');
+    renderClientList(clients);
+    showScreen('scrTrainerHome');
+  } catch (e) {
+    showToast(e.message, 'err');
+  }
+}
+
+let generatedInviteLink = '';
+
+async function doCreateInvite() {
+  const firstName = document.getElementById('newFirstName').value.trim();
+  if (!firstName) { showToast('Введите имя клиента', 'err'); return; }
+
+  const body = {
+    first_name: firstName,
+    last_name: document.getElementById('newLastName').value.trim() || null,
+    birth_date: document.getElementById('newBirthDate').value || null,
+  };
+
+  try {
+    const res = await api('/api/trainer/invites', 'POST', body);
+    generatedInviteLink = res.link;
+    document.getElementById('inviteLinkText').textContent = res.link;
+    document.getElementById('addClientForm').style.display = 'none';
+    document.getElementById('inviteLinkBlock').style.display = 'block';
+  } catch (e) {
+    showToast(e.message, 'err');
+  }
+}
+
+function copyGeneratedLink() {
+  const ta = document.createElement('textarea');
+  ta.value = generatedInviteLink;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  showToast('Ссылка скопирована', 'ok');
+}
+
+function resetAddClient() {
+  document.getElementById('addClientForm').style.display = 'block';
+  document.getElementById('inviteLinkBlock').style.display = 'none';
+  document.getElementById('newFirstName').value = '';
+  document.getElementById('newLastName').value = '';
+  document.getElementById('newBirthDate').value = '';
+  generatedInviteLink = '';
+}
+
+function renderClientList(clients) {
+  const el = document.getElementById('clientList');
+  if (!clients.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">👥</div><div class="empty-title">Нет клиентов</div><div class="empty-sub">Нажми «+ Добавить» чтобы добавить первого клиента.</div></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="card">${clients.map(c => {
+    const initials = (c.first_name || '?')[0].toUpperCase();
+    const badge = c.needs_plan
+      ? `<span class="badge badge-red">Нет плана</span>`
+      : c.last_plan_status === 'sent'
+        ? `<span class="badge badge-green">Отправлен</span>`
+        : `<span class="badge badge-gray">Черновик</span>`;
+    return `<div class="client-row" onclick="openClient(${c.id}, '${esc(c.first_name)}')">
+      <div class="client-avatar">${initials}</div>
+      <div class="client-info">
+        <div class="client-name">${esc(c.first_name)}${c.username ? ' @' + esc(c.username) : ''}</div>
+        <div class="client-meta">${c.last_plan_date ? 'Последний план: ' + formatDate(c.last_plan_date) : 'Планов ещё нет'}</div>
+      </div>
+      ${badge}
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ——— CLIENT DETAIL ———
+let clientPlansMeta = [];
+
+async function openClient(clientId, name) {
+  currentClientId = clientId;
+  generatedPlan = null;
+  generatedWeek = null;
+  generatedWeekCoverage = null;
+  weekPlanIds = [];
+  weekActiveDay = 0;
+  currentPlanId = null;
+  clientPlansMeta = [];
+  document.getElementById('detailClientName').textContent = name;
+  switchDetailTab('profile');
+  showScreen('scrClientDetail');
+  try {
+    const data = await api(`/api/trainer/clients/${clientId}`);
+    fillProfile(data.profile);
+    clientPlansMeta = data.plans || [];
+  } catch (e) {
+    showToast(e.message, 'err');
+  }
+}
+
+// ——— Сохранённые планы и дневник клиента (вкладки тренера) ———
+
+function dayMacroSummaryHtml(meals, title) {
+  let k = 0, p = 0, f = 0, c = 0, tk = 0, tp = 0, tf = 0, tc = 0;
+  (meals || []).forEach(m => {
+    const kb = m.kbju || {};
+    tk += kb.kcal || 0; tp += kb.protein || 0; tf += kb.fat || 0; tc += kb.carbs || 0;
+    (m.dishes || []).forEach(d => {
+      const n = d.nutrition || {};
+      k += n.calories || 0; p += n.protein || 0; f += n.fat || 0; c += n.carbohydrates || 0;
+    });
+  });
+  const cell = (got, target, unit) => {
+    const ok = target ? Math.abs(got / target - 1) <= 0.15 : true;
+    return `<span style="${ok ? '' : 'color:#c62828;font-weight:600'}"><b>${Math.round(got)}</b> / ${Math.round(target)}${unit}</span>`;
+  };
+  return `<div class="card">
+    <div class="card-title">${title || 'Макронутриенты за день'}</div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:0.85rem">
+      ${cell(k, tk, ' ккал')}
+      <span>Б ${cell(p, tp, 'г')}</span>
+      <span>Ж ${cell(f, tf, 'г')}</span>
+      <span>У ${cell(c, tc, 'г')}</span>
+    </div>
+  </div>`;
+}
+
+function renderSavedPlans() {
+  const el = document.getElementById('planContent');
+  document.getElementById('planActions').style.display = 'none';
+  if (!clientPlansMeta.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">🍽</div><div class="empty-title">Планов ещё нет</div><div class="empty-sub">Заполните профиль и нажмите «Подобрать план».</div></div>`;
+    return;
+  }
+  const badge = s => s === 'sent' ? `<span class="badge badge-green">Отправлен</span>`
+    : s === 'acknowledged' ? `<span class="badge badge-green">Клиент видел</span>`
+    : `<span class="badge badge-gray">Черновик</span>`;
+  el.innerHTML = `<div class="card"><div class="card-title">Сохранённые планы</div>` +
+    clientPlansMeta.map(p => `
+      <div class="client-row" onclick="viewSavedPlan(${p.id})">
+        <div class="client-info">
+          <div class="client-name">${formatDate(p.plan_date)}</div>
+        </div>
+        ${badge(p.status)}
+      </div>`).join('') + `</div>`;
+}
+
+async function viewSavedPlan(planId) {
+  const el = document.getElementById('planContent');
+  el.innerHTML = `<div class="spinner-wrap"><div class="spinner"></div></div>`;
+  try {
+    const p = await api(`/api/trainer/plans/${planId}`);
+    const meals = p.items || [];
+    el.innerHTML =
+      `<div style="margin:0 16px 8px"><button class="btn-sm btn-sm-outline" onclick="renderSavedPlans()">← К списку</button></div>` +
+      dayMacroSummaryHtml(meals, `План на ${formatDate(p.plan_date)}`) +
+      meals.map(m => `
+        <div class="meal-block">
+          <div class="meal-block-header">
+            <span class="meal-label">${esc(m.meal_label)}</span>
+            <span class="meal-kbju">${mealActualKcal(m)} ккал</span>
+          </div>
+          ${(m.dishes || []).map(d => dishHtml(d)).join('')}
+        </div>`).join('');
+    if (p.status === 'draft') {
+      currentPlanId = p.id;
+      weekPlanIds = [];
+      document.getElementById('planActions').style.display = 'block';
+      document.getElementById('btnSend').style.display = 'block';
+    } else {
+      document.getElementById('planActions').style.display = 'none';
+    }
+  } catch (e) {
+    showToast(e.message, 'err');
+    renderSavedPlans();
+  }
+}
+
+async function loadClientDiary() {
+  const el = document.getElementById('diaryContent');
+  el.innerHTML = `<div class="spinner-wrap"><div class="spinner"></div></div>`;
+  try {
+    const [logs, weights] = await Promise.all([
+      api(`/api/trainer/clients/${currentClientId}/logs`),
+      api(`/api/trainer/clients/${currentClientId}/weight`).catch(() => []),
+    ]);
+    let weightHtml = '';
+    if (weights.length) {
+      const delta = weights.length > 1 ? weights[0].weight_kg - weights[weights.length - 1].weight_kg : null;
+      weightHtml = `<div class="card">
+        <div class="card-title">⚖️ Вес</div>
+        <div style="font-size:0.82rem;color:var(--muted);line-height:1.6">
+          ${weights.slice(0, 5).map(w => `${formatDate(w.log_date)}: <b>${w.weight_kg}</b> кг`).join(' · ')}
+          ${delta !== null ? `<div>Изменение: <b>${delta > 0 ? '+' : ''}${delta.toFixed(1)} кг</b></div>` : ''}
+        </div>
+      </div>`;
+    }
+    if (!logs.length && !weights.length) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">Дневник пуст</div><div class="empty-sub">Клиент ещё не отмечал съеденное и вес.</div></div>`;
+      return;
+    }
+    el.innerHTML = weightHtml + logs.map(l => {
+      const t = l.target;
+      const pct = t && t.kcal ? Math.round(l.eaten.kcal / t.kcal * 100) : null;
+      return `<div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+          <span style="font-weight:700;font-size:0.9rem">${formatDate(l.log_date)}</span>
+          ${pct !== null ? `<span class="badge ${pct >= 80 && pct <= 120 ? 'badge-green' : 'badge-red'}">${pct}% ккал</span>` : ''}
+        </div>
+        <div style="font-size:0.82rem;color:var(--muted);margin-bottom:6px">
+          ${l.eaten.kcal}${t ? ' / ' + t.kcal : ''} ккал ·
+          Б ${l.eaten.protein}${t ? '/' + t.protein : ''} ·
+          Ж ${l.eaten.fat}${t ? '/' + t.fat : ''} ·
+          У ${l.eaten.carbs}${t ? '/' + t.carbs : ''}
+        </div>
+        ${(l.items || []).map(it => `<div style="font-size:0.8rem;color:var(--muted)">• ${esc(it.name)}${it.needed_g ? ' — ' + it.needed_g + ' г' : ''}</div>`).join('')}
+      </div>`;
+    }).join('');
+  } catch (e) {
+    showToast(e.message, 'err');
+    el.innerHTML = '';
+  }
+}
+
+function fillProfile(profile) {
+  document.getElementById('profBirthDate').value = profile?.birth_date || '';
+  document.getElementById('calcWeight').value = profile?.weight_kg || '';
+  document.getElementById('calcHeight').value = profile?.height_cm || '';
+  if (profile?.sex) setSex(profile.sex);
+  if (profile?.activity) document.getElementById('calcActivity').value = String(profile.activity);
+  if (profile?.goal_formula) setFormula(profile.goal_formula);
+  document.getElementById('profKcal').value = profile?.kcal || '';
+  document.getElementById('profProtein').value = profile?.protein || '';
+  document.getElementById('profFat').value = profile?.fat || '';
+  document.getElementById('profCarbs').value = profile?.carbs || '';
+  document.getElementById('profGoal').value = profile?.goal || '';
+  document.getElementById('profRestrictions').value = profile?.restrictions || '';
+}
+
+function switchDetailTab(tab) {
+  const map = { profile: 'Profile', plan: 'Plan', diary: 'Diary' };
+  Object.keys(map).forEach(t => {
+    document.getElementById('detailTab' + map[t]).style.display = t === tab ? 'block' : 'none';
+    document.getElementById('tab' + map[t]).className = 'tab' + (t === tab ? ' active' : '');
+  });
+  if (tab === 'plan' && !generatedPlan && !generatedWeek) renderSavedPlans();
+  if (tab === 'diary') loadClientDiary();
+}
+
+async function saveProfile() {
+  try {
+    await api(`/api/trainer/clients/${currentClientId}/profile`, 'PUT', {
+      birth_date: document.getElementById('profBirthDate').value || null,
+      weight_kg: +document.getElementById('calcWeight').value || null,
+      height_cm: +document.getElementById('calcHeight').value || null,
+      sex: calcSex || null,
+      activity: +document.getElementById('calcActivity').value || null,
+      goal_formula: calcFormula || null,
+      kcal: +document.getElementById('profKcal').value || null,
+      protein: +document.getElementById('profProtein').value || null,
+      fat: +document.getElementById('profFat').value || null,
+      carbs: +document.getElementById('profCarbs').value || null,
+      goal: document.getElementById('profGoal').value || null,
+      restrictions: document.getElementById('profRestrictions').value || null,
+    });
+    showToast('Профиль сохранён', 'ok');
+  } catch (e) {
+    showToast(e.message, 'err');
+  }
+}
+
+function setSex(s) {
+  calcSex = s;
+  document.querySelectorAll('.sex-btn').forEach(b => b.classList.toggle('active', b.dataset.sex === s));
+}
+
+function setFormula(f) {
+  calcFormula = f;
+  document.querySelectorAll('.formula-btn').forEach(b => b.classList.toggle('active', b.dataset.formula === f));
+}
+
+function calcKbju() {
+  const weight = parseFloat(document.getElementById('calcWeight').value);
+  const height = parseFloat(document.getElementById('calcHeight').value);
+  const birthDate = document.getElementById('profBirthDate').value;
+  const activity = parseFloat(document.getElementById('calcActivity').value);
+  const goal = document.getElementById('profGoal').value;
+
+  if (!weight || !height || !birthDate || !calcSex) {
+    showToast('Заполните: дата рождения, вес, рост и пол', 'err');
+    return;
+  }
+
+  // Age
+  const bd = new Date(birthDate);
+  const today = new Date();
+  let age = today.getFullYear() - bd.getFullYear();
+  if (today.getMonth() < bd.getMonth() || (today.getMonth() === bd.getMonth() && today.getDate() < bd.getDate())) age--;
+
+  // BMR
+  let bmr;
+  if (calcFormula === 'mifflin') {
+    bmr = calcSex === 'male'
+      ? 10 * weight + 6.25 * height - 5 * age + 5
+      : 10 * weight + 6.25 * height - 5 * age - 161;
+  } else {
+    bmr = calcSex === 'male'
+      ? 88.362 + 13.397 * weight + 4.799 * height - 5.677 * age
+      : 447.593 + 9.247 * weight + 3.098 * height - 4.330 * age;
+  }
+
+  // TDEE + goal adjustment
+  let kcal = Math.round(bmr * activity);
+  if (goal === 'похудение') kcal = Math.round(kcal * 0.80);
+  else if (goal === 'набор массы') kcal = Math.round(kcal * 1.15);
+
+  // Macro split
+  const splits = {
+    'похудение':   { p: 0.35, f: 0.25, c: 0.40 },
+    'набор массы': { p: 0.25, f: 0.25, c: 0.50 },
+  };
+  const s = splits[goal] || { p: 0.30, f: 0.30, c: 0.40 };
+
+  document.getElementById('profKcal').value    = kcal;
+  document.getElementById('profProtein').value = Math.round(kcal * s.p / 4);
+  document.getElementById('profFat').value     = Math.round(kcal * s.f / 9);
+  document.getElementById('profCarbs').value   = Math.round(kcal * s.c / 4);
+
+  showToast('КБЖУ рассчитано', 'ok');
+}
+
+function setMealCount(n) {
+  selectedMealCount = n;
+  document.querySelectorAll('#mealCountGroup .seg-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', [2, 3, 4, 5][i] === n);
+  });
+}
+
+function setPeriod(p) {
+  selectedPeriod = p;
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.toggle('active', b.dataset.period === p));
+  document.getElementById('btnGenerate').textContent = p === 'week' ? 'Подобрать неделю' : 'Подобрать план';
+}
+
+function renderGeneratedPlan() {
+  document.getElementById('planContent').innerHTML = dayMacroSummaryHtml(generatedPlan) + generatedPlan.map((meal, mi) => `
+    <div class="meal-block">
+      <div class="meal-block-header">
+        <span class="meal-label">${esc(meal.meal_label)}</span>
+        <span class="meal-kbju">${mealActualKcal(meal)} ккал</span>
+      </div>
+      ${meal.dishes.map((d, di) => dishHtml(d, mi, di)).join('')}
+    </div>`).join('');
+}
+
+async function generatePlan() {
+  const kcal = parseFloat(document.getElementById('profKcal').value);
+  if (!kcal) {
+    showToast('Сначала рассчитайте и сохраните КБЖУ', 'err');
+    switchDetailTab('profile');
+    return;
+  }
+  const week = selectedPeriod === 'week';
+  const btn = document.getElementById('btnGenerate');
+  btn.disabled = true;
+  btn.textContent = week ? 'Подбираем неделю...' : 'Подбираем...';
+  switchDetailTab('plan');
+  document.getElementById('planContent').innerHTML = `<div class="spinner-wrap"><div class="spinner"></div></div>`;
+  document.getElementById('planActions').style.display = 'none';
+  try {
+    if (week) {
+      const data = await api(`/api/trainer/clients/${currentClientId}/search-week?meal_count=${selectedMealCount}`, 'POST');
+      generatedWeek = data.days;
+      generatedWeekCoverage = data.coverage || null;
+      generatedPlan = null;
+      currentPlanId = null;
+      weekActiveDay = 0;
+      weekPlanIds = [];
+      renderGeneratedWeek();
+    } else {
+      const data = await api(`/api/trainer/clients/${currentClientId}/search?meal_count=${selectedMealCount}`, 'POST');
+      generatedPlan = data.meals;
+      generatedWeek = null;
+      generatedWeekCoverage = null;
+      weekPlanIds = [];
+      renderGeneratedPlan();
+    }
+    document.getElementById('planActions').style.display = 'block';
+    document.getElementById('btnSend').style.display = 'none';
+  } catch (e) {
+    document.getElementById('planContent').innerHTML = `<div class="empty"><div class="empty-sub" style="color:#c62828">${esc(e.message)}</div></div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = week ? 'Подобрать неделю' : 'Подобрать план';
+  }
+}
+
+const WEEKDAYS_SHORT = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
+
+function weekDayChipLabel(iso) {
+  const d = new Date(iso + 'T00:00:00');
+  return `${WEEKDAYS_SHORT[d.getDay()]} ${d.getDate()}`;
+}
+
+function setWeekDay(i) {
+  weekActiveDay = i;
+  renderGeneratedWeek();
+}
+
+function coverageCardHtml() {
+  if (!generatedWeekCoverage || !generatedWeekCoverage.length) return '';
+  const badges = generatedWeekCoverage.map(c => {
+    const norm = c.max ? `${c.min}–${c.max}` : `${c.min}+`;
+    return `<span class="badge ${c.ok ? 'badge-green' : 'badge-red'}" style="margin:2px 0">${c.ok ? '✓' : '⚠'} ${esc(c.group)} ${c.days}/${norm}</span>`;
+  }).join(' ');
+  return `<div class="card">
+    <div class="card-title">Покрытие пищевых групп за неделю</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">${badges}</div>
+    ${generatedWeekCoverage.some(c => !c.ok) ? `<p style="font-size:0.75rem;color:var(--muted);margin-top:10px">Есть незакрытые группы — попробуйте подобрать неделю ещё раз.</p>` : ''}
+  </div>`;
+}
+
+function renderGeneratedWeek() {
+  const chips = `<div style="display:flex;gap:4px;flex-wrap:wrap;margin:0 16px 12px">` +
+    generatedWeek.map((day, i) =>
+      `<button class="seg-btn${i === weekActiveDay ? ' active' : ''}" onclick="setWeekDay(${i})">${weekDayChipLabel(day.plan_date)}</button>`
+    ).join('') + `</div>`;
+  const day = generatedWeek[weekActiveDay];
+  const meals = day.meals.map((meal, mi) => `
+    <div class="meal-block">
+      <div class="meal-block-header">
+        <span class="meal-label">${esc(meal.meal_label)}</span>
+        <span class="meal-kbju">${mealActualKcal(meal)} ккал</span>
+      </div>
+      ${meal.dishes.map((d, di) => dishHtml(d, mi, di, true)).join('')}
+    </div>`).join('');
+  document.getElementById('planContent').innerHTML =
+    coverageCardHtml() + chips + dayMacroSummaryHtml(day.meals) + meals;
+}
+
+// ——— Замена блюда в недельном режиме ———
+
+function makeWholeAgain(d) {
+  // вернуть половинке полную упаковку (пересчёт КБЖУ по per_100g)
+  const w = { ...d, portion: 1.0, needed_g: d.weight_g, portion_hint: 'вся порция' };
+  delete w.carryover;
+  delete w.carryover_note;
+  const p100 = d.nutrition && d.nutrition.per_100g;
+  if (p100) {
+    const k = d.weight_g / 100;
+    w.nutrition = {
+      protein: Math.round(p100.protein * k * 10) / 10,
+      fat: Math.round(p100.fat * k * 10) / 10,
+      carbohydrates: Math.round(p100.carbohydrates * k * 10) / 10,
+      calories: Math.round(p100.calories * k * 10) / 10,
+      per_100g: p100,
+    };
+  }
+  return w;
+}
+
+function cleanupHalfLinks(dish) {
+  // заменяемая половинка тянет за собой пару в другом слоте недели
+  if (dish.portion !== 0.5) return;
+  if (dish.carryover) {
+    // заменили перенос — первая половина становится целой упаковкой
+    for (const day of generatedWeek) {
+      for (const meal of day.meals) {
+        const i = meal.dishes.findIndex(x => x.xml_id === dish.xml_id && !x.carryover && x.portion === 0.5);
+        if (i >= 0) { meal.dishes[i] = makeWholeAgain(meal.dishes[i]); return; }
+      }
+    }
+  } else {
+    // заменили первую половину — её перенос удаляется
+    for (const day of generatedWeek) {
+      for (const meal of day.meals) {
+        const i = meal.dishes.findIndex(x => x.xml_id === dish.xml_id && x.carryover);
+        if (i >= 0) { meal.dishes.splice(i, 1); return; }
+      }
+    }
+  }
+}
+
+async function refreshWeekCoverage() {
+  try {
+    const res = await api('/api/trainer/plans/coverage', 'POST', { days: generatedWeek });
+    generatedWeekCoverage = res.coverage;
+  } catch (_) { /* отчёт не критичен */ }
+}
+
+async function replaceWeekDish(mealIdx, dishIdx) {
+  if (!generatedWeek) return;
+  const meal = generatedWeek[weekActiveDay].meals[mealIdx];
+  const dish = meal.dishes[dishIdx];
+  const btn = document.getElementById(`rbtn_${mealIdx}_${dishIdx}`);
+  if (btn) { btn.classList.add('loading'); btn.disabled = true; }
+  const n = dish.nutrition || {};
+  try {
+    const res = await api(`/api/trainer/clients/${currentClientId}/replace-dish`, 'POST', {
+      meal_label: meal.meal_label,
+      meal_type: meal.meal_type,
+      kbju: {
+        kcal: n.calories || Math.round((meal.kbju.kcal || 0) / meal.dishes.length),
+        protein: n.protein || 0,
+        fat: n.fat || 0,
+        carbs: n.carbohydrates || 0,
+      },
+      exclude_xml_ids: meal.dishes.map(x => x.xml_id).filter(Boolean),
+    });
+    cleanupHalfLinks(dish);
+    const newDish = res.dish;
+    newDish.portion = 1.0;
+    newDish.in_cart = true;
+    meal.dishes[dishIdx] = newDish;
+    // неделя изменена — нужно пересохранить перед отправкой
+    weekPlanIds = [];
+    document.getElementById('btnSend').style.display = 'none';
+    await refreshWeekCoverage();
+    renderGeneratedWeek();
+  } catch (e) {
+    showToast(e.message, 'err');
+    if (btn) { btn.classList.remove('loading'); btn.disabled = false; }
+  }
+}
+
+async function replaceDish(mealIdx, dishIdx) {
+  if (!generatedPlan) return;
+  const meal = generatedPlan[mealIdx];
+  const btn = document.getElementById(`rbtn_${mealIdx}_${dishIdx}`);
+  if (btn) { btn.classList.add('loading'); btn.disabled = true; }
+  const excludeXmlIds = meal.dishes.map(d => d.xml_id).filter(Boolean);
+  // цель замены — КБЖУ заменяемого блюда, а не всего приёма
+  const removed = meal.dishes[dishIdx].nutrition || {};
+  const targetKbju = {
+    kcal: removed.calories || Math.round((meal.kbju.kcal || 0) / meal.dishes.length),
+    protein: removed.protein || 0,
+    fat: removed.fat || 0,
+    carbs: removed.carbohydrates || 0,
+  };
+  try {
+    const res = await api(`/api/trainer/clients/${currentClientId}/replace-dish`, 'POST', {
+      meal_label: meal.meal_label,
+      meal_type: meal.meal_type,
+      kbju: targetKbju,
+      exclude_xml_ids: excludeXmlIds,
+    });
+    generatedPlan[mealIdx].dishes[dishIdx] = res.dish;
+    renderGeneratedPlan();
+    // plan changed — hide Send button until re-saved
+    document.getElementById('btnSend').style.display = 'none';
+    currentPlanId = null;
+  } catch (e) {
+    showToast(e.message, 'err');
+    if (btn) { btn.classList.remove('loading'); btn.disabled = false; }
+  }
+}
+
+async function savePlan() {
+  if (generatedWeek) {
+    try {
+      const res = await api('/api/trainer/plans/week', 'POST', {
+        client_id: currentClientId,
+        days: generatedWeek,
+      });
+      weekPlanIds = res.plan_ids;
+      document.getElementById('btnSend').style.display = 'block';
+      showToast('Неделя сохранена', 'ok');
+    } catch (e) {
+      showToast(e.message, 'err');
+    }
+    return;
+  }
+  if (!generatedPlan) return;
+  try {
+    const res = await api('/api/trainer/plans', 'POST', {
+      client_id: currentClientId,
+      plan_date: new Date().toISOString().slice(0, 10),
+      items: generatedPlan,
+    });
+    currentPlanId = res.plan_id;
+    document.getElementById('btnSend').style.display = 'block';
+    showToast('План сохранён', 'ok');
+  } catch (e) {
+    showToast(e.message, 'err');
+  }
+}
+
+async function sendPlan() {
+  if (weekPlanIds.length) {
+    try {
+      const res = await api('/api/trainer/plans/send-many', 'POST', { plan_ids: weekPlanIds });
+      notifySendResult(res, 'Неделя отправлена клиенту');
+      document.getElementById('btnSend').style.display = 'none';
+      await loadTrainerHome();
+    } catch (e) {
+      showToast(e.message, 'err');
+    }
+    return;
+  }
+  if (!currentPlanId) return;
+  try {
+    const res = await api(`/api/trainer/plans/${currentPlanId}/send`, 'POST');
+    notifySendResult(res, 'План отправлен клиенту');
+    document.getElementById('btnSend').style.display = 'none';
+    await loadTrainerHome();
+  } catch (e) {
+    showToast(e.message, 'err');
+  }
+}
+
+function notifySendResult(res, okText) {
+  if (res.notified) {
+    showToast(okText + ' — уведомление доставлено', 'ok');
+  } else {
+    showToast(okText + '. Уведомление не дошло: клиент должен нажать Start у бота', '');
+  }
+}
+
+
+// досохранение дневника при сворачивании/закрытии приложения
+document.addEventListener('visibilitychange', () => { if (document.hidden) flushDiary(); });
+try { tg.onEvent('viewportChanged', e => { if (e && e.isStateStable === false) flushDiary(); }); } catch (_) {}
+
+init();
+</script>
+</body>
+</html>
