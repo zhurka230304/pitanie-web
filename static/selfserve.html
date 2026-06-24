@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<title>Журка — рацион под твою цель</title>
+<style>
+  :root{--green:#4A7C2F;--green-dark:#2D5016;--green-light:#EEF4E6;--bg:#F5F0E8;--white:#FDFAF4;--text:#1C1C1A;--muted:#6b7260;--border:#DDD8CC;--r:16px}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);max-width:680px;margin:0 auto;padding:16px;padding-bottom:60px}
+  h1{font-size:1.4rem;color:var(--green-dark);margin-bottom:2px}
+  .sub{color:var(--muted);font-size:.85rem;margin-bottom:14px}
+  .card{background:var(--white);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
+  .ct{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:10px}
+  .row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)}
+  .row:last-child{border-bottom:none}
+  .row label{font-size:.9rem;color:var(--muted)}
+  input,select{width:130px;border:1.5px solid var(--border);border-radius:10px;padding:7px 10px;font-size:.95rem;font-weight:600;text-align:right;font-family:inherit;background:var(--bg);color:var(--text);outline:none}
+  input:focus,select:focus{border-color:var(--green)}
+  .btn{display:block;width:100%;padding:14px;border:none;border-radius:99px;font-size:1rem;font-weight:600;cursor:pointer;font-family:inherit;background:var(--green-dark);color:#fff;margin:8px 0}
+  .btn-out{background:none;color:var(--green-dark);border:2px solid var(--green-dark)}
+  .btn:active{opacity:.85}.btn:disabled{opacity:.5}
+  .day{background:var(--white);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
+  .day-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .day-title{font-weight:700;color:var(--green-dark)}.kbju{font-size:.78rem;color:var(--muted)}
+  .meal{padding:8px 0;border-top:1px solid var(--border)}
+  .meal-label{font-weight:600;font-size:.88rem;margin-bottom:6px}
+  .dish{display:flex;gap:10px;align-items:center;padding:5px 0}
+  .dish img{width:54px;height:54px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--green-light);border:1px solid var(--border)}
+  .dish .di{flex:1;min-width:0}
+  .dish .dn{font-size:.85rem;font-weight:600;line-height:1.3}
+  .dish .dm{font-size:.75rem;color:var(--muted)}
+  .badge{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--green-light);color:var(--green-dark)}
+  .pill{display:inline-block;font-size:.7rem;background:var(--border);color:var(--muted);border-radius:99px;padding:2px 8px;margin-left:6px}
+  .shop li{font-size:.85rem;padding:3px 0}.shop{margin-left:18px}
+  .spin{text-align:center;padding:30px;color:var(--muted)}
+  .cart-link{font-size:.78rem;color:var(--green-dark);word-break:break-all;background:var(--green-light);padding:10px;border-radius:8px;margin:8px 0;line-height:1.5}
+  .tgt{display:flex;gap:6px;flex-wrap:wrap}
+  .tgt span{background:var(--white);border-radius:99px;padding:3px 10px;font-size:.78rem;font-weight:600;color:var(--green-dark)}
+  .hide{display:none}
+</style>
+</head>
+<body>
+<h1>🥗 Журка</h1>
+<div class="sub">Каждую неделю — готовый рацион под твою цель и корзина ВкусВилл. Без тренера.</div>
+
+<div class="card">
+  <div class="ct">Твои данные</div>
+  <div class="row"><label>Пол</label>
+    <select id="sex"><option value="female">Женский</option><option value="male">Мужской</option></select></div>
+  <div class="row"><label>Вес, кг</label><input id="weight" type="number" value="60"/></div>
+  <div class="row"><label>Рост, см</label><input id="height" type="number" value="165"/></div>
+  <div class="row"><label>Возраст</label><input id="age" type="number" value="30"/></div>
+  <div class="row"><label>Активность</label>
+    <select id="activity">
+      <option value="sedentary">Сидячий</option>
+      <option value="light">Низкая (1–3 трен/нед)</option>
+      <option value="moderate" selected>Умеренная (3–5 трен/нед)</option>
+      <option value="high">Высокая (6–7 трен/нед)</option>
+      <option value="very_high">Очень высокая</option>
+    </select></div>
+  <div class="row"><label>Цель</label>
+    <select id="goal"><option value="loss">Похудение</option><option value="maintain">Поддержание</option><option value="gain">Набор</option></select></div>
+  <button class="btn btn-out" onclick="calcKbju()" style="margin-top:8px">Рассчитать КБЖУ</button>
+</div>
+
+<div class="card">
+  <div class="ct">Цель на день (можно править)</div>
+  <div class="row"><label>Калории</label><input id="kcal" type="number" value="1950"/></div>
+  <div class="row"><label>Белки, г</label><input id="protein" type="number" value="150"/></div>
+  <div class="row"><label>Жиры, г</label><input id="fat" type="number" value="65"/></div>
+  <div class="row"><label>Углеводы, г</label><input id="carbs" type="number" value="180"/></div>
+  <div class="row"><label>Приёмов в день</label>
+    <select id="meal_count"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+  <div class="row"><label>Ограничения</label>
+    <select id="restrictions"><option value="">нет</option><option value="вегетарианское">вегетарианское</option><option value="без мяса">без мяса</option></select></div>
+</div>
+
+<button class="btn" id="go" onclick="build()">Собрать неделю</button>
+<div id="out"></div>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const H={'Content-Type':'application/json'};
+let currentDays=null;
+
+const PROFILE_FIELDS=['sex','weight','height','age','activity','goal','kcal','protein','fat','carbs','meal_count','restrictions'];
+function lsGet(k,def){ try{const v=JSON.parse(localStorage.getItem(k)); return v==null?def:v;}catch(e){return def;} }
+function lsSet(k,v){ try{localStorage.setItem(k,JSON.stringify(v));}catch(e){} }
+function collectProfile(){const p={};PROFILE_FIELDS.forEach(k=>{if($(k))p[k]=$(k).value;});return p;}
+function applyProfile(p){ if(!p)return; PROFILE_FIELDS.forEach(k=>{ if(p[k]!=null&&$(k))$(k).value=p[k]; }); }
+function saveProfile(){ lsSet('ss_profile', collectProfile()); }
+applyProfile(lsGet('ss_profile',null));
+
+async function calcKbju(){
+  try{
+    const b={sex:$('sex').value,weight:+$('weight').value,height:+$('height').value,age:+$('age').value,activity:$('activity').value,goal:$('goal').value};
+    const r=await(await fetch('api/self-serve/kbju',{method:'POST',headers:H,body:JSON.stringify(b)})).json();
+    $('kcal').value=r.kcal; $('protein').value=r.protein; $('fat').value=r.fat; $('carbs').value=r.carbs;
+    saveProfile();
+  }catch(e){ alert('Не удалось рассчитать КБЖУ'); }
+}
+
+function showOut(html){ $('out').innerHTML=html; $('out').scrollIntoView({behavior:'smooth',block:'start'}); }
+
+async function build(){
+  saveProfile();
+  const btn=$('go'); btn.disabled=true; btn.textContent='Собираю меню…';
+  showOut('<div class="spin">Подбираю блюда под твою цель… это занимает до минуты.</div>');
+  try{
+    const b={kcal:+$('kcal').value,protein:+$('protein').value,fat:+$('fat').value,carbs:+$('carbs').value,
+      meal_count:+$('meal_count').value,restrictions:$('restrictions').value||null,days_count:7};
+    const r=await(await fetch('api/self-serve/week',{method:'POST',headers:H,body:JSON.stringify(b)})).json();
+    currentDays=r.days||[];
+    render(currentDays);
+  }catch(e){ showOut('<div class="card sub" style="color:#c62828">Не удалось собрать неделю. Попробуй ещё раз.</div>'); }
+  finally{ btn.disabled=false; btn.textContent='Собрать неделю'; }
+}
+
+const WD=['пн','вт','ср','чт','пт','сб','вс'];
+function dishNutr(d){ return (d.nutrition||{}).calories||0; }
+function dayTotals(day){
+  let k=0,p=0,f=0,c=0;
+  (day.meals||[]).forEach(m=>(m.dishes||[]).forEach(d=>{const n=d.nutrition||{};k+=n.calories||0;p+=n.protein||0;f+=n.fat||0;c+=(n.carbohydrates||0);}));
+  return {kcal:Math.round(k),protein:Math.round(p),fat:Math.round(f),carbs:Math.round(c)};
+}
+function dishRow(d){
+  const img=d.image_url?`<img src="${d.image_url}"/>`:`<div style="width:54px;height:54px;border-radius:10px;background:var(--green-light);flex-shrink:0"></div>`;
+  const half=d.portion&&d.portion<1?` <span class="pill">½ упаковки</span>`:'';
+  const g=d.needed_g?`${d.needed_g} г`:'';
+  const kc=Math.round(dishNutr(d));
+  const link=d.url?`onclick="window.open('${d.url}','_blank')" style="cursor:pointer"`:'';
+  return `<div class="dish" ${link}>${img}<div class="di"><div class="dn">${d.name}${half}</div>
+    <div class="dm">${g}${g&&kc?' · ':''}${kc?kc+' ккал':''}${d.price?' · '+d.price+' ₽':''}</div></div></div>`;
+}
+function render(days){
+  if(!days||!days.length){ showOut('<div class="card sub">Ничего не подобралось. Попробуй изменить цель или ограничения.</div>'); return; }
+  let h='';
+  days.forEach((day,i)=>{
+    const t=dayTotals(day);
+    h+=`<div class="day"><div class="day-head"><span class="day-title">День ${i+1} (${WD[i%7]})</span>
+      <span class="kbju">${t.kcal} ккал · Б${t.protein} Ж${t.fat} У${t.carbs}</span></div>`;
+    (day.meals||[]).forEach(m=>{
+      h+=`<div class="meal"><div class="meal-label">${m.meal_label} <span class="badge">${Math.round((m.kbju||{}).kcal||0)} ккал</span></div>`;
+      (m.dishes||[]).forEach(d=>h+=dishRow(d));
+      h+='</div>';
+    });
+    h+='</div>';
+  });
+  h+='<div class="card"><div class="ct">🛒 Заказ ВкусВилл</div><div class="sub">Собрать корзину из продуктов на неделю одной ссылкой.</div>'
+    +'<button class="btn" id="cartBtn" onclick="makeCart()">Собрать корзину ВкусВилл</button><div id="cartOut"></div></div>';
+  showOut(h);
+}
+
+async function makeCart(){
+  const btn=$('cartBtn'); btn.disabled=true; btn.textContent='Собираю корзину…';
+  try{
+    const r=await(await fetch('api/self-serve/cart',{method:'POST',headers:H,body:JSON.stringify({days:currentDays})})).json();
+    let h='';
+    if(r.cart_url){
+      h=`<div class="cart-link" id="clink">${r.cart_url}</div>
+         <button class="btn btn-out" onclick="copyCart()">Скопировать ссылку</button>
+         <div class="sub">Открой в браузере. Товаров в корзине: ${r.count}.</div>`;
+    }else{ h='<div class="sub" style="color:#c62828">Не удалось собрать корзину. Попробуй ещё раз.</div>'; }
+    $('cartOut').innerHTML=h;
+  }catch(e){ $('cartOut').innerHTML='<div class="sub" style="color:#c62828">Ошибка</div>'; }
+  finally{ btn.disabled=false; btn.textContent='Собрать корзину ВкусВилл'; }
+}
+function copyCart(){
+  const t=$('clink').textContent; const ta=document.createElement('textarea'); ta.value=t;
+  ta.style.cssText='position:fixed;opacity:0'; document.body.appendChild(ta); ta.select();
+  document.execCommand('copy'); document.body.removeChild(ta); alert('Ссылка скопирована');
+}
+</script>
+</body>
+</html>

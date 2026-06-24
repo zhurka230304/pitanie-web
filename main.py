@@ -13,6 +13,7 @@ from models import User
 from routers import auth, search, history, ratings, ingredients, tg_auth, trainer
 from routers import client as client_router
 from routers import mealprep
+from routers import selfserve
 
 
 @asynccontextmanager
@@ -36,6 +37,9 @@ app.include_router(trainer.router)
 app.include_router(client_router.router)
 app.include_router(mealprep.router)
 
+# B2C self-serve (App 1) — отдельный сайт для людей без тренера
+app.include_router(selfserve.router)
+
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -44,6 +48,15 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def serve_mealprep():
     return FileResponse(
         "static/mealprep.html",
+        headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
+    )
+
+
+@app.get("/menu")
+async def serve_selfserve():
+    """App 1 (B2C self-serve) — сайт подбора готовых блюд без тренера."""
+    return FileResponse(
+        "static/selfserve.html",
         headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
     )
 
