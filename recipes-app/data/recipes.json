@@ -1,0 +1,5075 @@
+{
+  "meta": {
+    "sources": [
+      "IRNBY Training Club — Booty Challenge, раздел «Питание» (2023)",
+      "@KKIFOOD — Конструктор сбалансированной тарелки",
+      "@KKIFOOD — Сборник рационов на 30 дней (Кира)",
+      "ksy_profood — Гайд «Стройное тело» (Ксюша, нутрициолог)"
+    ],
+    "kbju_format": "nutrition = ккал / белки(г) / жиры(г) / углеводы(г) на порцию (как в гайде)",
+    "note": "Все рецепты из IRNBY. Граммовки и КБЖУ — как указаны в гайде; КБЖУ дано на 1 порцию приёма.",
+    "formulas": {
+      "IRNBY": {
+        "calories": "внешний калькулятор; цель: похудение -10%, набор +10%",
+        "bju_percent": {
+          "protein": 20,
+          "fat": 30,
+          "carbs": 50
+        },
+        "water_ml": "30 мл * вес(кг)"
+      },
+      "KKIFOOD": {
+        "calories": "не считает обязательным; ориентир 1500-1800 ккал/день (норма 1700-2500)",
+        "protein_g_per_kg": "не менее 0.8 г/кг (~20% рациона)",
+        "fat_g_per_kg": "0.8-1.2 г/кг (~30% рациона)",
+        "carbs_g_per_kg": "2-4 г/кг (~30% рациона)",
+        "fiber_g": "не менее 30 г/день",
+        "water_ml": "вес(кг) * 35 (мужчины) или * 31 (женщины)",
+        "plate": "1/2 зелень+овощи (клетчатка), 1/4 белок, 1/4 цельнозерновые/бобовые"
+      },
+      "ksy_profood": {
+        "bmr_formula": "Харриса-Бенедикта",
+        "bmr_women": "655 + 9.6*вес(кг) + 1.8*рост(см) - 4.7*возраст(лет)",
+        "bmr_men": "66.5 + 13.75*вес(кг) + 5.003*рост(см) - 6.755*возраст(лет)",
+        "maintenance": "базовый обмен * КА",
+        "activity_coeff": {
+          "без спорта": 1.2,
+          "3 трен/нед": 1.38,
+          "5 трен/нед": 1.46,
+          "интенсивные 5 раз": 1.55,
+          "каждый день": 1.64,
+          "спортсмены/физ.труд": "1.73-1.9"
+        },
+        "deficit_loss": "норма - 15%",
+        "macros": {
+          "protein_g_per_kg": "1.5-2 (4 ккал/г)",
+          "fat_g_per_kg": "1 (9 ккал/г)",
+          "carbs": "остаток калорий (4 ккал/г)"
+        },
+        "plate": "тарелка 24 см: 1/2 клетчатка, 1/4 белок, 1/4 углеводы, жиры в центре"
+      }
+    }
+  },
+  "rations": [
+    {
+      "id": "classic-1",
+      "title": "Классический рацион №1",
+      "type": "классический",
+      "total_nutrition": {
+        "kcal": 1551,
+        "protein": 78,
+        "fat": 59,
+        "carbs": 177
+      }
+    },
+    {
+      "id": "classic-2",
+      "title": "Классический рацион №2",
+      "type": "классический",
+      "total_nutrition": {
+        "kcal": 1503,
+        "protein": 92,
+        "fat": 54,
+        "carbs": 159
+      }
+    },
+    {
+      "id": "vegetarian-1",
+      "title": "Вегетарианский рацион №1",
+      "type": "вегетарианский",
+      "total_nutrition": {
+        "kcal": 1514,
+        "protein": 82,
+        "fat": 50,
+        "carbs": 182
+      }
+    },
+    {
+      "id": "vegetarian-2",
+      "title": "Вегетарианский рацион №2",
+      "type": "вегетарианский",
+      "total_nutrition": {
+        "kcal": 1531,
+        "protein": 96,
+        "fat": 51,
+        "carbs": 164
+      }
+    },
+    {
+      "id": "vegan-1",
+      "title": "Веганский рацион",
+      "type": "веганский",
+      "total_nutrition": {
+        "kcal": 1624,
+        "protein": 73,
+        "fat": 54,
+        "carbs": 216
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "ovsyanka-klyukva-izyum",
+      "title": "Овсяная каша с клюквой и изюмом",
+      "ration_id": "classic-1",
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [
+        "классический"
+      ],
+      "ingredients": [
+        {
+          "name": "геркулес",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "молоко",
+          "amount": 300,
+          "unit": "мл"
+        },
+        {
+          "name": "соль",
+          "amount": null,
+          "unit": "щепотка"
+        },
+        {
+          "name": "молотый мускатный орех",
+          "amount": null,
+          "unit": "щепотка"
+        },
+        {
+          "name": "палочки корицы",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "гвоздика",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "цедра апельсина",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "вяленая клюква",
+          "amount": 10,
+          "unit": "г"
+        },
+        {
+          "name": "орехи пекан",
+          "amount": 10,
+          "unit": "г"
+        },
+        {
+          "name": "светлый изюм",
+          "amount": 10,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Налить молоко в сотейник, поставить на средний огонь. Добавить щепотку соли, молотого мускатного ореха, гвоздику, корицу и апельсиновую цедру.",
+        "Довести молоко до кипения, всыпать геркулес и готовить на среднем огне, помешивая, примерно 7–8 минут до загустения.",
+        "Снять с огня, удалить палочку корицы и апельсиновую цедру. Вмешать вяленую клюкву и светлый изюм. Накрыть крышкой и оставить на пару минут.",
+        "При подаче посыпать кашу орехами пекан."
+      ],
+      "nutrition": {
+        "kcal": 537,
+        "protein": 18,
+        "fat": 21,
+        "carbs": 69
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "overnight": false
+    },
+    {
+      "id": "fruktovyy-salat",
+      "title": "Фруктовый салат",
+      "ration_id": "classic-1",
+      "meal_type": "перекус",
+      "servings": 1,
+      "tags": [
+        "классический"
+      ],
+      "ingredients": [
+        {
+          "name": "яблоко",
+          "amount": 0.5,
+          "unit": "шт"
+        },
+        {
+          "name": "киви",
+          "amount": 0.5,
+          "unit": "шт"
+        },
+        {
+          "name": "голубика",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "греческий йогурт 2%",
+          "amount": 100,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Порезать фрукты кубиками и заправить йогуртом. Перемешать.",
+        "Украсить голубикой."
+      ],
+      "nutrition": {
+        "kcal": 110,
+        "protein": 6,
+        "fat": 2,
+        "carbs": 17
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "без готовки",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 5,
+      "overnight": false
+    },
+    {
+      "id": "grechka-myaso-tomaty-po-kupecheski",
+      "title": "Гречка с мясом и томатами по-купечески",
+      "ration_id": "classic-1",
+      "meal_type": "обед",
+      "servings": 1,
+      "tags": [
+        "классический"
+      ],
+      "ingredients": [
+        {
+          "name": "репчатый лук",
+          "amount": 20,
+          "unit": "г"
+        },
+        {
+          "name": "говяжий фарш",
+          "amount": 70,
+          "unit": "г"
+        },
+        {
+          "name": "чеснок",
+          "amount": 0.5,
+          "unit": "зуб"
+        },
+        {
+          "name": "морковь",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "гречневая крупа",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "томатная паста",
+          "amount": 1.5,
+          "unit": "ч.л."
+        }
+      ],
+      "steps": [
+        "На сковороде обжарить мелко порезанный лук, фарш и натёртую на крупной тёрке морковь до золотистого цвета. Добавить томатную пасту, тщательно перемешать.",
+        "Гречку промыть, добавить к мясу и овощам и залить кипятком так, чтобы она была слегка прикрыта водой. Посолить. Тушить на медленном огне под крышкой.",
+        "В готовую гречку добавить мелко порезанный чеснок, перемешать."
+      ],
+      "nutrition": {
+        "kcal": 428,
+        "protein": 21,
+        "fat": 16,
+        "carbs": 50
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": true,
+      "keeps_days": 3,
+      "time_min": 25,
+      "overnight": false
+    },
+    {
+      "id": "salat-kinoa-shpinat",
+      "title": "Салат с киноа и шпинатом",
+      "ration_id": "classic-1",
+      "meal_type": "перекус",
+      "servings": 1,
+      "tags": [
+        "классический"
+      ],
+      "ingredients": [
+        {
+          "name": "шпинат",
+          "amount": 80,
+          "unit": "г"
+        },
+        {
+          "name": "киноа",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "помидоры черри",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "авокадо",
+          "amount": 40,
+          "unit": "г"
+        },
+        {
+          "name": "лимонный сок",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "оливковое масло",
+          "amount": 1,
+          "unit": "ч.л."
+        }
+      ],
+      "steps": [
+        "Отварить киноа до готовности, промыть шпинат (идеально использовать мелкий беби-шпинат) и нарезать авокадо с помидорами черри дольками.",
+        "Перемешать салат и заправить его лимонным соком и оливковым маслом."
+      ],
+      "nutrition": {
+        "kcal": 314,
+        "protein": 11,
+        "fat": 14,
+        "carbs": 36
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "overnight": false
+    },
+    {
+      "id": "treska-tomaty-zelen",
+      "title": "Запечённая треска с томатами и зеленью",
+      "ration_id": "classic-1",
+      "meal_type": "ужин",
+      "servings": 1,
+      "tags": [
+        "классический"
+      ],
+      "ingredients": [
+        {
+          "name": "филе трески",
+          "amount": 120,
+          "unit": "г"
+        },
+        {
+          "name": "оливковое масло",
+          "amount": 1,
+          "unit": "ч.л."
+        },
+        {
+          "name": "долька лимона",
+          "amount": 1,
+          "unit": "долька"
+        },
+        {
+          "name": "петрушка",
+          "amount": 20,
+          "unit": "г"
+        },
+        {
+          "name": "помидоры черри",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "соль",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "молотый чёрный перец",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Разрезать пополам помидоры черри. Мелко порубить зелень.",
+        "В пакет для запекания положить кусочек филе трески, рубленую зелень, половинки томатов, сбрызнуть соком лимона и ложкой масла. Завязать герметично пакет, посолить, поперчить и положить на 15 минут в духовку, разогретую до 180 °C."
+      ],
+      "nutrition": {
+        "kcal": 162,
+        "protein": 22,
+        "fat": 6,
+        "carbs": 5
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "духовка",
+      "no_bake": false,
+      "is_quick": false,
+      "batch_friendly": true,
+      "keeps_days": 4,
+      "time_min": 40,
+      "overnight": false
+    },
+    {
+      "id": "shakshuka",
+      "title": "Шакшука",
+      "ration_id": "classic-2",
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [
+        "классический",
+        "вегетарианское"
+      ],
+      "ingredients": [
+        {
+          "name": "яйца",
+          "amount": 2,
+          "unit": "шт"
+        },
+        {
+          "name": "помидор",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "цукини",
+          "amount": 0.5,
+          "unit": "шт"
+        },
+        {
+          "name": "фиолетовая луковица",
+          "amount": 0.5,
+          "unit": "шт"
+        },
+        {
+          "name": "болгарский перец",
+          "amount": 0.5,
+          "unit": "шт"
+        },
+        {
+          "name": "помидоры в собственном соку",
+          "amount": 150,
+          "unit": "г"
+        },
+        {
+          "name": "кинза",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "сливки",
+          "amount": 10,
+          "unit": "мл"
+        },
+        {
+          "name": "чеснок",
+          "amount": 1,
+          "unit": "зуб"
+        },
+        {
+          "name": "специи",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "хлебцы ржаные",
+          "amount": 3,
+          "unit": "шт"
+        }
+      ],
+      "steps": [
+        "Нарезать мелким кубиком помидоры, цукини, лук и болгарский перец. Измельчить чеснок и мелко нарубить томаты в собственном соку. Отправить всё вместе на сковородку и жарить 7–8 минут, помешивая. Приправить.",
+        "Сделать в овощах небольшие углубления и вбить в них яйца. Добавить сливки и тушить на слабом огне ~7 минут, в зависимости от желаемой консистенции яиц.",
+        "Посыпать шакшуку рубленой кинзой. Подавать вместе с хлебцами."
+      ],
+      "nutrition": {
+        "kcal": 423,
+        "protein": 26,
+        "fat": 15,
+        "carbs": 45
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "overnight": false
+    },
+    {
+      "id": "yagody-oreshki-1",
+      "title": "Ягоды с орешками",
+      "ration_id": "classic-2",
+      "meal_type": "перекус",
+      "servings": 1,
+      "tags": [
+        "классический",
+        "вегетарианское"
+      ],
+      "ingredients": [
+        {
+          "name": "ягоды (голубика, клубника, малина и др.)",
+          "amount": 150,
+          "unit": "г"
+        },
+        {
+          "name": "орехи",
+          "amount": 20,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Пиала свежих ягод с орешками."
+      ],
+      "nutrition": {
+        "kcal": 162,
+        "protein": 4,
+        "fat": 9,
+        "carbs": 15
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "без готовки",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 5,
+      "overnight": false
+    },
+    {
+      "id": "kuskus-tunec-goroshek",
+      "title": "Кускус с тунцом и зелёным горошком",
+      "ration_id": "classic-2",
+      "meal_type": "обед",
+      "servings": 1,
+      "tags": [
+        "классический"
+      ],
+      "ingredients": [
+        {
+          "name": "кускус",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "зелёный горошек",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "консервированный тунец в собственном соку",
+          "amount": 150,
+          "unit": "г"
+        },
+        {
+          "name": "чеснок",
+          "amount": 1,
+          "unit": "зуб"
+        },
+        {
+          "name": "специи",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Запарить кускус по инструкции.",
+        "Мелко нарезать чеснок и обжарить до золотистости. Добавить зелёный горошек (свежий или замороженный), влить немного воды и протушить ~5 минут.",
+        "Добавить тунец и ещё минуту прогреть. Добавить кускус со специями, перемешать, протушить ещё минуту и снять с огня."
+      ],
+      "nutrition": {
+        "kcal": 374,
+        "protein": 42,
+        "fat": 4,
+        "carbs": 45
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": true,
+      "keeps_days": 3,
+      "time_min": 25,
+      "overnight": false
+    },
+    {
+      "id": "ovoshchnoy-salat-kinoa",
+      "title": "Овощной салат с киноа",
+      "ration_id": "classic-2",
+      "meal_type": "перекус",
+      "servings": 1,
+      "tags": [
+        "классический",
+        "веганское"
+      ],
+      "ingredients": [
+        {
+          "name": "киноа",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "огурец",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "помидоры черри",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "мята",
+          "amount": 1,
+          "unit": "веточка"
+        },
+        {
+          "name": "болгарский перец",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "кинза, петрушка",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "лимонный сок",
+          "amount": 1,
+          "unit": "ч.л."
+        },
+        {
+          "name": "оливковое масло",
+          "amount": 1,
+          "unit": "ч.л."
+        }
+      ],
+      "steps": [
+        "Отварить киноа до готовности, нарезать все овощи средними кусочками и измельчить зелень.",
+        "Заправить салат лимонным соком и оливковым маслом."
+      ],
+      "nutrition": {
+        "kcal": 317,
+        "protein": 11,
+        "fat": 9,
+        "carbs": 44
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "overnight": false
+    },
+    {
+      "id": "tomaty-strachatella-pesto",
+      "title": "Томаты со страчателлой и соусом песто",
+      "ration_id": "classic-2",
+      "meal_type": "ужин",
+      "servings": 1,
+      "tags": [
+        "классический",
+        "вегетарианское"
+      ],
+      "ingredients": [
+        {
+          "name": "томаты",
+          "amount": 200,
+          "unit": "г"
+        },
+        {
+          "name": "сыр страчателла",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "соус песто",
+          "amount": 10,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Разрезать томаты крупными кубиками, посолить, поперчить, добавить соус песто, перемешать.",
+        "Выложить сверху сыр страчателла."
+      ],
+      "nutrition": {
+        "kcal": 227,
+        "protein": 9,
+        "fat": 18,
+        "carbs": 9
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "без готовки",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 5,
+      "overnight": false
+    },
+    {
+      "id": "grechka-yabloko-mindal",
+      "title": "Гречневая крупа с яблоком и миндалём",
+      "ration_id": "vegetarian-1",
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [
+        "вегетарианское"
+      ],
+      "ingredients": [
+        {
+          "name": "гречневая крупа",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "яблоко",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "курага",
+          "amount": 40,
+          "unit": "г"
+        },
+        {
+          "name": "миндаль",
+          "amount": 20,
+          "unit": "г"
+        },
+        {
+          "name": "соль",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Промыть и отварить крупу, добавить немного соли.",
+        "Мелко покрошить яблоко, курагу, орехи и добавить в кашу."
+      ],
+      "nutrition": {
+        "kcal": 450,
+        "protein": 14,
+        "fat": 14,
+        "carbs": 71
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "overnight": false
+    },
+    {
+      "id": "salat-avokado-rukkola-apelsin",
+      "title": "Салат с авокадо, рукколой и апельсином",
+      "ration_id": "vegetarian-1",
+      "meal_type": "перекус",
+      "servings": 1,
+      "tags": [
+        "вегетарианское"
+      ],
+      "ingredients": [
+        {
+          "name": "авокадо",
+          "amount": 70,
+          "unit": "г"
+        },
+        {
+          "name": "морковь",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "апельсин",
+          "amount": 150,
+          "unit": "г"
+        },
+        {
+          "name": "руккола",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "оливковое масло",
+          "amount": 10,
+          "unit": "мл"
+        },
+        {
+          "name": "белок яйца",
+          "amount": 2,
+          "unit": "шт"
+        },
+        {
+          "name": "специи",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Нарезать морковь тонкими кружочками, авокадо — дольками, апельсины разобрать на филе.",
+        "Яйца отварить, отделить желтки и белки, белки порезать кубиками.",
+        "Выложить всё на рукколу и сбрызнуть салат оливковым маслом."
+      ],
+      "nutrition": {
+        "kcal": 309,
+        "protein": 11,
+        "fat": 20,
+        "carbs": 22
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "overnight": false
+    },
+    {
+      "id": "pasta-bolonyeze-soevyy-farsh",
+      "title": "Паста болоньезе с соевым фаршем",
+      "ration_id": "vegetarian-1",
+      "meal_type": "обед",
+      "servings": 1,
+      "tags": [
+        "вегетарианское",
+        "веганское"
+      ],
+      "ingredients": [
+        {
+          "name": "паста из твёрдых сортов пшеницы",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "помидор",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "лук репчатый",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "чеснок",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "соевый фарш",
+          "amount": 70,
+          "unit": "г"
+        },
+        {
+          "name": "базилик",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "орегано",
+          "amount": null,
+          "unit": "щепотка"
+        },
+        {
+          "name": "оливковое масло",
+          "amount": 1,
+          "unit": "ч.л."
+        },
+        {
+          "name": "соль, перец",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Нарезать лук и чеснок мелкими кубиками. В кастрюлю/глубокую сковороду пассеровать лук и чеснок. Мелкими кубиками нарезать помидоры, отправить туда же. Закрыть крышкой и тушить, пока помидоры не превратятся почти в пюре.",
+        "Туда же в сухом виде засыпать соевую крошку — она впитает влагу и станет похожа на обжаренный фарш. Если густо — добавить пару ложек воды. Ещё слегка тушить на медленном огне, затем выключить и оставить доготавливаться. Добавить соль, орегано, чёрный перец.",
+        "Тем временем сварить пасту. При подаче на дно тарелки выложить пасту, сверху — соус."
+      ],
+      "nutrition": {
+        "kcal": 486,
+        "protein": 43,
+        "fat": 2,
+        "carbs": 62
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": true,
+      "keeps_days": 3,
+      "time_min": 25,
+      "overnight": false
+    },
+    {
+      "id": "frukt-oreshki",
+      "title": "Фрукт с орешками",
+      "ration_id": "vegetarian-1",
+      "meal_type": "перекус",
+      "servings": 1,
+      "tags": [
+        "вегетарианское",
+        "веганское"
+      ],
+      "ingredients": [
+        {
+          "name": "фрукт (груша, яблоко, апельсин)",
+          "amount": 150,
+          "unit": "г"
+        },
+        {
+          "name": "орехи",
+          "amount": 20,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Порезать фрукт дольками. Подавать вместе с орешками."
+      ],
+      "nutrition": {
+        "kcal": 100,
+        "protein": 5,
+        "fat": 3,
+        "carbs": 17
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "без готовки",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 5,
+      "overnight": false
+    },
+    {
+      "id": "salat-svekla-tofu",
+      "title": "Салат со свёклой и тофу",
+      "ration_id": "vegetarian-1",
+      "meal_type": "ужин",
+      "servings": 1,
+      "tags": [
+        "вегетарианское"
+      ],
+      "ingredients": [
+        {
+          "name": "листья мангольд",
+          "amount": 40,
+          "unit": "г"
+        },
+        {
+          "name": "свёкла",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "тофу",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "дижонская горчица",
+          "amount": 1,
+          "unit": "ч.л."
+        },
+        {
+          "name": "мёд",
+          "amount": 1,
+          "unit": "ч.л."
+        },
+        {
+          "name": "оливковое масло",
+          "amount": 1,
+          "unit": "ч.л."
+        },
+        {
+          "name": "лимонный сок",
+          "amount": 1,
+          "unit": "ч.л."
+        },
+        {
+          "name": "соевый соус",
+          "amount": 1,
+          "unit": "ч.л."
+        }
+      ],
+      "steps": [
+        "Для соуса смешать мёд, масло, горчицу, соевый соус, лимонный сок.",
+        "Свёклу отварить/запечь в духовке или купить уже сваренную.",
+        "Порезать свёклу кубиками, смешать с мангольдом, добавить половину заправки, перемешать.",
+        "Выложить салат на тарелку, украсить кубиками тофу и полить оставшимся соусом."
+      ],
+      "nutrition": {
+        "kcal": 171,
+        "protein": 10,
+        "fat": 10,
+        "carbs": 11
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "духовка",
+      "no_bake": false,
+      "is_quick": false,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 40,
+      "overnight": false
+    },
+    {
+      "id": "kinoa-banan-kokosovoe-moloko",
+      "title": "Киноа с бананом и кокосовым молоком",
+      "ration_id": "vegetarian-2",
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [
+        "вегетарианское",
+        "веганское"
+      ],
+      "ingredients": [
+        {
+          "name": "киноа",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "кокосовое молоко",
+          "amount": 200,
+          "unit": "мл"
+        },
+        {
+          "name": "банан",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "корица",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Кашу промыть 3–4 раза под проточной водой.",
+        "Довести кокосовое молоко до кипения, добавить киноа и отварить до готовности.",
+        "Покрошить банан и смешать с киноа. Добавить корицу по вкусу."
+      ],
+      "nutrition": {
+        "kcal": 328,
+        "protein": 10,
+        "fat": 6,
+        "carbs": 53
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "overnight": false
+    },
+    {
+      "id": "mindal-yabloko",
+      "title": "Миндаль с яблоком",
+      "ration_id": "vegetarian-2",
+      "meal_type": "перекус",
+      "servings": 1,
+      "tags": [
+        "вегетарианское",
+        "веганское"
+      ],
+      "ingredients": [
+        {
+          "name": "миндаль",
+          "amount": 20,
+          "unit": "г"
+        },
+        {
+          "name": "яблоко",
+          "amount": 200,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Яблоко разрезать на дольки. Подавать вместе с орешками."
+      ],
+      "nutrition": {
+        "kcal": 223,
+        "protein": 5,
+        "fat": 12,
+        "carbs": 23
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "без готовки",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 5,
+      "overnight": false
+    },
+    {
+      "id": "chechevica-shampinyony-tofu",
+      "title": "Чечевица с шампиньонами и тофу",
+      "ration_id": "vegetarian-2",
+      "meal_type": "обед",
+      "servings": 1,
+      "tags": [
+        "вегетарианское",
+        "веганское"
+      ],
+      "ingredients": [
+        {
+          "name": "чечевица",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "тофу",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "шампиньоны",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "репчатый лук",
+          "amount": 20,
+          "unit": "г"
+        },
+        {
+          "name": "чеснок",
+          "amount": 0.5,
+          "unit": "зуб"
+        },
+        {
+          "name": "морковь",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "соль, перец",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "петрушка, укроп",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "хлебцы ржаные",
+          "amount": 30,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Чечевицу хорошо промыть и сварить, снимая пену (~20 минут, до мягкости).",
+        "На разогретой сковороде обжарить мелко нарезанные лук и чеснок. Добавить натёртую на крупной тёрке морковь. Положить грибы, тофу и готовить, помешивая, 8 минут до готовности.",
+        "Добавить к грибам отварную чечевицу. Положить рубленую зелень. Посолить, поперчить, перемешать. Подавать вместе с хлебцами."
+      ],
+      "nutrition": {
+        "kcal": 385,
+        "protein": 31,
+        "fat": 7,
+        "carbs": 49
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": true,
+      "keeps_days": 3,
+      "time_min": 25,
+      "overnight": false
+    },
+    {
+      "id": "tost-zelen-yaytso",
+      "title": "Тост с зеленью и яйцом",
+      "ration_id": "vegetarian-2",
+      "meal_type": "перекус",
+      "servings": 1,
+      "tags": [
+        "вегетарианское"
+      ],
+      "ingredients": [
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "хлебец",
+          "amount": 40,
+          "unit": "г"
+        },
+        {
+          "name": "зелень",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Сварить вкрутую яйцо. Порезать на ломтики.",
+        "Выложить на хлебцы ломтики яйца. Посолить по вкусу. Украсить зеленью."
+      ],
+      "nutrition": {
+        "kcal": 225,
+        "protein": 8,
+        "fat": 15,
+        "carbs": 14
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "overnight": false
+    },
+    {
+      "id": "soevoe-myaso-zelyonaya-fasol",
+      "title": "Соевое мясо с зелёной фасолью",
+      "ration_id": "vegetarian-2",
+      "meal_type": "ужин",
+      "servings": 1,
+      "tags": [
+        "вегетарианское",
+        "веганское"
+      ],
+      "ingredients": [
+        {
+          "name": "соевое мясо",
+          "amount": 70,
+          "unit": "г"
+        },
+        {
+          "name": "зелёная фасоль",
+          "amount": 300,
+          "unit": "г"
+        },
+        {
+          "name": "оливковое масло",
+          "amount": 1,
+          "unit": "ст.л."
+        },
+        {
+          "name": "специи",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Мясо залить кипятком и оставить набухать 15–20 минут.",
+        "Слить воду, разрезать мясо на небольшие кусочки и обжарить на сковороде до готовности.",
+        "В кастрюлю добавить воду, довести до кипения и отварить фасоль ~15 минут.",
+        "Слить воду и поместить фасоль в холодную воду, чтобы остановить варку.",
+        "Откинуть на дуршлаг. Подавать мясо с фасолью, сбрызнув маслом и добавив специи."
+      ],
+      "nutrition": {
+        "kcal": 370,
+        "protein": 42,
+        "fat": 11,
+        "carbs": 25
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": true,
+      "keeps_days": 3,
+      "time_min": 25,
+      "overnight": false
+    },
+    {
+      "id": "ovsyanka-kuraga-semena-tykvy",
+      "title": "Овсяная каша с курагой и семенами тыквы",
+      "ration_id": "vegan-1",
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [
+        "веганское"
+      ],
+      "ingredients": [
+        {
+          "name": "овсяная крупа",
+          "amount": 80,
+          "unit": "г"
+        },
+        {
+          "name": "соевое молоко",
+          "amount": 160,
+          "unit": "мл"
+        },
+        {
+          "name": "курага",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "семена тыквы",
+          "amount": 1,
+          "unit": "ч.л."
+        }
+      ],
+      "steps": [
+        "Овсяную крупу отварить на соевом молоке.",
+        "Покрошить в кашу кубики кураги и украсить семенами."
+      ],
+      "nutrition": {
+        "kcal": 516,
+        "protein": 19,
+        "fat": 12,
+        "carbs": 83
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "overnight": false
+    },
+    {
+      "id": "yagody-oreshki-2",
+      "title": "Ягоды с орешками",
+      "ration_id": "vegan-1",
+      "meal_type": "перекус",
+      "servings": 1,
+      "tags": [
+        "веганское"
+      ],
+      "ingredients": [
+        {
+          "name": "ягоды (голубика, клубника, малина и др.)",
+          "amount": 200,
+          "unit": "г"
+        },
+        {
+          "name": "орехи",
+          "amount": 30,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Пиала свежих ягод с орешками."
+      ],
+      "nutrition": {
+        "kcal": 263,
+        "protein": 8,
+        "fat": 17,
+        "carbs": 21
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "без готовки",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 5,
+      "overnight": false
+    },
+    {
+      "id": "pasta-griby",
+      "title": "Паста с грибами",
+      "ration_id": "vegan-1",
+      "meal_type": "обед",
+      "servings": 1,
+      "tags": [
+        "веганское",
+        "вегетарианское"
+      ],
+      "ingredients": [
+        {
+          "name": "шампиньоны",
+          "amount": 300,
+          "unit": "г"
+        },
+        {
+          "name": "тофу",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "лук",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "зелень",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "паста из твёрдых сортов пшеницы / полбы",
+          "amount": 70,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Порезать лук и грибы, тушить на сковороде до выкипания жидкости.",
+        "Добавить тофу, нарезанный кубиками, зелень, посолить, поперчить, перемешать и тушить ещё несколько минут.",
+        "Отварить макароны до состояния аль-денте и добавить в грибную смесь. Перемешать.",
+        "Подавать, украсив зеленью."
+      ],
+      "nutrition": {
+        "kcal": 418,
+        "protein": 29,
+        "fat": 8,
+        "carbs": 56
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": true,
+      "keeps_days": 3,
+      "time_min": 25,
+      "overnight": false
+    },
+    {
+      "id": "brusketta-tomaty-bazilik",
+      "title": "Брускетта с томатами и базиликом",
+      "ration_id": "vegan-1",
+      "meal_type": "перекус",
+      "servings": 1,
+      "tags": [
+        "веганское",
+        "вегетарианское"
+      ],
+      "ingredients": [
+        {
+          "name": "помидор",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "базилик сушёный / свежий",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "хлеб ржаной",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "масло оливковое",
+          "amount": 1,
+          "unit": "ч.л."
+        }
+      ],
+      "steps": [
+        "Помидоры порезать небольшими кубиками. Добавить базилик, соль, перец по вкусу. Перемешать.",
+        "Маслом сбрызнуть хлеб и запечь в духовке 5 минут при 200 °C.",
+        "На приготовленный хлеб выложить помидорную смесь."
+      ],
+      "nutrition": {
+        "kcal": 186,
+        "protein": 5,
+        "fat": 6,
+        "carbs": 28
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "духовка",
+      "no_bake": false,
+      "is_quick": false,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 40,
+      "overnight": false
+    },
+    {
+      "id": "ovoshchnoe-ragu-fasol",
+      "title": "Овощное рагу с фасолью",
+      "ration_id": "vegan-1",
+      "meal_type": "ужин",
+      "servings": 1,
+      "tags": [
+        "веганское",
+        "вегетарианское"
+      ],
+      "ingredients": [
+        {
+          "name": "брокколи",
+          "amount": 150,
+          "unit": "г"
+        },
+        {
+          "name": "цуккини",
+          "amount": 150,
+          "unit": "г"
+        },
+        {
+          "name": "морковь",
+          "amount": 70,
+          "unit": "г"
+        },
+        {
+          "name": "лук красный",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "масло растительное",
+          "amount": 1,
+          "unit": "ст.л."
+        },
+        {
+          "name": "консервированная фасоль",
+          "amount": 50,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Морковь и лук очистить, промыть.",
+        "Вместе с цуккини нарезать дольками или кубиками и обжарить на сухой сковороде до полуготовности.",
+        "Брокколи нарезать шашечками и припустить в воде.",
+        "Соединить овощи, добавить соль и продолжать тушить до готовности.",
+        "Готовое блюдо сбрызнуть маслом и добавить фасоль."
+      ],
+      "nutrition": {
+        "kcal": 241,
+        "protein": 11,
+        "fat": 1,
+        "carbs": 29
+      },
+      "source": "IRNBY",
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": true,
+      "keeps_days": 3,
+      "time_min": 25,
+      "overnight": false
+    },
+    {
+      "id": "kki-tvorozhnaya-zapekanka",
+      "title": "Творожная запеканка",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "time_min": 40,
+      "tags": [
+        "вегетарианское",
+        "без сахара"
+      ],
+      "ingredients": [
+        {
+          "name": "творог 5%",
+          "amount": 400,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "молоко",
+          "amount": 150,
+          "unit": "мл"
+        },
+        {
+          "name": "подсластитель FitParad",
+          "amount": 3,
+          "unit": "мерн.ложки"
+        },
+        {
+          "name": "ванилин",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Творог перемолоть блендером. Добавить молоко, яйцо и подсластитель, хорошо перемешать (можно блендером).",
+        "В форму выложить пергамент, вылить тесто.",
+        "Выпекать при 180 °C 30 минут. Дать остыть (лучше в холодильнике на ночь)."
+      ],
+      "nutrition": {
+        "kcal": 660,
+        "protein": 75.5,
+        "fat": 30.5,
+        "carbs": 15.9
+      },
+      "nutrition_in_source": false,
+      "cook_method": "духовка",
+      "no_bake": false,
+      "is_quick": false,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "image": "img/kki-tvorozhnaya-zapekanka.jpg",
+      "nutrition_estimated": true,
+      "overnight": true
+    },
+    {
+      "id": "kki-pp-syrniki",
+      "title": "ПП сырники без сахара",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "time_min": 12,
+      "tags": [
+        "вегетарианское",
+        "без сахара"
+      ],
+      "ingredients": [
+        {
+          "name": "творог 5%",
+          "amount": 400,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "мука",
+          "amount": 1.5,
+          "unit": "ст.л."
+        },
+        {
+          "name": "мука для обвалки",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "подсластитель FitParad",
+          "amount": 0.5,
+          "unit": "ч.л."
+        }
+      ],
+      "steps": [
+        "Творог смешать с яйцом, мукой и подсластителем (творог без комочков, в меру сухой).",
+        "Сформировать сырники, обвалять в муке.",
+        "Обжарить на сковороде по 5 минут с каждой стороны."
+      ],
+      "nutrition": {
+        "kcal": 749,
+        "protein": 76.2,
+        "fat": 26.5,
+        "carbs": 45.1
+      },
+      "nutrition_in_source": false,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "image": "img/kki-pp-syrniki.jpg",
+      "nutrition_estimated": true,
+      "overnight": false
+    },
+    {
+      "id": "kki-lenivye-vareniki",
+      "title": "Ленивые вареники",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "time_min": 12,
+      "tags": [
+        "вегетарианское",
+        "без сахара"
+      ],
+      "ingredients": [
+        {
+          "name": "творог",
+          "amount": 200,
+          "unit": "г"
+        },
+        {
+          "name": "белок яйца",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "мука",
+          "amount": 3,
+          "unit": "ст.л."
+        },
+        {
+          "name": "подсластитель FitParad",
+          "amount": 3,
+          "unit": "мерн.ложки"
+        },
+        {
+          "name": "ягоды для подачи",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "греческий йогурт для подачи",
+          "amount": 100,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Смешать все ингредиенты в миске до однородной массы.",
+        "Скатать небольшие шарики, варить в кастрюле пока не всплывут (~5-6 минут).",
+        "Выложить и украсить ягодами и греческим йогуртом."
+      ],
+      "nutrition": {
+        "kcal": 556,
+        "protein": 52.5,
+        "fat": 13.4,
+        "carbs": 49.5
+      },
+      "nutrition_in_source": false,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "image": "img/kki-lenivye-vareniki.jpg",
+      "nutrition_estimated": true,
+      "overnight": false
+    },
+    {
+      "id": "kki-pankeyki",
+      "title": "Панкейки",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "time_min": 12,
+      "tags": [
+        "вегетарианское",
+        "без сахара"
+      ],
+      "ingredients": [
+        {
+          "name": "мука полбяная цельнозерновая",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "вода",
+          "amount": 50,
+          "unit": "мл"
+        },
+        {
+          "name": "подсластитель FitParad",
+          "amount": 2,
+          "unit": "саше"
+        },
+        {
+          "name": "разрыхлитель",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "ванилин",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Разделить яйцо: белок взбить отдельно до пиков.",
+        "Желток смешать с подсластителем и водой. Постепенно добавить муку и разрыхлитель.",
+        "Лопаткой ввести взбитые белки до пышного теста.",
+        "Жарить на среднем огне по ~3 минуты с каждой стороны."
+      ],
+      "nutrition": {
+        "kcal": 426,
+        "protein": 19.0,
+        "fat": 8.0,
+        "carbs": 65.4
+      },
+      "nutrition_in_source": false,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "image": "img/kki-pankeyki.jpg",
+      "nutrition_estimated": true,
+      "overnight": false
+    },
+    {
+      "id": "kki-ovsyanoblin",
+      "title": "Овсяноблин",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "time_min": 12,
+      "tags": [
+        "вегетарианское"
+      ],
+      "ingredients": [
+        {
+          "name": "овсянка",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "молоко",
+          "amount": 30,
+          "unit": "мл"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        }
+      ],
+      "steps": [
+        "Отправить всё в блендер и немного взбить.",
+        "Вылить на сковороду и жарить на среднем огне (можно немного масла)."
+      ],
+      "nutrition": {
+        "kcal": 289,
+        "protein": 13.9,
+        "fat": 10.4,
+        "carbs": 32.9
+      },
+      "nutrition_in_source": false,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "image": "img/kki-ovsyanoblin.jpg",
+      "nutrition_estimated": true,
+      "overnight": false
+    },
+    {
+      "id": "kki-pp-pirozhnoe-kartoshka",
+      "title": "ПП пирожное «Картошка»",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "перекус",
+      "servings": 1,
+      "time_min": 5,
+      "tags": [
+        "вегетарианское",
+        "без сахара"
+      ],
+      "ingredients": [
+        {
+          "name": "творог",
+          "amount": 220,
+          "unit": "г"
+        },
+        {
+          "name": "хлебцы",
+          "amount": 20,
+          "unit": "г"
+        },
+        {
+          "name": "какао",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "шоколад",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "сахзам",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "К творогу добавить перемолотые в крошку хлебцы, какао, растопленный шоколад, подсластитель. Перемешать.",
+        "Сформировать, обвалять в какао.",
+        "Оставить на час в холодильнике."
+      ],
+      "nutrition": {
+        "kcal": 556,
+        "protein": 45.9,
+        "fat": 24.2,
+        "carbs": 35.3
+      },
+      "nutrition_in_source": false,
+      "cook_method": "без готовки",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "image": "img/kki-pp-pirozhnoe-kartoshka.jpg",
+      "nutrition_estimated": true,
+      "overnight": false
+    },
+    {
+      "id": "kki-pp-chizkeyk",
+      "title": "Шоколадный ПП чизкейк",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "перекус",
+      "servings": 1,
+      "time_min": 90,
+      "tags": [
+        "вегетарианское",
+        "без сахара"
+      ],
+      "ingredients": [
+        {
+          "name": "маскарпоне/творожный сыр",
+          "amount": 250,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "какао",
+          "amount": 3,
+          "unit": "ст.л."
+        },
+        {
+          "name": "подсластитель FitParad",
+          "amount": 2,
+          "unit": "ч.л."
+        }
+      ],
+      "steps": [
+        "В миску добавить маскарпоне, яйцо, перемешать венчиком.",
+        "Добавить какао и подсластитель, хорошо перемешать.",
+        "Выпекать 30 минут при 200 °C, дать остыть (лучше ночь в холодильнике)."
+      ],
+      "nutrition": {
+        "kcal": 842,
+        "protein": 35.3,
+        "fat": 70.2,
+        "carbs": 17.1
+      },
+      "nutrition_in_source": false,
+      "cook_method": "духовка",
+      "no_bake": false,
+      "is_quick": false,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "image": "img/kki-pp-chizkeyk.jpg",
+      "nutrition_estimated": true,
+      "overnight": false
+    },
+    {
+      "id": "kki-pp-sochniki",
+      "title": "ПП сочники",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "перекус",
+      "servings": 1,
+      "time_min": 50,
+      "tags": [
+        "вегетарианское",
+        "без сахара"
+      ],
+      "ingredients": [
+        {
+          "name": "мука",
+          "amount": 80,
+          "unit": "г"
+        },
+        {
+          "name": "творог (тесто)",
+          "amount": 80,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "подсластитель FitParad",
+          "amount": 2,
+          "unit": "мерн.ложки"
+        },
+        {
+          "name": "ванилин",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "разрыхлитель",
+          "amount": 0.5,
+          "unit": "ч.л."
+        },
+        {
+          "name": "масло растительное/кокосовое",
+          "amount": 10,
+          "unit": "г"
+        },
+        {
+          "name": "творог (начинка)",
+          "amount": 180,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо (начинка, желток для смазки)",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "подсластитель (начинка)",
+          "amount": 5,
+          "unit": "мерн.ложки"
+        }
+      ],
+      "steps": [
+        "Тесто: творог размять с яйцом, подсластителем, ванилином, разрыхлителем и маслом. Просеять муку, перемешать. Убрать в плёнке на 30 минут в холодильник.",
+        "Начинка: отделить белок, смешать творог с белком, добавить подсластитель и ванилин.",
+        "Раскатать тесто колбаской, нарезать, раскатать кусочки, выложить начинку, слепить. Смазать желтком.",
+        "Выпекать при 180 °C 15-20 минут."
+      ],
+      "nutrition": {
+        "kcal": 821,
+        "protein": 63.6,
+        "fat": 33.2,
+        "carbs": 62.0
+      },
+      "nutrition_in_source": false,
+      "cook_method": "духовка",
+      "no_bake": false,
+      "is_quick": false,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "image": "img/kki-pp-sochniki.jpg",
+      "nutrition_estimated": true,
+      "overnight": false
+    },
+    {
+      "id": "kki-yaichnica-na-lavashe",
+      "title": "Яичница на лаваше",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "ужин",
+      "servings": 1,
+      "time_min": 30,
+      "tags": [
+        "вегетарианское"
+      ],
+      "ingredients": [
+        {
+          "name": "лаваш",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "помидоры",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "брокколи",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "яйца",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "сыр",
+          "amount": 40,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "В сковороду выложить лаваш, на него овощи, затем яйца.",
+        "Жарить под крышкой на среднем огне. Можно добавить натёртый сыр."
+      ],
+      "nutrition": {
+        "kcal": 400,
+        "protein": 19.7,
+        "fat": 10.0,
+        "carbs": 54.2
+      },
+      "nutrition_in_source": false,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": true,
+      "keeps_days": 3,
+      "image": "img/kki-yaichnica-na-lavashe.jpg",
+      "nutrition_estimated": true,
+      "overnight": false
+    },
+    {
+      "id": "kki-oladi-brokkoli",
+      "title": "Оладьи с брокколи и сыром",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "time_min": 12,
+      "tags": [
+        "вегетарианское"
+      ],
+      "ingredients": [
+        {
+          "name": "брокколи",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "сыр (легкий 16%)",
+          "amount": 70,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "соль/перец",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Брокколи немного отварить и нарезать. Сыр натереть.",
+        "Смешать брокколи, сыр, яйцо и соль.",
+        "Жарить оладьи на разогретой сковороде с двух сторон на среднем огне."
+      ],
+      "nutrition": {
+        "kcal": 330,
+        "protein": 25.4,
+        "fat": 22.1,
+        "carbs": 6.8
+      },
+      "nutrition_in_source": false,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "image": "img/kki-oladi-brokkoli.jpg",
+      "nutrition_estimated": true,
+      "overnight": false
+    },
+    {
+      "id": "kki-kurinye-kotlety",
+      "title": "Куриные котлеты",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "обед",
+      "servings": 1,
+      "time_min": 30,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "фарш куриный",
+          "amount": 300,
+          "unit": "г"
+        },
+        {
+          "name": "брокколи",
+          "amount": 70,
+          "unit": "г"
+        },
+        {
+          "name": "сыр",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "мука",
+          "amount": 1.5,
+          "unit": "ст.л."
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "соль",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "перец",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Фарш смешать с яйцом и мукой, добавить соль и перец.",
+        "Натереть брокколи, сыр нарезать кубиками, добавить в фарш, вмешать.",
+        "Жарить под крышкой на сковороде, слегка смазанной маслом, до готовности."
+      ],
+      "nutrition": {
+        "kcal": 766,
+        "protein": 73.3,
+        "fat": 41.7,
+        "carbs": 20.6
+      },
+      "nutrition_in_source": false,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": true,
+      "keeps_days": 3,
+      "image": "img/kki-kurinye-kotlety.jpg",
+      "nutrition_estimated": true,
+      "overnight": false
+    },
+    {
+      "id": "kki-kurino-ovoshchnye-kotlety",
+      "title": "Курино-овощные котлеты из духовки",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "ужин",
+      "servings": 1,
+      "time_min": 40,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "куриный фарш/филе",
+          "amount": 450,
+          "unit": "г"
+        },
+        {
+          "name": "морковь",
+          "amount": 0.5,
+          "unit": "шт"
+        },
+        {
+          "name": "кабачок",
+          "amount": 0.5,
+          "unit": "шт"
+        },
+        {
+          "name": "брокколи",
+          "amount": 40,
+          "unit": "г"
+        },
+        {
+          "name": "соль",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "перец",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Натереть морковь и кабачок (из кабачка отжать воду). Брокколи мелко нарезать.",
+        "Всё смешать (филе можно перемолоть в блендере), добавить соль и перец.",
+        "Сформировать котлеты, выпекать 25 минут при 180 °C."
+      ],
+      "nutrition": {
+        "kcal": 674,
+        "protein": 78.3,
+        "fat": 36.0,
+        "carbs": 5.6
+      },
+      "nutrition_in_source": false,
+      "cook_method": "духовка",
+      "no_bake": false,
+      "is_quick": false,
+      "batch_friendly": true,
+      "keeps_days": 4,
+      "image": "img/kki-kurino-ovoshchnye-kotlety.jpg",
+      "nutrition_estimated": true,
+      "overnight": false
+    },
+    {
+      "id": "kki-shnitsel",
+      "title": "Шницель",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "обед",
+      "servings": 1,
+      "time_min": 35,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "филе индейки/куриное филе",
+          "amount": 300,
+          "unit": "г"
+        },
+        {
+          "name": "мука цельнозерновая",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "панировочные сухари с отрубями",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "оливковое масло",
+          "amount": 1,
+          "unit": "ст.л."
+        },
+        {
+          "name": "соль",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Нарезать филе вдоль на кусочки средней толщины. Взбить яйцо с солью.",
+        "Обвалять кусок в муке, окунуть в яйцо, затем в панировочные сухари.",
+        "Жарить под крышкой на среднем огне (можно с оливковым маслом)."
+      ],
+      "nutrition": {
+        "kcal": 767,
+        "protein": 82.3,
+        "fat": 25.5,
+        "carbs": 42.4
+      },
+      "nutrition_in_source": false,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": true,
+      "keeps_days": 3,
+      "image": "img/kki-shnitsel.jpg",
+      "nutrition_estimated": true,
+      "overnight": false
+    },
+    {
+      "id": "kki-farshirovannyy-perets",
+      "title": "Фаршированный перец",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "обед",
+      "servings": 1,
+      "time_min": 60,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "болгарский перец",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "куриный фарш",
+          "amount": 300,
+          "unit": "г"
+        },
+        {
+          "name": "брокколи",
+          "amount": 40,
+          "unit": "г"
+        },
+        {
+          "name": "соль",
+          "amount": 0.5,
+          "unit": "ч.л."
+        },
+        {
+          "name": "перец",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "сыр",
+          "amount": 30,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Разрезать перец пополам, вычистить.",
+        "Смешать фарш с мелко нарезанным брокколи, посолить, поперчить. Наполнить перец.",
+        "Выпекать 25 минут, затем посыпать тёртым сыром и запекать ещё пару минут."
+      ],
+      "nutrition": {
+        "kcal": 573,
+        "protein": 60.3,
+        "fat": 30.9,
+        "carbs": 10.1
+      },
+      "nutrition_in_source": false,
+      "cook_method": "духовка",
+      "no_bake": false,
+      "is_quick": false,
+      "batch_friendly": true,
+      "keeps_days": 4,
+      "image": "img/kki-farshirovannyy-perets.jpg",
+      "nutrition_estimated": true,
+      "overnight": false
+    },
+    {
+      "id": "kki-ovoshchnaya-zapekanka-kurica",
+      "title": "Овощная запеканка с курицей",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "ужин",
+      "servings": 1,
+      "time_min": 50,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "куриное филе",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "кабачок",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "брокколи",
+          "amount": 80,
+          "unit": "г"
+        },
+        {
+          "name": "морковь",
+          "amount": 0.5,
+          "unit": "шт"
+        },
+        {
+          "name": "яйца",
+          "amount": 2,
+          "unit": "шт"
+        },
+        {
+          "name": "соль/перец",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Всё сложить в блендер и перемолоть, добавить соль и перец.",
+        "Выложить в форму (пергамент), выпекать 30 минут при 200 °C."
+      ],
+      "nutrition": {
+        "kcal": 171,
+        "protein": 26.7,
+        "fat": 1.0,
+        "carbs": 10.4
+      },
+      "nutrition_in_source": false,
+      "cook_method": "духовка",
+      "no_bake": false,
+      "is_quick": false,
+      "batch_friendly": true,
+      "keeps_days": 4,
+      "image": "img/kki-ovoshchnaya-zapekanka-kurica.jpg",
+      "nutrition_estimated": true,
+      "overnight": false
+    },
+    {
+      "id": "kki-pp-shaurma",
+      "title": "ПП шаурма",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "обед",
+      "servings": 1,
+      "time_min": 45,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "курица",
+          "amount": 200,
+          "unit": "г"
+        },
+        {
+          "name": "лаваш цельнозерновой",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "помидор",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "огурец",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "авокадо",
+          "amount": 0.5,
+          "unit": "шт"
+        },
+        {
+          "name": "салат айсберг",
+          "amount": "несколько листов",
+          "unit": "по вкусу"
+        },
+        {
+          "name": "греческий йогурт (соус)",
+          "amount": 1,
+          "unit": "ст.л."
+        },
+        {
+          "name": "горчица (соус)",
+          "amount": 0.5,
+          "unit": "ч.л."
+        },
+        {
+          "name": "оливковое масло (соус)",
+          "amount": 2,
+          "unit": "ч.л."
+        },
+        {
+          "name": "мёд (соус)",
+          "amount": 1,
+          "unit": "ч.л."
+        },
+        {
+          "name": "соль (соус)",
+          "amount": 0.5,
+          "unit": "ч.л."
+        }
+      ],
+      "steps": [
+        "Курицу обжарить со специями и солью, нарезать.",
+        "Соус: смешать греческий йогурт, горчицу, масло, мёд, соль.",
+        "На лаваш намазать соус, выложить овощи и курицу. Завернуть."
+      ],
+      "nutrition": {
+        "kcal": 532,
+        "protein": 12.2,
+        "fat": 24.8,
+        "carbs": 65.3
+      },
+      "nutrition_in_source": false,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "image": "img/kki-pp-shaurma.jpg",
+      "nutrition_estimated": true,
+      "overnight": false
+    },
+    {
+      "id": "kki-shpinatnye-blinchiki",
+      "title": "Шпинатные блинчики с лососем",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "time_min": 15,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "шпинат",
+          "amount": 20,
+          "unit": "г"
+        },
+        {
+          "name": "мука",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "молоко (овсяное без сахара)",
+          "amount": 100,
+          "unit": "мл"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "масло растительное",
+          "amount": 1,
+          "unit": "ч.л."
+        },
+        {
+          "name": "творожный сыр",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "сёмга/лосось",
+          "amount": 60,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Всё (кроме начинки) выложить в миску и взбить блендером до однородной массы.",
+        "Пожарить блинчики среднего размера, не очень тонкие.",
+        "Смазать блинчик творожным сыром, выложить внутрь сёмгу."
+      ],
+      "nutrition": {
+        "kcal": 575,
+        "protein": 29.7,
+        "fat": 30.2,
+        "carbs": 42.0
+      },
+      "nutrition_in_source": false,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "image": "img/kki-shpinatnye-blinchiki.jpg",
+      "nutrition_estimated": true,
+      "overnight": false
+    },
+    {
+      "id": "kki-pp-sup-brokkoli",
+      "title": "ПП суп из брокколи",
+      "source": "KKIFOOD",
+      "ration_id": null,
+      "meal_type": "обед",
+      "servings": 1,
+      "time_min": 15,
+      "tags": [
+        "вегетарианское"
+      ],
+      "ingredients": [
+        {
+          "name": "брокколи",
+          "amount": 200,
+          "unit": "г"
+        },
+        {
+          "name": "сливки или молоко",
+          "amount": 150,
+          "unit": "мл"
+        },
+        {
+          "name": "соль",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Отварить брокколи, слить воду.",
+        "Положить в блендер, добавить сливки и соль, взбить."
+      ],
+      "nutrition": {
+        "kcal": 158,
+        "protein": 10.5,
+        "fat": 4.5,
+        "carbs": 17.5
+      },
+      "nutrition_in_source": false,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": true,
+      "keeps_days": 3,
+      "image": "img/kki-pp-sup-brokkoli.jpg",
+      "nutrition_estimated": true,
+      "overnight": false
+    },
+    {
+      "id": "ksy-farshirovannye-kabachki",
+      "title": "Фаршированные кабачки",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "обед",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "кабачок (большой)",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "куриное филе",
+          "amount": 600,
+          "unit": "г"
+        },
+        {
+          "name": "сыр лёгкий",
+          "amount": 120,
+          "unit": "г"
+        },
+        {
+          "name": "греческий йогурт",
+          "amount": 120,
+          "unit": "г"
+        },
+        {
+          "name": "помидор (большой)",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "шампиньоны",
+          "amount": 3,
+          "unit": "шт"
+        },
+        {
+          "name": "соль/перец",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Кабачок почистить и удалить сердцевину.",
+        "Куриное филе нарезать мелкими кубиками, смешать с греческим йогуртом и специями.",
+        "Наполнить начинкой кабачки, сверху положить помидор и сыр.",
+        "Запекать 20–30 минут при 180 °C."
+      ],
+      "nutrition": {
+        "kcal": 323,
+        "protein": 57,
+        "fat": 8,
+        "carbs": 1
+      },
+      "nutrition_in_source": true,
+      "cook_method": "духовка",
+      "no_bake": false,
+      "is_quick": false,
+      "batch_friendly": true,
+      "keeps_days": 4,
+      "time_min": 40,
+      "image": "img/ksy-farshirovannye-kabachki.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-grecha-boul-1",
+      "title": "Греча-боул",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "обед",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "гречка",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "эдамаме",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "куриное филе",
+          "amount": 80,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "авокадо",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "черри",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "руккола",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Гречку отварить.",
+        "Грудку обжарить на сковороде или гриле, добавить перец и соль.",
+        "Яйцо сварить всмятку (6–7 минут). Эдемаме разморозить или бланшировать 2–3 минуты.",
+        "Нарезать черри и авокадо. Выложить в боул: гречка → грудка → зелень → яйцо → авокадо."
+      ],
+      "nutrition": {
+        "kcal": 520,
+        "protein": 45,
+        "fat": 15,
+        "carbs": 60
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 25,
+      "image": "img/ksy-grecha-boul-1.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-boul-krevetki",
+      "title": "Боул с креветками",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "обед",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "пшено",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "креветки",
+          "amount": 120,
+          "unit": "г"
+        },
+        {
+          "name": "авокадо",
+          "amount": 70,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "зелень",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Пшено отварить.",
+        "Креветки обжарить 2–3 минуты на оливковом масле, добавить паприку и соль.",
+        "Яйцо сварить всмятку (6–7 минут). Спаржу обжарить или бланшировать 2–3 минуты.",
+        "Нарезать огурец и авокадо. Выложить в боул: пшено → креветки → овощи → яйцо."
+      ],
+      "nutrition": {
+        "kcal": 430,
+        "protein": 30,
+        "fat": 17,
+        "carbs": 40
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 25,
+      "image": "img/ksy-boul-krevetki.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-chia-pudding",
+      "title": "Чиа пудинг",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "чиа",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "молоко",
+          "amount": 200,
+          "unit": "мл"
+        },
+        {
+          "name": "мягкий творог",
+          "amount": 150,
+          "unit": "г"
+        },
+        {
+          "name": "клубника",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "киви",
+          "amount": 0.5,
+          "unit": "шт"
+        },
+        {
+          "name": "печенье",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "Bombbar",
+          "amount": 1,
+          "unit": "шт"
+        }
+      ],
+      "steps": [
+        "Чиа залить молоком, оставить на ночь в холодильнике.",
+        "Утром выложить слоями: пудинг → творог → фрукты → крошка печенья."
+      ],
+      "nutrition": {
+        "kcal": 432,
+        "protein": 35,
+        "fat": 18,
+        "carbs": 31
+      },
+      "nutrition_in_source": true,
+      "cook_method": "без готовки",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 5,
+      "image": "img/ksy-chia-pudding.jpg",
+      "overnight": true
+    },
+    {
+      "id": "ksy-lenivye-vareniki",
+      "title": "Ленивые вареники",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "творог 5%",
+          "amount": 200,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "мак",
+          "amount": 1,
+          "unit": "ст.л."
+        },
+        {
+          "name": "малина",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "черника",
+          "amount": 50,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Смешать творог с яйцом и маком до однородности.",
+        "Сформировать шарики, варить в кипящей воде 5–7 минут.",
+        "Выложить с ягодами."
+      ],
+      "nutrition": {
+        "kcal": 320,
+        "protein": 26,
+        "fat": 10,
+        "carbs": 22
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "image": "img/ksy-lenivye-vareniki.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-proteinovyy-ovsyanoblin",
+      "title": "Протеиновый овсяноблин",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "овсяные хлопья",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "молоко 1-2%",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "какао",
+          "amount": 1,
+          "unit": "ч.л."
+        },
+        {
+          "name": "ванилин",
+          "amount": 0.33,
+          "unit": "ч.л."
+        },
+        {
+          "name": "соль",
+          "amount": 0.33,
+          "unit": "ч.л."
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "творог мягкий",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "банан",
+          "amount": 50,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Овсяные хлопья соединить с молоком, какао, ванилином, солью и яйцом. Взбить блендером.",
+        "Вылить на разогретую сковороду и жарить с двух сторон.",
+        "Смазать мягким творогом и выложить кружочками банан."
+      ],
+      "nutrition": {
+        "kcal": 427,
+        "protein": 24,
+        "fat": 13,
+        "carbs": 50
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 15,
+      "image": "img/ksy-proteinovyy-ovsyanoblin.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-kesadilya-kurica",
+      "title": "Кесадилья с курицей",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "обед",
+      "servings": 2,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "куриное филе",
+          "amount": 200,
+          "unit": "г"
+        },
+        {
+          "name": "томаты черри",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "перец болгарский",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "сыр лёгкий",
+          "amount": 40,
+          "unit": "г"
+        },
+        {
+          "name": "лаваш",
+          "amount": 2,
+          "unit": "шт"
+        }
+      ],
+      "steps": [
+        "Смешать филе, помидоры и перец, обжарить смесь на сковороде до готовности.",
+        "Выложить начинку на лаваш, посыпать сыром.",
+        "Свернуть кесадилью пополам и поджарить с двух сторон под крышкой до румяной корочки."
+      ],
+      "nutrition": {
+        "kcal": 267,
+        "protein": 36,
+        "fat": 7,
+        "carbs": 14
+      },
+      "nutrition_in_source": true,
+      "note": "на 2 порции; КБЖУ — на порцию",
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 25,
+      "image": "img/ksy-kesadilya-kurica.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-proteinovaya-vatrushka",
+      "title": "Протеиновая ватрушка",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "перекус",
+      "servings": 4,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "творог 5%",
+          "amount": 360,
+          "unit": "г"
+        },
+        {
+          "name": "мука",
+          "amount": 90,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "разрыхлитель",
+          "amount": 0.33,
+          "unit": "ч.л."
+        },
+        {
+          "name": "ванилин",
+          "amount": 0.33,
+          "unit": "ч.л."
+        },
+        {
+          "name": "соль",
+          "amount": 0.33,
+          "unit": "ч.л."
+        },
+        {
+          "name": "мягкий творог 0.1% (начинка)",
+          "amount": 120,
+          "unit": "г"
+        },
+        {
+          "name": "яичный желток (начинка)",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "мёд (начинка)",
+          "amount": 1,
+          "unit": "ст.л."
+        },
+        {
+          "name": "голубика (начинка)",
+          "amount": 125,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Замесить тесто из творога, муки, яйца, разрыхлителя, ванилина и соли.",
+        "Начинка: смешать мягкий творог, желток, мёд, голубику.",
+        "Сформировать ватрушки, выложить начинку.",
+        "Запекать при 180 °C 15–20 минут, обязательно дать остыть."
+      ],
+      "nutrition": {
+        "kcal": 254,
+        "protein": 21,
+        "fat": 7,
+        "carbs": 24
+      },
+      "nutrition_in_source": true,
+      "note": "на 4 шт; КБЖУ — на штуку",
+      "cook_method": "духовка",
+      "no_bake": false,
+      "is_quick": false,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 40,
+      "image": "img/ksy-proteinovaya-vatrushka.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-belkovyy-sendvich",
+      "title": "Белковый сэндвич",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "яичный белок",
+          "amount": 2,
+          "unit": "шт"
+        },
+        {
+          "name": "тортилья",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "сыр лёгкий",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "ветчина из индейки",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "авокадо",
+          "amount": 25,
+          "unit": "г"
+        },
+        {
+          "name": "шпинат/салат/руккола",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Яйцо взбить с белком до однородности, вылить на разогретую сковороду.",
+        "Сверху положить тортилью, накрыть крышкой. Когда яичная смесь схватится с лавашем — достать, сделать 1 разрез от середины к краю.",
+        "На каждую четверть выложить ингредиенты: сыр/ветчина/авокадо/зелень. Завернуть конвертом."
+      ],
+      "nutrition": {
+        "kcal": 390,
+        "protein": 35,
+        "fat": 17,
+        "carbs": 23
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "image": "img/ksy-belkovyy-sendvich.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-fitnes-shaurma",
+      "title": "Фитнес шаурма",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "обед",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "лаваш",
+          "amount": 70,
+          "unit": "г"
+        },
+        {
+          "name": "куриная грудка",
+          "amount": 90,
+          "unit": "г"
+        },
+        {
+          "name": "томат",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "творог мягкий",
+          "amount": 80,
+          "unit": "г"
+        },
+        {
+          "name": "чеснок сушёный / соль / перец",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "сыр лёгкий",
+          "amount": 25,
+          "unit": "г"
+        },
+        {
+          "name": "лист салата / шпинат",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "авокадо",
+          "amount": 30,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Грудку нарезать и отварить с солью в воде. Томат нарезать кубиками.",
+        "Творог смешать с солью и чесноком.",
+        "В лаваш выложить грудку, авокадо и томат, распределить сверху мягкий творог.",
+        "Посыпать сыром, уложить салат айсберг. Завернуть и жарить с 4 сторон."
+      ],
+      "nutrition": {
+        "kcal": 523,
+        "protein": 46,
+        "fat": 14,
+        "carbs": 53
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 25,
+      "image": "img/ksy-fitnes-shaurma.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-proteinovyy-boul",
+      "title": "Протеиновый боул",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "творог 5%",
+          "amount": 150,
+          "unit": "г"
+        },
+        {
+          "name": "греческий йогурт 2%",
+          "amount": 150,
+          "unit": "г"
+        },
+        {
+          "name": "голубика",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "гранола без сахара",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "миндаль",
+          "amount": 10,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Без варки — выложить все ингредиенты в боул секторами: йогурт, творог, черника, сверху гранола и миндаль.",
+        "Можно перемешать прямо перед едой."
+      ],
+      "nutrition": {
+        "kcal": 380,
+        "protein": 30,
+        "fat": 10,
+        "carbs": 38
+      },
+      "nutrition_in_source": true,
+      "cook_method": "без готовки",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 5,
+      "image": "img/ksy-proteinovyy-boul.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-boul-aziatskiy",
+      "title": "Боул в азиатском стиле",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "обед",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "чёрный рис",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "форель с/с",
+          "amount": 120,
+          "unit": "г"
+        },
+        {
+          "name": "манго",
+          "amount": 80,
+          "unit": "г"
+        },
+        {
+          "name": "огурец",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "чука",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "кунжут чёрный",
+          "amount": 5,
+          "unit": "г"
+        },
+        {
+          "name": "тахини",
+          "amount": 10,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Рис отварить заранее и остудить.",
+        "Лосось нарезать кубиками, манго и огурец — ломтиками.",
+        "Все ингредиенты выложить в боул секторами вокруг риса. Тахини как соус подать отдельно. Посыпать кунжутом."
+      ],
+      "nutrition": {
+        "kcal": 420,
+        "protein": 28,
+        "fat": 14,
+        "carbs": 45
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 25,
+      "image": "img/ksy-boul-aziatskiy.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-tvorozhnaya-zapekanka",
+      "title": "Творожная запеканка",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "творог 5%",
+          "amount": 150,
+          "unit": "г"
+        },
+        {
+          "name": "греческий йогурт",
+          "amount": 140,
+          "unit": "г"
+        },
+        {
+          "name": "яйца",
+          "amount": 2,
+          "unit": "шт"
+        },
+        {
+          "name": "орехи",
+          "amount": 10,
+          "unit": "г"
+        },
+        {
+          "name": "голубика",
+          "amount": 80,
+          "unit": "г"
+        },
+        {
+          "name": "подсластитель",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Творог взбить с яйцами и йогуртом до однородности, добавить подсластитель.",
+        "Вылить массу в форму, выпекать при 180 °C 30–35 минут до золотистой корочки.",
+        "Полностью остудить. Перед подачей посыпать кокосовой стружкой и дроблёными орехами, выложить чернику."
+      ],
+      "nutrition": {
+        "kcal": 360,
+        "protein": 30,
+        "fat": 18,
+        "carbs": 16
+      },
+      "nutrition_in_source": true,
+      "cook_method": "духовка",
+      "no_bake": false,
+      "is_quick": false,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 40,
+      "image": "img/ksy-tvorozhnaya-zapekanka.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-skrembl-forel",
+      "title": "Скрэмбл с форелью",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "яйца",
+          "amount": 3,
+          "unit": "шт"
+        },
+        {
+          "name": "форель с/с",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "авокадо",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "микрозелень",
+          "amount": 20,
+          "unit": "г"
+        },
+        {
+          "name": "огурец",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "сливочное масло",
+          "amount": 5,
+          "unit": "г"
+        },
+        {
+          "name": "круассан",
+          "amount": 35,
+          "unit": "г"
+        },
+        {
+          "name": "кунжут",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Яйца взбить, вылить на сковороду со сливочным маслом на минимальный огонь.",
+        "Постоянно медленно помешивая лопаткой готовить 5–7 минут — текстура кремовая.",
+        "Огурец свернуть в рулетики. Выложить всё в боул секторами: скрэмбл, лосось, авокадо, рулетики огурца, микрозелень, половину круассана. Посыпать кунжутом."
+      ],
+      "nutrition": {
+        "kcal": 570,
+        "protein": 35,
+        "fat": 36,
+        "carbs": 22
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "image": "img/ksy-skrembl-forel.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-ovsyano-blin",
+      "title": "Овсяно-блин",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "овсяные хлопья",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "молоко 1-2%",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "ванилин",
+          "amount": 0.33,
+          "unit": "ч.л."
+        },
+        {
+          "name": "соль",
+          "amount": 0.33,
+          "unit": "ч.л."
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "греческий йогурт",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "ягоды",
+          "amount": 50,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Овсяные хлопья соединить с молоком, ванилином, солью и яйцом. Взбить блендером.",
+        "Вылить на разогретую сковороду, жарить с двух сторон.",
+        "Смазать греческим йогуртом, сложить пополам, сверху выложить ягоды."
+      ],
+      "nutrition": {
+        "kcal": 427,
+        "protein": 24,
+        "fat": 13,
+        "carbs": 50
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 15,
+      "image": "img/ksy-ovsyano-blin.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-pryanaya-shakshuka",
+      "title": "Пряная шакшука",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "яйца",
+          "amount": 3,
+          "unit": "шт"
+        },
+        {
+          "name": "томаты",
+          "amount": 200,
+          "unit": "г"
+        },
+        {
+          "name": "лук",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "чеснок",
+          "amount": 2,
+          "unit": "зубчика"
+        },
+        {
+          "name": "паприка",
+          "amount": 1,
+          "unit": "ч.л."
+        },
+        {
+          "name": "фета",
+          "amount": 40,
+          "unit": "г"
+        },
+        {
+          "name": "петрушка, соль, перец",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Обжарить лук с чесноком до мягкости. Добавить томаты и паприку, тушить 5 минут. Убавить огонь.",
+        "Сделать в смеси углубления, аккуратно влить яйца. Сверху выложить кусочки сыра.",
+        "Накрыть крышкой, готовить 5–7 минут (белок схватится, желток мягкий). Посыпать петрушкой, подавать в сковороде."
+      ],
+      "nutrition": {
+        "kcal": 380,
+        "protein": 28,
+        "fat": 22,
+        "carbs": 12
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "image": "img/ksy-pryanaya-shakshuka.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-shokoladnye-oladi",
+      "title": "Шоколадные оладьи",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "яйца",
+          "amount": 2,
+          "unit": "шт"
+        },
+        {
+          "name": "творог 5%",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "овсяная мука",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "какао",
+          "amount": 1,
+          "unit": "ст.л."
+        },
+        {
+          "name": "разрыхлитель",
+          "amount": 1,
+          "unit": "ч.л."
+        },
+        {
+          "name": "клубника (подача)",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "греческий йогурт (подача)",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Все ингредиенты смешать блендером до однородности.",
+        "Жарить на антипригарной сковороде без масла на среднем огне по 2–3 минуты с каждой стороны.",
+        "Подавать с йогуртом и клубникой."
+      ],
+      "nutrition": {
+        "kcal": 380,
+        "protein": 28,
+        "fat": 12,
+        "carbs": 38
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 15,
+      "image": "img/ksy-shokoladnye-oladi.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-shpinatnyy-blin",
+      "title": "Шпинатный блин",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "белки",
+          "amount": 2,
+          "unit": "шт"
+        },
+        {
+          "name": "яйцо целое",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "шпинат",
+          "amount": "горсть",
+          "unit": "по вкусу"
+        },
+        {
+          "name": "геркулес",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "куриное филе",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "творожный сыр",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "огурец (начинка)",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "соль, перец",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "В блендере смешать овсянку, яйцо, белки, шпинат и специи до однородной массы.",
+        "Вылить на разогретую сковороду, жарить с 2 сторон под крышкой.",
+        "На блин выложить начинку: творожный сыр, филе и огурец. Сложить пополам."
+      ],
+      "nutrition": {
+        "kcal": 428,
+        "protein": 32,
+        "fat": 15,
+        "carbs": 32
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 15,
+      "image": "img/ksy-shpinatnyy-blin.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-shokoladnyy-muss",
+      "title": "Шоколадный мусс",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "перекус",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "замороженные ягоды (черника)",
+          "amount": 150,
+          "unit": "г"
+        },
+        {
+          "name": "протеин шоколадный",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "творог 2%",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "миндальное молоко",
+          "amount": 50,
+          "unit": "мл"
+        },
+        {
+          "name": "малина + ежевика",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "семена чиа",
+          "amount": 1,
+          "unit": "ст.л."
+        },
+        {
+          "name": "орехи",
+          "amount": "горсть",
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Ягоды, протеин, творог и молоко пробить блендером до густой однородной консистенции.",
+        "Выложить в боул и украсить топпингами."
+      ],
+      "nutrition": {
+        "kcal": 380,
+        "protein": 30,
+        "fat": 10,
+        "carbs": 42
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "image": "img/ksy-shokoladnyy-muss.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-belkovye-blinchiki",
+      "title": "Белковые блинчики",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "белки",
+          "amount": 3,
+          "unit": "шт"
+        },
+        {
+          "name": "мягкий творог 2%",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "рисовая мука",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "молоко",
+          "amount": 50,
+          "unit": "мл"
+        },
+        {
+          "name": "ванилин",
+          "amount": "щепотка",
+          "unit": "по вкусу"
+        },
+        {
+          "name": "клубника",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "сгущёнка Bombbar",
+          "amount": 2,
+          "unit": "ст.л."
+        },
+        {
+          "name": "греческий йогурт + рикотта (подача)",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Мягкий творог, муку, ванилин, белки и молоко взбить венчиком до однородности.",
+        "Жарить тонкие блинчики на антипригарной сковороде без масла.",
+        "Подавать с йогуртом, рикоттой и клубникой, полить сгущёнкой."
+      ],
+      "nutrition": {
+        "kcal": 359,
+        "protein": 30,
+        "fat": 10,
+        "carbs": 35
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "image": "img/ksy-belkovye-blinchiki.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-idealnye-syrniki",
+      "title": "Идеальные сырники",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "творог в брикете 5%",
+          "amount": 180,
+          "unit": "г"
+        },
+        {
+          "name": "желток",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "банан",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "рисовая мука",
+          "amount": 1,
+          "unit": "ст.л."
+        },
+        {
+          "name": "ванилин",
+          "amount": 0.33,
+          "unit": "ч.л."
+        },
+        {
+          "name": "свежие фрукты",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "сгущёнка Bombbar",
+          "amount": 10,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Творог соединить с желтком, добавить размятый до пюре банан, перемешать.",
+        "Смешать с мукой и сформовать одинаковые шарики.",
+        "Жарить с двух сторон под крышкой.",
+        "Выложить сырники, фрукты или ягоды. Сверху можно полить сгущёнкой Bombbar."
+      ],
+      "nutrition": {
+        "kcal": 457,
+        "protein": 30,
+        "fat": 12,
+        "carbs": 58
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "image": "img/ksy-idealnye-syrniki.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-belkovyy-omlet",
+      "title": "Белковый омлет",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "яйца",
+          "amount": 3,
+          "unit": "шт"
+        },
+        {
+          "name": "творог",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "шампиньоны",
+          "amount": 80,
+          "unit": "г"
+        },
+        {
+          "name": "моцарелла",
+          "amount": 20,
+          "unit": "г"
+        },
+        {
+          "name": "пармезан",
+          "amount": 10,
+          "unit": "г"
+        },
+        {
+          "name": "черри",
+          "amount": 80,
+          "unit": "г"
+        },
+        {
+          "name": "огурец",
+          "amount": 80,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Шампиньоны обжарить на сухой сковороде.",
+        "Взбить яйца с творогом до однородности (творог делает омлет нежнее и добавляет белок).",
+        "Вылить на сковороду, накрыть крышкой на 1–2 минуты, сложить пополам.",
+        "Подавать с нарезанными овощами и сыром."
+      ],
+      "nutrition": {
+        "kcal": 393,
+        "protein": 27,
+        "fat": 2,
+        "carbs": 32
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "image": "img/ksy-belkovyy-omlet.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-draniki-cukini",
+      "title": "Драники из цукини",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "кабачок",
+          "amount": 200,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "лосось",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо пашот",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "мука",
+          "amount": 1,
+          "unit": "ст.л."
+        },
+        {
+          "name": "специи",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Кабачок натереть, отжать лишнюю жидкость, смешать с яйцом, мукой, солью и перцем.",
+        "Жарить оладьи на минимальном масле.",
+        "Яйцо пашот: в кипящую воду с уксусом аккуратно вбить яйцо и варить 3 минуты.",
+        "Собрать: оладьи → лосось → пашот → специи."
+      ],
+      "nutrition": {
+        "kcal": 380,
+        "protein": 34,
+        "fat": 20,
+        "carbs": 14
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 15,
+      "image": "img/ksy-draniki-cukini.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-grecha-boul-2",
+      "title": "Греча боул (с лососем)",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "обед",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "гречка",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "лосось с/с",
+          "amount": 70,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 2,
+          "unit": "шт"
+        },
+        {
+          "name": "авокадо",
+          "amount": 70,
+          "unit": "г"
+        },
+        {
+          "name": "зелень",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "паприка / специи",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Отварить гречку (1:2) ~15 минут. Выложить в боул.",
+        "Добавить ломтики авокадо. Выложить лосось. Сверху яйца пашот.",
+        "Посыпать паприкой и микрозеленью, сбрызнуть лимоном."
+      ],
+      "nutrition": {
+        "kcal": 520,
+        "protein": 36,
+        "fat": 24,
+        "carbs": 32
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 25,
+      "image": "img/ksy-grecha-boul-2.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-tosty-yaytso-pashot",
+      "title": "Тосты с яйцом-пашот",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "английский маффин",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 2,
+          "unit": "шт"
+        },
+        {
+          "name": "лосось с/с",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "творожный сыр",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "авокадо",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "шпинат",
+          "amount": "горсть",
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Булочку разрезать пополам и слегка поджарить. Намазать творожный сыр.",
+        "Выложить шпинат и ломтики авокадо. Добавить лосось.",
+        "Яйца пашот: в кипящую воду с уксусом разбить яйцо в воронку, варить 2,5–3 минуты. Выложить сверху, приправить."
+      ],
+      "nutrition": {
+        "kcal": 440,
+        "protein": 30,
+        "fat": 22,
+        "carbs": 29
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 15,
+      "image": "img/ksy-tosty-yaytso-pashot.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-proteinovye-pankeyki",
+      "title": "Протеиновые панкейки",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "овсяная мука",
+          "amount": 40,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "яичный белок",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "протеин",
+          "amount": 20,
+          "unit": "г"
+        },
+        {
+          "name": "молоко",
+          "amount": 40,
+          "unit": "мл"
+        },
+        {
+          "name": "разрыхлитель",
+          "amount": 0.5,
+          "unit": "ч.л."
+        },
+        {
+          "name": "греческий йогурт (топпинг)",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "малина (топпинг)",
+          "amount": 60,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Смешать яйцо, белок, молоко. Добавить овсяную муку, протеин, разрыхлитель.",
+        "Жарить на антипригарной сковороде без масла.",
+        "Подать с йогуртом и малиной."
+      ],
+      "nutrition": {
+        "kcal": 350,
+        "protein": 34,
+        "fat": 8,
+        "carbs": 36
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "image": "img/ksy-proteinovye-pankeyki.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-proteinovaya-kasha",
+      "title": "Протеиновая каша",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "геркулес",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "молоко",
+          "amount": 200,
+          "unit": "мл"
+        },
+        {
+          "name": "яичные белки",
+          "amount": 3,
+          "unit": "шт"
+        },
+        {
+          "name": "банан",
+          "amount": 50,
+          "unit": "г"
+        },
+        {
+          "name": "клубника",
+          "amount": 40,
+          "unit": "г"
+        },
+        {
+          "name": "гранола",
+          "amount": 15,
+          "unit": "г"
+        },
+        {
+          "name": "детское манговое пюре",
+          "amount": 40,
+          "unit": "г"
+        }
+      ],
+      "steps": [
+        "Сварить овсянку на молоке. Когда почти готова — аккуратно влить белки, активно перемешивая.",
+        "Готовить ещё 1 минуту до кремовой текстуры.",
+        "Выложить банан, клубнику. Добавить гранолу и манговое пюре."
+      ],
+      "nutrition": {
+        "kcal": 420,
+        "protein": 29,
+        "fat": 9,
+        "carbs": 58
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "image": "img/ksy-proteinovaya-kasha.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-tomatnaya-ovsyanka",
+      "title": "Томатная овсянка",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "сливочное масло",
+          "amount": 5,
+          "unit": "г"
+        },
+        {
+          "name": "томаты",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "чеснок сушёный",
+          "amount": 1,
+          "unit": "ч.л."
+        },
+        {
+          "name": "соль",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "геркулес",
+          "amount": 80,
+          "unit": "г"
+        },
+        {
+          "name": "сыр лёгкий",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "уксус столовый",
+          "amount": 1,
+          "unit": "ст.л."
+        }
+      ],
+      "steps": [
+        "Сливочное масло растопить на сковороде, добавить томаты, чеснок, соль. Потушить 2 минуты.",
+        "Добавить геркулес, залить водой на 1 см выше уровня крупы, варить под крышкой до готовности.",
+        "Сварить яйцо пашот в уксусе 2 минуты.",
+        "Выложить овсянку в тарелку, посыпать тёртым сыром и выложить яйцо пашот."
+      ],
+      "nutrition": {
+        "kcal": 494,
+        "protein": 26,
+        "fat": 20,
+        "carbs": 49
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 15,
+      "image": "img/ksy-tomatnaya-ovsyanka.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-proteinovyy-beygl",
+      "title": "Протеиновый бейгл",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "завтрак",
+      "servings": 4,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "творог 2%",
+          "amount": 500,
+          "unit": "г"
+        },
+        {
+          "name": "сыр лёгкий",
+          "amount": 100,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 2,
+          "unit": "шт"
+        },
+        {
+          "name": "мука",
+          "amount": 120,
+          "unit": "г"
+        },
+        {
+          "name": "соль",
+          "amount": "щепотка",
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Смешать все ингредиенты до однородной массы, мокрыми руками скатать 4 одинаковых шарика.",
+        "Выложить на противень и сформировать бейгл. Сверху смазать молоком+яйцом, посыпать семечками/кунжутом.",
+        "Запекать при 180 °C 15–20 минут, дать остыть. Начинка любая: творожный сыр, огурец и форель."
+      ],
+      "nutrition": {
+        "kcal": 380,
+        "protein": 35,
+        "fat": 9,
+        "carbs": 40
+      },
+      "nutrition_in_source": true,
+      "note": "на 4 шт; КБЖУ — на штуку",
+      "cook_method": "духовка",
+      "no_bake": false,
+      "is_quick": false,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 40,
+      "image": "img/ksy-proteinovyy-beygl.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-belkovaya-pizza",
+      "title": "Белковая пицца",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "обед",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "лаваш",
+          "amount": 2,
+          "unit": "шт"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "яичный белок",
+          "amount": 2,
+          "unit": "шт"
+        },
+        {
+          "name": "сыр лёгкий",
+          "amount": 55,
+          "unit": "г"
+        },
+        {
+          "name": "ветчина из индейки",
+          "amount": 60,
+          "unit": "г"
+        },
+        {
+          "name": "кетчуп Bombbar",
+          "amount": 20,
+          "unit": "г"
+        },
+        {
+          "name": "томаты черри",
+          "amount": 4,
+          "unit": "шт"
+        },
+        {
+          "name": "зелень",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "соль/перец",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Яйцо взбить с белком, вылить на разогретую сковороду. Сверху положить лаваш, накрыть крышкой.",
+        "Когда смесь схватится — перевернуть, добавить тёртый сыр и накрыть вторым лавашем.",
+        "Смазать кетчупом, выложить ветчину, томаты черри, ещё сыр и зелень.",
+        "Ждать, когда сыр расплавится."
+      ],
+      "nutrition": {
+        "kcal": 411,
+        "protein": 40,
+        "fat": 16,
+        "carbs": 25
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": false,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 25,
+      "image": "img/ksy-belkovaya-pizza.jpg",
+      "overnight": false
+    },
+    {
+      "id": "ksy-pirozhki-luk-yaytso",
+      "title": "Пирожки с луком и яйцом",
+      "source": "ksy_profood",
+      "ration_id": null,
+      "meal_type": "перекус",
+      "servings": 1,
+      "tags": [],
+      "ingredients": [
+        {
+          "name": "яйца варёные",
+          "amount": 5,
+          "unit": "шт"
+        },
+        {
+          "name": "лук зелёный",
+          "amount": null,
+          "unit": "по вкусу"
+        },
+        {
+          "name": "сыр лёгкий",
+          "amount": 45,
+          "unit": "г"
+        },
+        {
+          "name": "яйцо",
+          "amount": 1,
+          "unit": "шт"
+        },
+        {
+          "name": "мука",
+          "amount": 30,
+          "unit": "г"
+        },
+        {
+          "name": "соль/перец",
+          "amount": null,
+          "unit": "по вкусу"
+        }
+      ],
+      "steps": [
+        "Варёные яйца нарезать кубиками, добавить лук, тёртый сыр, ложку муки и сырое яйцо. Тщательно перемешать.",
+        "Сформировать шарики, выложить на разогретую сковороду, жарить с 2 сторон под крышкой.",
+        "Подавать можно с греческим йогуртом или сметаной."
+      ],
+      "nutrition": {
+        "kcal": 383,
+        "protein": 30,
+        "fat": 22,
+        "carbs": 16
+      },
+      "nutrition_in_source": true,
+      "cook_method": "плита",
+      "no_bake": true,
+      "is_quick": true,
+      "batch_friendly": false,
+      "keeps_days": 1,
+      "time_min": 12,
+      "image": "img/ksy-pirozhki-luk-yaytso.jpg",
+      "overnight": false
+    }
+  ],
+  "meal_plans": [
+    {
+      "id": "kkifood-30-days",
+      "title": "@KKIFOOD — Рацион на 30 дней",
+      "source": "KKIFOOD",
+      "days": [
+        {
+          "day": 1,
+          "meals": {
+            "завтрак": "Омлет из двух яиц со шпинатом",
+            "перекус_1": "Нежирный йогурт и гранола",
+            "обед": "Куриные котлеты, рис, овощи",
+            "перекус_2": "Творог с ягодами / протеиновый батончик",
+            "ужин": "Рыба/курица/индейка, зелёный салат с авокадо"
+          }
+        },
+        {
+          "day": 2,
+          "meals": {
+            "завтрак": "Творожная запеканка с ягодами",
+            "перекус_1": "Цельнозерновой хлеб с арахисовой пастой и бананом",
+            "обед": "Салат из курицы, киноа, авокадо и помидоры черри",
+            "перекус_2": "Йогурт с ягодами",
+            "ужин": "Шницель с овощами"
+          }
+        },
+        {
+          "day": 3,
+          "meals": {
+            "завтрак": "Тост с авокадо и яйцом",
+            "перекус_1": "Орехи и сухофрукты",
+            "обед": "Индейка, макароны из твёрдых сортов, микс овощей",
+            "перекус_2": "Творог с мёдом",
+            "ужин": "2 отварных яйца, салат из шпината, огурца, помидора"
+          }
+        },
+        {
+          "day": 4,
+          "meals": {
+            "завтрак": "Овсяная каша с ягодами, миндаль",
+            "перекус_1": "Тост с авокадо",
+            "обед": "Лосось на гриле/запечённый, киноа, свежие овощи",
+            "перекус_2": "Сыр, орехи или йогурт",
+            "ужин": "Тушёное куриное филе, кускус, тушёные овощи"
+          }
+        },
+        {
+          "day": 5,
+          "meals": {
+            "завтрак": "Сэндвич с творожным сыром, авокадо и омлетом из одного яйца",
+            "перекус_1": "Йогурт с гранолой",
+            "обед": "Фаршированный перец с гречкой",
+            "перекус_2": "Овощи с хумусом или батончик без сахара",
+            "ужин": "Курица с салатом"
+          }
+        },
+        {
+          "day": 6,
+          "meals": {
+            "завтрак": "Ленивые вареники с ягодами и греческим йогуртом",
+            "перекус_1": "Хумус с овощами ИЛИ ПП пирожное картошка",
+            "обед": "Индейка с гречкой и грибами",
+            "перекус_2": "ПП пирожное картошка",
+            "ужин": "Яичница из двух яиц с брокколи, шпинатом и помидорами черри"
+          }
+        },
+        {
+          "day": 7,
+          "meals": {
+            "завтрак": "ПП сырники без сахара",
+            "перекус_1": "Йогурт с семенами чиа",
+            "обед": "Боул с киноа, курицей, авокадо, шпинатом и хумусом",
+            "перекус_2": "Орехи + фрукт",
+            "ужин": "Запеканка овощная с курицей"
+          }
+        },
+        {
+          "day": 8,
+          "meals": {
+            "завтрак": "Овсяноблин с творогом, йогуртом и ягодами",
+            "перекус_1": "Батончик полезный без сахара или шоколад",
+            "обед": "Тушёное куриное филе, кускус, тушёные овощи",
+            "перекус_2": "Хумус с овощами",
+            "ужин": "Яичница на лаваше из двух яиц с брокколи, шпинатом и помидорами черри"
+          }
+        },
+        {
+          "day": 9,
+          "meals": {
+            "завтрак": "Овсяная каша с ягодами, миндаль",
+            "перекус_1": "ПП шоколадный чизкейк",
+            "обед": "ПП шаурма",
+            "перекус_2": "Йогурт с гранолой",
+            "ужин": "Боул с курицей, гречкой и овощами (авокадо, помидор, шпинат)"
+          }
+        },
+        {
+          "day": 10,
+          "meals": {
+            "завтрак": "Оладья с брокколи и сыром",
+            "перекус_1": "Фрукты/орехи",
+            "обед": "Салат с креветками, киноа, помидорками, салатом айсберг",
+            "перекус_2": "ПП шоколадный чизкейк",
+            "ужин": "Куриные котлеты, рис, овощи"
+          }
+        },
+        {
+          "day": 11,
+          "meals": {
+            "завтрак": "Творожная запеканка с ягодами",
+            "перекус_1": "Хлебцы с творожным сыром и авокадо",
+            "обед": "Индейка с гречкой и грибами",
+            "перекус_2": "ПП пирожное картошка",
+            "ужин": "Индейка, макароны из твёрдых сортов, микс овощей"
+          }
+        },
+        {
+          "day": 12,
+          "meals": {
+            "завтрак": "Омлет из двух яиц со шпинатом",
+            "перекус_1": "ПП пирожное картошка",
+            "обед": "Боул с курицей, гречкой и овощами (авокадо, помидор, шпинат)",
+            "перекус_2": "Сыр, орехи или йогурт",
+            "ужин": "Тушёное куриное филе, кускус, тушёные овощи"
+          }
+        },
+        {
+          "day": 13,
+          "meals": {
+            "завтрак": "Панкейки с греческим йогуртом и ягодами",
+            "перекус_1": "Орехи/банан",
+            "обед": "Куриные котлеты, рис, овощи",
+            "перекус_2": "Творог с ягодами / протеиновый батончик",
+            "ужин": "Рыба/курица/индейка, зелёный салат с авокадо"
+          }
+        },
+        {
+          "day": 14,
+          "meals": {
+            "завтрак": "Ленивые вареники",
+            "перекус_1": "Йогурт с семенами чиа и ягодами/фруктами",
+            "обед": "ПП шаурма",
+            "перекус_2": "Хумус с овощами",
+            "ужин": "Овощная запеканка с курицей"
+          }
+        },
+        {
+          "day": 15,
+          "meals": {
+            "завтрак": "ПП сырники без сахара",
+            "перекус_1": "Йогурт с гранолой",
+            "обед": "Солёный овсяноблин (с авокадо и яйцом пашот) или с сыром",
+            "перекус_2": "Фрукты",
+            "ужин": "Боул с киноа, курицей, авокадо, шпинатом и хумусом"
+          }
+        },
+        {
+          "day": 16,
+          "meals": {
+            "завтрак": "Сэндвич с творожным сыром, авокадо и омлетом из одного яйца",
+            "перекус_1": "Йогурт с гранолой",
+            "обед": "Фаршированный перец с гречкой",
+            "перекус_2": "Фрукты",
+            "ужин": "ПП шаурма"
+          }
+        },
+        {
+          "day": 17,
+          "meals": {
+            "завтрак": "Овсяноблин с творогом, ягодами и фруктами",
+            "перекус_1": "ПП пирожное картошка",
+            "обед": "Боул с курицей, гречкой и овощами",
+            "перекус_2": "Сыр, орехи или йогурт",
+            "ужин": "Тушёное куриное филе, киноа, тушёные овощи"
+          }
+        },
+        {
+          "day": 18,
+          "meals": {
+            "завтрак": "Яичница из 2 яиц и хлебцы с творожным сыром",
+            "перекус_1": "Протеиновый пудинг или йогурт без сахара",
+            "обед": "Боул: рис, авокадо, лосось, огурец и соус",
+            "перекус_2": "Орехи",
+            "ужин": "Овощная запеканка с курицей"
+          }
+        },
+        {
+          "day": 19,
+          "meals": {
+            "завтрак": "Шпинатные блинчики с творожным сыром и лососем",
+            "перекус_1": "Хумус с овощами ИЛИ ПП пирожное картошка",
+            "обед": "Индейка с гречкой и грибами",
+            "перекус_2": "ПП пирожное картошка",
+            "ужин": "Яичница из двух яиц с брокколи, шпинатом и помидорами черри"
+          }
+        },
+        {
+          "day": 20,
+          "meals": {
+            "завтрак": "Оладья с брокколи и сыром",
+            "перекус_1": "Фрукты/орехи",
+            "обед": "Салат с креветками",
+            "перекус_2": "ПП шоколадный чизкейк",
+            "ужин": "Куриные котлеты, рис, овощи"
+          }
+        },
+        {
+          "day": 21,
+          "meals": {
+            "завтрак": "Овсяная каша с ягодами, миндаль",
+            "перекус_1": "ПП шоколадный чизкейк",
+            "обед": "ПП шаурма",
+            "перекус_2": "Йогурт с гранолой",
+            "ужин": "Боул с курицей, гречкой и овощами (авокадо, помидор, шпинат)"
+          }
+        },
+        {
+          "day": 22,
+          "meals": {
+            "завтрак": "Панкейки ПП с ягодами и йогуртом",
+            "перекус_1": "ПП сочники",
+            "обед": "Куриное филе, гречка, брокколи (овощи)",
+            "перекус_2": "Сыр, орехи или йогурт",
+            "ужин": "Яичница с овощами (помидоры, шпинат)"
+          }
+        },
+        {
+          "day": 23,
+          "meals": {
+            "завтрак": "Творог, йогурт, гранола без сахара и фрукты",
+            "перекус_1": "Смузи из молока, банана, клубники и семян чиа",
+            "обед": "Курица, рис и салат (другие овощи)",
+            "перекус_2": "Чиа-пудинг из йогурта",
+            "ужин": "Курица с салатом"
+          }
+        },
+        {
+          "day": 24,
+          "meals": {
+            "завтрак": "Яичница с брокколи и шпинатом",
+            "перекус_1": "Батончик без сахара",
+            "обед": "Паста с брокколи и курицей",
+            "перекус_2": "ПП сочники",
+            "ужин": "Индейка, макароны из твёрдых сортов, микс овощей"
+          }
+        },
+        {
+          "day": 25,
+          "meals": {
+            "завтрак": "Панкейки с йогуртом и ягодами",
+            "перекус_1": "Орехи, шоколад",
+            "обед": "Солёный овсяноблин (с авокадо и яйцом пашот) или с сыром",
+            "перекус_2": "Сыр, орехи или йогурт",
+            "ужин": "Креветки, киноа, авокадо"
+          }
+        },
+        {
+          "day": 26,
+          "meals": {
+            "завтрак": "Овсяноблин с творогом, ягодами и фруктами",
+            "перекус_1": "ПП пирожное картошка",
+            "обед": "Боул с курицей, гречкой и овощами",
+            "перекус_2": "Фрукты, орехи",
+            "ужин": "Котлеты курино-овощные из духовки с овощами и кускусом"
+          }
+        },
+        {
+          "day": 27,
+          "meals": {
+            "завтрак": "Тост с творожным сыром, авокадо и яичницей",
+            "перекус_1": "Фрукты/орехи",
+            "обед": "Салат с креветками",
+            "перекус_2": "Йогурт с гранолой",
+            "ужин": "Боул с курицей, гречкой и овощами"
+          }
+        },
+        {
+          "day": 28,
+          "meals": {
+            "завтрак": "Оладья с брокколи и сыром",
+            "перекус_1": "Фрукты/орехи",
+            "обед": "Омлет из 2 яиц со шпинатом и отдельно авокадо",
+            "перекус_2": "Орехи, шоколад",
+            "ужин": "Котлеты курино-овощные из духовки с овощами"
+          }
+        },
+        {
+          "day": 29,
+          "meals": {
+            "завтрак": "Панкейки с ягодами и йогуртом",
+            "перекус_1": "Хумус с овощами ИЛИ ПП пирожное картошка",
+            "обед": "Индейка с гречкой и грибами",
+            "перекус_2": "Смузи из банана, молока, клубники и семян чиа",
+            "ужин": "Яичница с брокколи, шпинатом и помидорами"
+          }
+        },
+        {
+          "day": 30,
+          "meals": {
+            "завтрак": "Шпинатные блинчики с творожным сыром и лососем",
+            "перекус_1": "Протеиновый пудинг или йогурт без сахара",
+            "обед": "Боул: рис, авокадо, лосось, огурец и соевый соус",
+            "перекус_2": "Орехи",
+            "ужин": "Овощная запеканка с курицей"
+          }
+        }
+      ],
+      "note": "Дневной план — названия блюд по приёмам. Детальные рецепты блюд — в recipes (source=KKIFOOD), часть блюд составные/без отдельного рецепта."
+    }
+  ]
+}

@@ -1,0 +1,504 @@
+{
+  "meta": {
+    "description": "Каталог компонентов для компонентного мил-препа (белок+углевод+овощи+жир)",
+    "kbju_basis": "на 100 г готового продукта (крупы/бобовые — указан коэф. raw_to_cooked для пересчёта сухого веса в список покупок)",
+    "source": "IRNBY таблица взаимозаменяемости (стр 35-38) + списки продуктов гайдов",
+    "plate_rule": "1/2 овощи+зелень (клетчатка), 1/4 белок, 1/4 сложные углеводы, жиры — добавка"
+  },
+  "components": {
+    "proteins": [
+      {
+        "name": "Куриная грудка (отварная/гриль)",
+        "kbju": {
+          "kcal": 102,
+          "protein": 21,
+          "fat": 2,
+          "carbs": 0
+        },
+        "keeps_days": 4,
+        "batch": true,
+        "method": "варка/гриль"
+      },
+      {
+        "name": "Филе индейки",
+        "kbju": {
+          "kcal": 97,
+          "protein": 22,
+          "fat": 1,
+          "carbs": 0
+        },
+        "keeps_days": 4,
+        "batch": true,
+        "method": "варка/запекание"
+      },
+      {
+        "name": "Куриное бедро (без кожи)",
+        "kbju": {
+          "kcal": 185,
+          "protein": 21.7,
+          "fat": 11.7,
+          "carbs": 0.0
+        },
+        "keeps_days": 4,
+        "batch": true,
+        "method": "запекание/тушение"
+      },
+      {
+        "name": "Говядина постная",
+        "kbju": {
+          "kcal": 187,
+          "protein": 18.3,
+          "fat": 11.7,
+          "carbs": 0.0
+        },
+        "keeps_days": 4,
+        "batch": true,
+        "method": "тушение"
+      },
+      {
+        "name": "Лосось/форель",
+        "kbju": {
+          "kcal": 142,
+          "protein": 20.0,
+          "fat": 6.2,
+          "carbs": 0.0
+        },
+        "keeps_days": 3,
+        "batch": true,
+        "method": "запекание/гриль"
+      },
+      {
+        "name": "Треска/минтай (белая рыба)",
+        "kbju": {
+          "kcal": 78,
+          "protein": 17.7,
+          "fat": 0.8,
+          "carbs": 0.0
+        },
+        "keeps_days": 3,
+        "batch": true,
+        "method": "запекание/варка"
+      },
+      {
+        "name": "Креветки",
+        "kbju": {
+          "kcal": 97,
+          "protein": 22,
+          "fat": 1,
+          "carbs": 0
+        },
+        "keeps_days": 2,
+        "batch": true,
+        "method": "варка/обжарка"
+      },
+      {
+        "name": "Яйца",
+        "kbju": {
+          "kcal": 157,
+          "protein": 12.9,
+          "fat": 11.4,
+          "carbs": 0.0
+        },
+        "keeps_days": 5,
+        "batch": true,
+        "method": "варка"
+      },
+      {
+        "name": "Творог 5%",
+        "kbju": {
+          "kcal": 109,
+          "protein": 16,
+          "fat": 5,
+          "carbs": 2
+        },
+        "keeps_days": 4,
+        "batch": false,
+        "method": "без готовки"
+      },
+      {
+        "name": "Греческий йогурт",
+        "kbju": {
+          "kcal": 112,
+          "protein": 9,
+          "fat": 5,
+          "carbs": 6
+        },
+        "keeps_days": 5,
+        "batch": false,
+        "method": "без готовки"
+      },
+      {
+        "name": "Тофу",
+        "kbju": {
+          "kcal": 73,
+          "protein": 8.5,
+          "fat": 4.6,
+          "carbs": 0.8
+        },
+        "keeps_days": 4,
+        "batch": true,
+        "method": "обжарка/тушение"
+      },
+      {
+        "name": "Чечевица (сухая→варка)",
+        "kbju": {
+          "kcal": 283,
+          "protein": 22.9,
+          "fat": 2.9,
+          "carbs": 42.9
+        },
+        "keeps_days": 4,
+        "batch": true,
+        "method": "варка",
+        "raw_to_cooked": 2.5
+      },
+      {
+        "name": "Нут (сухой→варка)",
+        "kbju": {
+          "kcal": 363,
+          "protein": 20.0,
+          "fat": 6.7,
+          "carbs": 60.0
+        },
+        "keeps_days": 4,
+        "batch": true,
+        "method": "варка",
+        "raw_to_cooked": 2.4
+      },
+      {
+        "name": "Фасоль (сухая→варка)",
+        "kbju": {
+          "kcal": 265,
+          "protein": 20.0,
+          "fat": 2.5,
+          "carbs": 42.5
+        },
+        "keeps_days": 4,
+        "batch": true,
+        "method": "варка",
+        "raw_to_cooked": 2.4
+      }
+    ],
+    "carbs": [
+      {
+        "name": "Гречка",
+        "kbju": {
+          "kcal": 312,
+          "protein": 12.5,
+          "fat": 2.5,
+          "carbs": 62.5
+        },
+        "keeps_days": 4,
+        "batch": true,
+        "method": "варка",
+        "raw_to_cooked": 2.8
+      },
+      {
+        "name": "Бурый/дикий рис",
+        "kbju": {
+          "kcal": 338,
+          "protein": 7.5,
+          "fat": 2.5,
+          "carbs": 72.5
+        },
+        "keeps_days": 4,
+        "batch": true,
+        "method": "варка",
+        "raw_to_cooked": 2.7
+      },
+      {
+        "name": "Киноа",
+        "kbju": {
+          "kcal": 368,
+          "protein": 15.0,
+          "fat": 5.0,
+          "carbs": 57.5
+        },
+        "keeps_days": 4,
+        "batch": true,
+        "method": "варка",
+        "raw_to_cooked": 2.8
+      },
+      {
+        "name": "Булгур",
+        "kbju": {
+          "kcal": 342,
+          "protein": 12.5,
+          "fat": 2.5,
+          "carbs": 57.5
+        },
+        "keeps_days": 4,
+        "batch": true,
+        "method": "варка",
+        "raw_to_cooked": 2.8
+      },
+      {
+        "name": "Перловка",
+        "kbju": {
+          "kcal": 320,
+          "protein": 10.0,
+          "fat": 0.0,
+          "carbs": 72.5
+        },
+        "keeps_days": 4,
+        "batch": true,
+        "method": "варка",
+        "raw_to_cooked": 3.0
+      },
+      {
+        "name": "Овсяная крупа",
+        "kbju": {
+          "kcal": 342,
+          "protein": 12.5,
+          "fat": 5.0,
+          "carbs": 60.0
+        },
+        "keeps_days": 3,
+        "batch": true,
+        "method": "варка",
+        "raw_to_cooked": 3.0
+      },
+      {
+        "name": "Паста из твёрдых сортов",
+        "kbju": {
+          "kcal": 345,
+          "protein": 10.0,
+          "fat": 2.5,
+          "carbs": 72.5
+        },
+        "keeps_days": 3,
+        "batch": true,
+        "method": "варка",
+        "raw_to_cooked": 2.5
+      },
+      {
+        "name": "Картофель/батат (запечённый)",
+        "kbju": {
+          "kcal": 85,
+          "protein": 2,
+          "fat": 0,
+          "carbs": 18
+        },
+        "keeps_days": 3,
+        "batch": true,
+        "method": "запекание/варка"
+      }
+    ],
+    "vegetables": [
+      {
+        "name": "Брокколи",
+        "kbju": {
+          "kcal": 28,
+          "protein": 3.2,
+          "fat": 0.4,
+          "carbs": 5.2
+        },
+        "keeps_days": 3,
+        "batch": true,
+        "method": "на пару/запекание",
+        "fresh_ok": true
+      },
+      {
+        "name": "Помидоры",
+        "kbju": {
+          "kcal": 20,
+          "protein": 1.1,
+          "fat": 0.3,
+          "carbs": 3.7
+        },
+        "keeps_days": 2,
+        "batch": false,
+        "method": "свежие",
+        "fresh_ok": true
+      },
+      {
+        "name": "Огурец",
+        "kbju": {
+          "kcal": 15,
+          "protein": 0.8,
+          "fat": 0.2,
+          "carbs": 2.8
+        },
+        "keeps_days": 3,
+        "batch": false,
+        "method": "свежие",
+        "fresh_ok": true
+      },
+      {
+        "name": "Болгарский перец",
+        "kbju": {
+          "kcal": 27,
+          "protein": 1.2,
+          "fat": 0.0,
+          "carbs": 5.2
+        },
+        "keeps_days": 4,
+        "batch": false,
+        "method": "свежие/запекание",
+        "fresh_ok": true
+      },
+      {
+        "name": "Цветная капуста",
+        "kbju": {
+          "kcal": 30,
+          "protein": 2.4,
+          "fat": 0.4,
+          "carbs": 5.6
+        },
+        "keeps_days": 3,
+        "batch": true,
+        "method": "на пару/запекание"
+      },
+      {
+        "name": "Кабачок",
+        "kbju": {
+          "kcal": 72,
+          "protein": 2.0,
+          "fat": 1.0,
+          "carbs": 14.0
+        },
+        "keeps_days": 3,
+        "batch": true,
+        "method": "тушение/запекание"
+      },
+      {
+        "name": "Баклажан",
+        "kbju": {
+          "kcal": 72,
+          "protein": 4.0,
+          "fat": 0.0,
+          "carbs": 14.0
+        },
+        "keeps_days": 3,
+        "batch": true,
+        "method": "запекание"
+      },
+      {
+        "name": "Зелёный горошек",
+        "kbju": {
+          "kcal": 73,
+          "protein": 5.0,
+          "fat": 0.0,
+          "carbs": 14.0
+        },
+        "keeps_days": 3,
+        "batch": true,
+        "method": "варка",
+        "fresh_ok": true
+      },
+      {
+        "name": "Стручковая фасоль",
+        "kbju": {
+          "kcal": 31,
+          "protein": 2,
+          "fat": 0,
+          "carbs": 5
+        },
+        "keeps_days": 3,
+        "batch": true,
+        "method": "варка/обжарка"
+      },
+      {
+        "name": "Морковь",
+        "kbju": {
+          "kcal": 41,
+          "protein": 1.0,
+          "fat": 0.0,
+          "carbs": 9.0
+        },
+        "keeps_days": 5,
+        "batch": true,
+        "method": "свежая/тушение",
+        "fresh_ok": true,
+        "starchy": true
+      },
+      {
+        "name": "Зелень/салат (руккола, шпинат)",
+        "kbju": {
+          "kcal": 20,
+          "protein": 2,
+          "fat": 0,
+          "carbs": 2
+        },
+        "keeps_days": 3,
+        "batch": false,
+        "method": "свежие",
+        "fresh_ok": true
+      },
+      {
+        "name": "Шампиньоны",
+        "kbju": {
+          "kcal": 27,
+          "protein": 4.3,
+          "fat": 1.1,
+          "carbs": 0.0
+        },
+        "keeps_days": 3,
+        "batch": true,
+        "method": "обжарка/тушение"
+      }
+    ],
+    "fats": [
+      {
+        "name": "Авокадо",
+        "kbju": {
+          "kcal": 160,
+          "protein": 2,
+          "fat": 15,
+          "carbs": 9
+        },
+        "keeps_days": 2,
+        "batch": false,
+        "method": "свежий"
+      },
+      {
+        "name": "Оливковое масло",
+        "kbju": {
+          "kcal": 900,
+          "protein": 0,
+          "fat": 100,
+          "carbs": 0
+        },
+        "keeps_days": 60,
+        "batch": false,
+        "method": "заправка"
+      },
+      {
+        "name": "Орехи (миндаль/грецкий)",
+        "kbju": {
+          "kcal": 600,
+          "protein": 15,
+          "fat": 54,
+          "carbs": 13
+        },
+        "keeps_days": 30,
+        "batch": false,
+        "method": "без готовки"
+      },
+      {
+        "name": "Семена (тыквы/льна/чиа)",
+        "kbju": {
+          "kcal": 550,
+          "protein": 20,
+          "fat": 45,
+          "carbs": 15
+        },
+        "keeps_days": 30,
+        "batch": false,
+        "method": "без готовки"
+      },
+      {
+        "name": "Сыр твёрдый/фета",
+        "kbju": {
+          "kcal": 280,
+          "protein": 20,
+          "fat": 22,
+          "carbs": 2
+        },
+        "keeps_days": 7,
+        "batch": false,
+        "method": "без готовки"
+      }
+    ]
+  }
+}

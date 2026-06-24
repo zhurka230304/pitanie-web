@@ -1,0 +1,13 @@
+[Unit]
+Description=Журка — Рецепты (recipes-app)
+After=network.target
+
+[Service]
+User=kristi23z
+WorkingDirectory=/home/kristi23z/pitanie-web/recipes-app
+ExecStart=/usr/bin/python3 -m uvicorn main:app --host 127.0.0.1 --port 8001
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
