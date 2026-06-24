@@ -289,12 +289,12 @@ class WeightLog(Base):
 
 class SelfServeStore(Base):
     """B2C self-serve (App 1): профиль и история планов пользователя без тренера.
-    Ключ — telegram_id (вход через Telegram Login Widget). Гости хранят данные
-    в браузере и эту таблицу не используют. Профиль/планы — JSON, одна строка
-    на пользователя (история — последние ~30 планов в списке)."""
-    __tablename__ = "selfserve_store"
+    Ключ user_key: "u<id>" — вход по почте (User), "tg<id>" — Telegram Login Widget.
+    Гости хранят данные в браузере и эту таблицу не используют. Профиль/планы —
+    JSON, одна строка на пользователя (история — последние ~30 планов)."""
+    __tablename__ = "selfserve_accounts"
 
-    telegram_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    user_key: Mapped[str] = mapped_column(String(64), primary_key=True)
     name: Mapped[str | None] = mapped_column(String(120), nullable=True)
     profile: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     plans: Mapped[list | None] = mapped_column(JSON, nullable=True)

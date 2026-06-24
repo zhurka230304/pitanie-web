@@ -99,20 +99,45 @@ const $=id=>document.getElementById(id);
 const H={'Content-Type':'application/json'};
 let currentDays=null, currentTarget=null, BOT='';
 let tgUser=null; try{ tgUser=JSON.parse(localStorage.getItem('ss_tgUser')||'null'); }catch(e){}
+let authToken=localStorage.getItem('ss_token')||'';
+let authName=localStorage.getItem('ss_name')||'';
 
-function serverMode(){ return !!tgUser; }
-function authBody(extra){ return Object.assign({tg_user:tgUser||{}}, extra||{}); }
+function serverMode(){ return !!(tgUser||authToken); }
+function authBody(extra){ return Object.assign({tg_user:tgUser||{}, token:authToken||''}, extra||{}); }
 function lsGet(k,def){ try{const v=JSON.parse(localStorage.getItem(k)); return v==null?def:v;}catch(e){return def;} }
 function lsSet(k,v){ try{localStorage.setItem(k,JSON.stringify(v));}catch(e){} }
 
-// ── вход через Telegram (опционально; гость работает без входа) ──
+// ── вход: почта или Telegram (опционально; гость работает без входа) ──
+const inStyle='width:100%;text-align:left;margin-bottom:6px';
 window.onTelegramAuth=function(user){ tgUser=user; lsSet('ss_tgUser',user); loadProfile(); alert('Вы вошли через Telegram'); };
-function logoutTg(){ tgUser=null; localStorage.removeItem('ss_tgUser'); renderCabinet(); }
-function injectTgWidget(el){
-  el.innerHTML='';
-  if(!BOT){ el.innerHTML='<div class="sub" style="margin:0">Можно пользоваться без входа. Вход через Telegram не настроен.</div>'; return; }
-  const note=document.createElement('div'); note.className='sub'; note.style.margin='0 0 6px';
-  note.textContent='Войдите, чтобы сохранять профиль и историю между устройствами:';
+function logout(){ tgUser=null; authToken=''; authName='';
+  localStorage.removeItem('ss_tgUser'); localStorage.removeItem('ss_token'); localStorage.removeItem('ss_name'); loadProfile(); }
+async function emailAuth(kind){
+  const email=$('em_email').value.trim(), pass=$('em_pass').value, name=$('em_name')?$('em_name').value:'';
+  if(!email||!pass){ alert('Введите почту и пароль'); return; }
+  try{
+    const r=await fetch('api/self-serve/'+kind,{method:'POST',headers:H,body:JSON.stringify({email,password:pass,name})});
+    const d=await r.json();
+    if(!r.ok){ alert(d.detail||'Ошибка'); return; }
+    authToken=d.token; authName=d.name||email;
+    localStorage.setItem('ss_token',authToken); localStorage.setItem('ss_name',authName);
+    tgUser=null; localStorage.removeItem('ss_tgUser');
+    loadProfile();
+  }catch(e){ alert('Не удалось войти'); }
+}
+function loginAreaHtml(){
+  return '<div class="sub" style="margin:0 0 8px">Войдите, чтобы сохранять профиль и историю между устройствами:</div>'
+    +`<input id="em_email" type="email" placeholder="Почта" style="${inStyle}"/>`
+    +`<input id="em_pass" type="password" placeholder="Пароль (от 6 символов)" style="${inStyle}"/>`
+    +`<input id="em_name" type="text" placeholder="Имя (для регистрации)" style="${inStyle}"/>`
+    +'<div style="display:flex;gap:8px">'
+    +'<button class="btn btn-out" style="margin:0;padding:10px" onclick="emailAuth(\'login\')">Войти</button>'
+    +'<button class="btn" style="margin:0;padding:10px" onclick="emailAuth(\'register\')">Регистрация</button>'
+    +'</div><div id="tgLogin" style="margin-top:6px"></div>';
+}
+function injectTgWidget(){
+  const el=$('tgLogin'); if(!el||!BOT) return;
+  const note=document.createElement('div'); note.className='sub'; note.style.margin='6px 0'; note.textContent='или через Telegram:';
   el.appendChild(note);
   const s=document.createElement('script');
   s.async=true; s.src='https://telegram.org/js/telegram-widget.js?22';
@@ -139,16 +164,20 @@ async function loadProfile(){
   applyProfile(profile); renderCabinet();
 }
 function renderCabinet(){
-  const u=tgUser;
-  if(u){
-    $('cabName').textContent=[u.first_name,u.last_name].filter(Boolean).join(' ')||'Профиль';
-    if(u.photo_url) $('avatar').innerHTML=`<img src="${u.photo_url}" style="width:46px;height:46px;border-radius:50%;object-fit:cover"/>`;
-    else { $('avatar').innerHTML=''; $('avatar').textContent=(u.first_name||'?')[0].toUpperCase(); }
-  }else{ $('avatar').innerHTML=''; $('avatar').textContent='👤'; $('cabName').textContent='Гость'; }
-  const la=$('loginArea');
-  if(tgUser){ $('cabStatus').textContent='Вход через Telegram · синхронизация между устройствами';
-    la.innerHTML='<button class="btn btn-out" onclick="logoutTg()" style="margin:0;padding:9px">Выйти из Telegram</button>'; }
-  else { $('cabStatus').textContent='Данные сохраняются в этом браузере'; if(!la.querySelector('iframe,script')) injectTgWidget(la); }
+  const loggedIn=!!(tgUser||authToken);
+  const name = tgUser ? ([tgUser.first_name,tgUser.last_name].filter(Boolean).join(' ')||'Профиль') : (authToken?(authName||'Профиль'):'');
+  if(loggedIn){
+    $('cabName').textContent=name;
+    if(tgUser&&tgUser.photo_url) $('avatar').innerHTML=`<img src="${tgUser.photo_url}" style="width:46px;height:46px;border-radius:50%;object-fit:cover"/>`;
+    else { $('avatar').innerHTML=''; $('avatar').textContent=(name||'?')[0].toUpperCase(); }
+    $('cabStatus').textContent='Вход выполнен · данные синхронизируются между устройствами';
+    $('loginArea').innerHTML='<button class="btn btn-out" onclick="logout()" style="margin:0;padding:9px">Выйти</button>';
+  }else{
+    $('avatar').innerHTML=''; $('avatar').textContent='👤'; $('cabName').textContent='Гость';
+    $('cabStatus').textContent='Данные сохраняются в этом браузере';
+    const la=$('loginArea');
+    if(!la.querySelector('#em_email')){ la.innerHTML=loginAreaHtml(); injectTgWidget(); }
+  }
   const k=$('kcal').value,p=$('protein').value,f=$('fat').value,c=$('carbs').value;
   $('cabTargets').innerHTML=(k?`<div class="tgt"><span>${k} ккал</span><span>Б ${p}</span><span>Ж ${f}</span><span>У ${c}</span></div>`:'');
 }

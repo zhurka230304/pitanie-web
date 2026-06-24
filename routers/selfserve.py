@@ -7,13 +7,15 @@
 import os
 from datetime import date, datetime, timezone
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from jose import jwt
 
 from database import get_db
-from models import SelfServeStore
+from models import SelfServeStore, User
+from auth import hash_password, verify_password, create_token, SECRET_KEY, ALGORITHM
 from services.week_planner import generate_week
 from services.food_groups import coverage_report
 from services.vkusvill import create_cart
@@ -27,6 +29,27 @@ def _tg_id(tg_user: dict):
         return int(tg_user["id"]) if tg_user and tg_user.get("id") else None
     except (ValueError, TypeError, KeyError):
         return None
+
+
+def _uid_from_token(token: str):
+    """user_id из JWT-токена (вход по почте) или None."""
+    if not token:
+        return None
+    try:
+        return int(jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])["sub"])
+    except Exception:
+        return None
+
+
+def _user_key(token: str, tg_user: dict):
+    """Единый ключ пользователя: 'u<id>' (почта) или 'tg<id>' (Telegram)."""
+    uid = _uid_from_token(token)
+    if uid:
+        return f"u{uid}"
+    tid = _tg_id(tg_user)
+    if tid:
+        return f"tg{tid}"
+    return None
 
 
 # ── Расчёт КБЖУ по антропометрике (Харрис-Бенедикт — методика проекта) ──
@@ -113,92 +136,136 @@ async def selfserve_cart(b: CartBody):
     return {"cart_url": url, "count": len(xml_ids)}
 
 
-# ── Вход (Telegram Login Widget) и хранилище: профиль + история планов ──
+# ── Регистрация/вход по почте (переиспользуем auth.py + модель User) ──
+class RegisterBody(BaseModel):
+    name: str = ""
+    email: str
+    password: str
+
+
+class LoginBody(BaseModel):
+    email: str
+    password: str
+
+
+@router.post("/register")
+async def selfserve_register(b: RegisterBody, db: AsyncSession = Depends(get_db)):
+    email = (b.email or "").strip().lower()
+    if not email or "@" not in email:
+        raise HTTPException(400, "Введите корректную почту")
+    if len(b.password) < 6:
+        raise HTTPException(400, "Пароль не короче 6 символов")
+    exists = (await db.execute(select(User).where(User.email == email))).scalar_one_or_none()
+    if exists:
+        raise HTTPException(400, "Эта почта уже зарегистрирована — войдите")
+    user = User(email=email, name=(b.name.strip() or email.split("@")[0]),
+                hashed_password=hash_password(b.password))
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return {"token": create_token(user.id), "name": user.name}
+
+
+@router.post("/login")
+async def selfserve_login(b: LoginBody, db: AsyncSession = Depends(get_db)):
+    email = (b.email or "").strip().lower()
+    user = (await db.execute(select(User).where(User.email == email))).scalar_one_or_none()
+    if not user or not user.hashed_password or not verify_password(b.password, user.hashed_password):
+        raise HTTPException(401, "Неверная почта или пароль")
+    return {"token": create_token(user.id), "name": user.name}
+
+
+# ── Хранилище: профиль + история планов (вход по почте или Telegram) ──
 class AuthBody(BaseModel):
     tg_user: dict = {}
+    token: str = ""
 
 
 class SaveProfileBody(BaseModel):
     tg_user: dict = {}
+    token: str = ""
     data: dict = {}
 
 
 class SavePlanBody(BaseModel):
     tg_user: dict = {}
+    token: str = ""
     plan: dict = {}
 
 
 class GetPlanBody(BaseModel):
     tg_user: dict = {}
+    token: str = ""
     id: int = 0
 
 
 @router.get("/config")
 async def selfserve_config():
-    """Имя бота для кнопки «Войти через Telegram» (пусто — входа нет, только гость)."""
+    """Имя бота для кнопки «Войти через Telegram» (пусто — Telegram-вход не настроен)."""
     return {"bot_username": os.getenv("BOT_USERNAME", "")}
 
 
-async def _get_store(db: AsyncSession, tid: int):
+async def _get_store(db: AsyncSession, key: str):
     return (await db.execute(
-        select(SelfServeStore).where(SelfServeStore.telegram_id == tid)
+        select(SelfServeStore).where(SelfServeStore.user_key == key)
     )).scalar_one_or_none()
+
+
+def _disp_name(b):
+    return b.tg_user.get("first_name") if b.tg_user else None
 
 
 @router.post("/profile/get")
 async def profile_get(b: AuthBody, db: AsyncSession = Depends(get_db)):
-    tid = _tg_id(b.tg_user)
-    if not tid:
+    key = _user_key(b.token, b.tg_user)
+    if not key:
         return {"authorized": False, "profile": None}
-    s = await _get_store(db, tid)
-    return {"authorized": True, "name": b.tg_user.get("first_name"),
+    s = await _get_store(db, key)
+    return {"authorized": True, "name": (s.name if s else _disp_name(b)),
             "profile": (s.profile if s else None)}
 
 
 @router.post("/profile/save")
 async def profile_save(b: SaveProfileBody, db: AsyncSession = Depends(get_db)):
-    tid = _tg_id(b.tg_user)
-    if not tid:
+    key = _user_key(b.token, b.tg_user)
+    if not key:
         return {"ok": False, "authorized": False}
-    s = await _get_store(db, tid)
+    s = await _get_store(db, key)
     if s:
         s.profile = b.data
-        s.name = b.tg_user.get("first_name")
         s.updated_at = datetime.now(timezone.utc)
     else:
-        db.add(SelfServeStore(telegram_id=tid, name=b.tg_user.get("first_name"),
-                              profile=b.data, plans=[]))
+        db.add(SelfServeStore(user_key=key, name=_disp_name(b), profile=b.data, plans=[]))
     await db.commit()
     return {"ok": True}
 
 
 @router.post("/plan/save")
 async def plan_save(b: SavePlanBody, db: AsyncSession = Depends(get_db)):
-    tid = _tg_id(b.tg_user)
-    if not tid:
+    key = _user_key(b.token, b.tg_user)
+    if not key:
         return {"ok": False, "authorized": False}
     now = datetime.now()
     entry = {"id": int(now.timestamp()), "created_at": now.strftime("%Y-%m-%d %H:%M"),
              "target": (b.plan or {}).get("target", {}), "plan": b.plan}
-    s = await _get_store(db, tid)
+    s = await _get_store(db, key)
     if s:
         plans = list(s.plans or [])
         plans.insert(0, entry)
         s.plans = plans[:30]                 # переприсваиваем — иначе JSON не обновится
         s.updated_at = datetime.now(timezone.utc)
     else:
-        db.add(SelfServeStore(telegram_id=tid, name=b.tg_user.get("first_name"),
-                              profile=None, plans=[entry]))
+        db.add(SelfServeStore(user_key=key, name=_disp_name(b), profile=None, plans=[entry]))
     await db.commit()
     return {"ok": True}
 
 
 @router.post("/plan/history")
 async def plan_history(b: AuthBody, db: AsyncSession = Depends(get_db)):
-    tid = _tg_id(b.tg_user)
-    if not tid:
+    key = _user_key(b.token, b.tg_user)
+    if not key:
         return {"authorized": False, "plans": []}
-    s = await _get_store(db, tid)
+    s = await _get_store(db, key)
     out = [{"id": p.get("id"), "created_at": p.get("created_at"), "target": p.get("target", {})}
            for p in (s.plans if s and s.plans else [])]
     return {"authorized": True, "plans": out}
@@ -206,10 +273,10 @@ async def plan_history(b: AuthBody, db: AsyncSession = Depends(get_db)):
 
 @router.post("/plan/get")
 async def plan_get(b: GetPlanBody, db: AsyncSession = Depends(get_db)):
-    tid = _tg_id(b.tg_user)
-    if not tid:
+    key = _user_key(b.token, b.tg_user)
+    if not key:
         return {"plan": None}
-    s = await _get_store(db, tid)
+    s = await _get_store(db, key)
     for p in (s.plans if s and s.plans else []):
         if p.get("id") == b.id:
             return {"plan": p.get("plan")}
