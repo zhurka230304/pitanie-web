@@ -36,5 +36,6 @@ async def init_db():
             "ALTER TABLE client_profiles ADD COLUMN IF NOT EXISTS activity FLOAT",
             "ALTER TABLE client_profiles ADD COLUMN IF NOT EXISTS goal_formula VARCHAR(20)",
             "ALTER TABLE client_invites ADD COLUMN IF NOT EXISTS birth_date DATE",
+            "ALTER TABLE selfserve_accounts ADD COLUMN IF NOT EXISTS tracking JSON",
         ]:
             await conn.execute(text(stmt))

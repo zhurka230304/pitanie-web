@@ -58,6 +58,14 @@
   <button class="btn btn-out" onclick="openHistory()" style="margin:10px 0 0;padding:10px">📋 История планов</button>
 </div>
 
+<div class="card" id="trackCard">
+  <div class="ct">📉 Вес</div>
+  <div class="row"><label>Записать вес сегодня, кг</label>
+    <input id="w_kg" type="number" step="0.1" placeholder="60"/></div>
+  <button class="btn btn-out" onclick="addWeight()" style="margin-top:8px">Записать</button>
+  <div id="wHistory" style="margin-top:10px"></div>
+</div>
+
 <div class="card">
   <div class="ct">Твои данные</div>
   <div class="row"><label>Пол</label>
@@ -101,11 +109,50 @@ let currentDays=null, currentTarget=null, BOT='';
 let tgUser=null; try{ tgUser=JSON.parse(localStorage.getItem('ss_tgUser')||'null'); }catch(e){}
 let authToken=localStorage.getItem('ss_token')||'';
 let authName=localStorage.getItem('ss_name')||'';
+let tracking={weights:[],done:{}};
 
 function serverMode(){ return !!(tgUser||authToken); }
 function authBody(extra){ return Object.assign({tg_user:tgUser||{}, token:authToken||''}, extra||{}); }
 function lsGet(k,def){ try{const v=JSON.parse(localStorage.getItem(k)); return v==null?def:v;}catch(e){return def;} }
 function lsSet(k,v){ try{localStorage.setItem(k,JSON.stringify(v));}catch(e){} }
+
+// ── трекинг: вес + отметки «съел/заказал» по датам ──
+function normTrack(t){ t=t||{}; return {weights:Array.isArray(t.weights)?t.weights:[], done:t.done||{}}; }
+async function loadTracking(){
+  if(serverMode()){ try{ const r=await(await fetch('api/self-serve/track/get',{method:'POST',headers:H,body:JSON.stringify(authBody())})).json(); tracking=normTrack(r.tracking); }catch(e){ tracking=normTrack(null); } }
+  else tracking=normTrack(lsGet('ss_tracking',null));
+  renderWeight();
+}
+async function saveTracking(){
+  if(serverMode()){ try{await fetch('api/self-serve/track/save',{method:'POST',headers:H,body:JSON.stringify(authBody({tracking}))});}catch(e){} }
+  else lsSet('ss_tracking',tracking);
+}
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function addWeight(){
+  const kg=parseFloat($('w_kg').value); if(!kg||kg<=0){ alert('Введите вес'); return; }
+  const d=todayISO();
+  tracking.weights=tracking.weights.filter(w=>w.date!==d);
+  tracking.weights.push({date:d,kg:Math.round(kg*10)/10});
+  tracking.weights.sort((a,b)=>a.date<b.date?-1:1);
+  $('w_kg').value=''; saveTracking(); renderWeight();
+}
+function renderWeight(){
+  const w=tracking.weights||[];
+  if(!w.length){ $('wHistory').innerHTML='<div class="sub" style="margin:0">Записей пока нет. Записывай вес раз в неделю — увидишь динамику.</div>'; return; }
+  const delta=Math.round((w[w.length-1].kg-w[0].kg)*10)/10;
+  const dtxt=w.length>1?` <span class="badge">${delta>0?'+':''}${delta} кг с начала</span>`:'';
+  let h=`<div class="sub" style="margin:0 0 6px">Динамика${dtxt}</div>`;
+  w.slice(-6).reverse().forEach(x=>{ h+=`<div class="row"><span>${x.date}</span><span style="font-weight:600">${x.kg} кг</span></div>`; });
+  $('wHistory').innerHTML=h;
+}
+function doneLabel(on){ return on?'✅ день выполнен':'☐ отметить день (съел/заказал)'; }
+function toggleDone(date,el){
+  tracking.done[date]=!tracking.done[date];
+  if(!tracking.done[date]) delete tracking.done[date];
+  const on=!!tracking.done[date];
+  el.textContent=doneLabel(on); el.style.color=on?'var(--green-dark)':'var(--muted)';
+  saveTracking();
+}
 
 // ── вход: почта или Telegram (опционально; гость работает без входа) ──
 const inStyle='width:100%;text-align:left;margin-bottom:6px';
@@ -162,6 +209,7 @@ async function loadProfile(){
   if(serverMode()){ try{ const r=await(await fetch('api/self-serve/profile/get',{method:'POST',headers:H,body:JSON.stringify(authBody())})).json(); profile=r.profile; }catch(e){} }
   else profile=lsGet('ss_profile',null);
   applyProfile(profile); renderCabinet();
+  await loadTracking();
 }
 function renderCabinet(){
   const loggedIn=!!(tgUser||authToken);
@@ -226,8 +274,10 @@ function render(days){
   let h='<button class="btn" id="saveBtn" onclick="savePlan()" style="margin-top:0">💾 Сохранить план в историю</button>';
   days.forEach((day,i)=>{
     const t=dayTotals(day);
+    const on=!!tracking.done[day.plan_date];
     h+=`<div class="day"><div class="day-head"><span class="day-title">День ${i+1} (${WD[i%7]})</span>
       <span class="kbju">${t.kcal} ккал · Б${t.protein} Ж${t.fat} У${t.carbs}</span></div>`;
+    h+=`<div onclick="toggleDone('${day.plan_date}',this)" style="cursor:pointer;font-size:.8rem;margin:0 0 4px;color:${on?'var(--green-dark)':'var(--muted)'}">${doneLabel(on)}</div>`;
     (day.meals||[]).forEach(m=>{
       h+=`<div class="meal"><div class="meal-label">${m.meal_label} <span class="badge">${Math.round((m.kbju||{}).kcal||0)} ккал</span></div>`;
       (m.dishes||[]).forEach(d=>h+=dishRow(d));

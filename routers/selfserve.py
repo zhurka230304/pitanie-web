@@ -281,3 +281,34 @@ async def plan_get(b: GetPlanBody, db: AsyncSession = Depends(get_db)):
         if p.get("id") == b.id:
             return {"plan": p.get("plan")}
     return {"plan": None}
+
+
+# ── Трекинг: вес ({date,kg}) и отметки «съел/заказал» по датам ──
+class TrackBody(BaseModel):
+    tg_user: dict = {}
+    token: str = ""
+    tracking: dict = {}
+
+
+@router.post("/track/get")
+async def track_get(b: AuthBody, db: AsyncSession = Depends(get_db)):
+    key = _user_key(b.token, b.tg_user)
+    if not key:
+        return {"authorized": False, "tracking": {}}
+    s = await _get_store(db, key)
+    return {"authorized": True, "tracking": (s.tracking if s and s.tracking else {})}
+
+
+@router.post("/track/save")
+async def track_save(b: TrackBody, db: AsyncSession = Depends(get_db)):
+    key = _user_key(b.token, b.tg_user)
+    if not key:
+        return {"ok": False, "authorized": False}
+    s = await _get_store(db, key)
+    if s:
+        s.tracking = b.tracking
+        s.updated_at = datetime.now(timezone.utc)
+    else:
+        db.add(SelfServeStore(user_key=key, name=_disp_name(b), tracking=b.tracking, plans=[]))
+    await db.commit()
+    return {"ok": True}

@@ -298,6 +298,8 @@ class SelfServeStore(Base):
     name: Mapped[str | None] = mapped_column(String(120), nullable=True)
     profile: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     plans: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    # трекинг: {"weights": [{date, kg}], "done": {"<plan_date>": true}}
+    tracking: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
