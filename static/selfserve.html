@@ -31,19 +31,32 @@
   .dish .di{flex:1;min-width:0}
   .dish .dn{font-size:.85rem;font-weight:600;line-height:1.3}
   .dish .dm{font-size:.75rem;color:var(--muted)}
+  .avatar{width:46px;height:46px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:700;color:var(--green-dark);flex-shrink:0;object-fit:cover}
   .badge{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--green-light);color:var(--green-dark)}
   .pill{display:inline-block;font-size:.7rem;background:var(--border);color:var(--muted);border-radius:99px;padding:2px 8px;margin-left:6px}
-  .shop li{font-size:.85rem;padding:3px 0}.shop{margin-left:18px}
   .spin{text-align:center;padding:30px;color:var(--muted)}
   .cart-link{font-size:.78rem;color:var(--green-dark);word-break:break-all;background:var(--green-light);padding:10px;border-radius:8px;margin:8px 0;line-height:1.5}
   .tgt{display:flex;gap:6px;flex-wrap:wrap}
   .tgt span{background:var(--white);border-radius:99px;padding:3px 10px;font-size:.78rem;font-weight:600;color:var(--green-dark)}
-  .hide{display:none}
+  #cabinet{background:var(--green-light)}
 </style>
 </head>
 <body>
 <h1>🥗 Журка</h1>
 <div class="sub">Каждую неделю — готовый рацион под твою цель и корзина ВкусВилл. Без тренера.</div>
+
+<div class="card" id="cabinet">
+  <div style="display:flex;gap:12px;align-items:center">
+    <div id="avatar" class="avatar">👤</div>
+    <div style="flex:1;min-width:0">
+      <div id="cabName" style="font-weight:700;font-size:1rem;color:var(--green-dark)">Гость</div>
+      <div id="cabStatus" class="sub" style="margin:0">Данные сохраняются в этом браузере</div>
+    </div>
+  </div>
+  <div id="cabTargets" style="margin-top:10px"></div>
+  <div id="loginArea" style="margin-top:10px"></div>
+  <button class="btn btn-out" onclick="openHistory()" style="margin:10px 0 0;padding:10px">📋 История планов</button>
+</div>
 
 <div class="card">
   <div class="ct">Твои данные</div>
@@ -84,15 +97,61 @@
 'use strict';
 const $=id=>document.getElementById(id);
 const H={'Content-Type':'application/json'};
-let currentDays=null;
+let currentDays=null, currentTarget=null, BOT='';
+let tgUser=null; try{ tgUser=JSON.parse(localStorage.getItem('ss_tgUser')||'null'); }catch(e){}
 
-const PROFILE_FIELDS=['sex','weight','height','age','activity','goal','kcal','protein','fat','carbs','meal_count','restrictions'];
+function serverMode(){ return !!tgUser; }
+function authBody(extra){ return Object.assign({tg_user:tgUser||{}}, extra||{}); }
 function lsGet(k,def){ try{const v=JSON.parse(localStorage.getItem(k)); return v==null?def:v;}catch(e){return def;} }
 function lsSet(k,v){ try{localStorage.setItem(k,JSON.stringify(v));}catch(e){} }
+
+// ── вход через Telegram (опционально; гость работает без входа) ──
+window.onTelegramAuth=function(user){ tgUser=user; lsSet('ss_tgUser',user); loadProfile(); alert('Вы вошли через Telegram'); };
+function logoutTg(){ tgUser=null; localStorage.removeItem('ss_tgUser'); renderCabinet(); }
+function injectTgWidget(el){
+  el.innerHTML='';
+  if(!BOT){ el.innerHTML='<div class="sub" style="margin:0">Можно пользоваться без входа. Вход через Telegram не настроен.</div>'; return; }
+  const note=document.createElement('div'); note.className='sub'; note.style.margin='0 0 6px';
+  note.textContent='Войдите, чтобы сохранять профиль и историю между устройствами:';
+  el.appendChild(note);
+  const s=document.createElement('script');
+  s.async=true; s.src='https://telegram.org/js/telegram-widget.js?22';
+  s.setAttribute('data-telegram-login',BOT); s.setAttribute('data-size','medium');
+  s.setAttribute('data-userpic','false'); s.setAttribute('data-request-access','write');
+  s.setAttribute('data-onauth','onTelegramAuth(user)');
+  el.appendChild(s);
+}
+
+// ── профиль ──
+const PROFILE_FIELDS=['sex','weight','height','age','activity','goal','kcal','protein','fat','carbs','meal_count','restrictions'];
 function collectProfile(){const p={};PROFILE_FIELDS.forEach(k=>{if($(k))p[k]=$(k).value;});return p;}
 function applyProfile(p){ if(!p)return; PROFILE_FIELDS.forEach(k=>{ if(p[k]!=null&&$(k))$(k).value=p[k]; }); }
-function saveProfile(){ lsSet('ss_profile', collectProfile()); }
-applyProfile(lsGet('ss_profile',null));
+async function saveProfile(){
+  const data=collectProfile();
+  if(serverMode()){ try{await fetch('api/self-serve/profile/save',{method:'POST',headers:H,body:JSON.stringify(authBody({data}))});}catch(e){} }
+  else lsSet('ss_profile',data);
+  renderCabinet();
+}
+async function loadProfile(){
+  let profile=null;
+  if(serverMode()){ try{ const r=await(await fetch('api/self-serve/profile/get',{method:'POST',headers:H,body:JSON.stringify(authBody())})).json(); profile=r.profile; }catch(e){} }
+  else profile=lsGet('ss_profile',null);
+  applyProfile(profile); renderCabinet();
+}
+function renderCabinet(){
+  const u=tgUser;
+  if(u){
+    $('cabName').textContent=[u.first_name,u.last_name].filter(Boolean).join(' ')||'Профиль';
+    if(u.photo_url) $('avatar').innerHTML=`<img src="${u.photo_url}" style="width:46px;height:46px;border-radius:50%;object-fit:cover"/>`;
+    else { $('avatar').innerHTML=''; $('avatar').textContent=(u.first_name||'?')[0].toUpperCase(); }
+  }else{ $('avatar').innerHTML=''; $('avatar').textContent='👤'; $('cabName').textContent='Гость'; }
+  const la=$('loginArea');
+  if(tgUser){ $('cabStatus').textContent='Вход через Telegram · синхронизация между устройствами';
+    la.innerHTML='<button class="btn btn-out" onclick="logoutTg()" style="margin:0;padding:9px">Выйти из Telegram</button>'; }
+  else { $('cabStatus').textContent='Данные сохраняются в этом браузере'; if(!la.querySelector('iframe,script')) injectTgWidget(la); }
+  const k=$('kcal').value,p=$('protein').value,f=$('fat').value,c=$('carbs').value;
+  $('cabTargets').innerHTML=(k?`<div class="tgt"><span>${k} ккал</span><span>Б ${p}</span><span>Ж ${f}</span><span>У ${c}</span></div>`:'');
+}
 
 async function calcKbju(){
   try{
@@ -102,7 +161,6 @@ async function calcKbju(){
     saveProfile();
   }catch(e){ alert('Не удалось рассчитать КБЖУ'); }
 }
-
 function showOut(html){ $('out').innerHTML=html; $('out').scrollIntoView({behavior:'smooth',block:'start'}); }
 
 async function build(){
@@ -110,8 +168,8 @@ async function build(){
   const btn=$('go'); btn.disabled=true; btn.textContent='Собираю меню…';
   showOut('<div class="spin">Подбираю блюда под твою цель… это занимает до минуты.</div>');
   try{
-    const b={kcal:+$('kcal').value,protein:+$('protein').value,fat:+$('fat').value,carbs:+$('carbs').value,
-      meal_count:+$('meal_count').value,restrictions:$('restrictions').value||null,days_count:7};
+    currentTarget={kcal:+$('kcal').value,protein:+$('protein').value,fat:+$('fat').value,carbs:+$('carbs').value};
+    const b=Object.assign({}, currentTarget, {meal_count:+$('meal_count').value,restrictions:$('restrictions').value||null,days_count:7});
     const r=await(await fetch('api/self-serve/week',{method:'POST',headers:H,body:JSON.stringify(b)})).json();
     currentDays=r.days||[];
     render(currentDays);
@@ -129,15 +187,14 @@ function dayTotals(day){
 function dishRow(d){
   const img=d.image_url?`<img src="${d.image_url}"/>`:`<div style="width:54px;height:54px;border-radius:10px;background:var(--green-light);flex-shrink:0"></div>`;
   const half=d.portion&&d.portion<1?` <span class="pill">½ упаковки</span>`:'';
-  const g=d.needed_g?`${d.needed_g} г`:'';
-  const kc=Math.round(dishNutr(d));
+  const g=d.needed_g?`${d.needed_g} г`:''; const kc=Math.round(dishNutr(d));
   const link=d.url?`onclick="window.open('${d.url}','_blank')" style="cursor:pointer"`:'';
   return `<div class="dish" ${link}>${img}<div class="di"><div class="dn">${d.name}${half}</div>
     <div class="dm">${g}${g&&kc?' · ':''}${kc?kc+' ккал':''}${d.price?' · '+d.price+' ₽':''}</div></div></div>`;
 }
 function render(days){
   if(!days||!days.length){ showOut('<div class="card sub">Ничего не подобралось. Попробуй изменить цель или ограничения.</div>'); return; }
-  let h='';
+  let h='<button class="btn" id="saveBtn" onclick="savePlan()" style="margin-top:0">💾 Сохранить план в историю</button>';
   days.forEach((day,i)=>{
     const t=dayTotals(day);
     h+=`<div class="day"><div class="day-head"><span class="day-title">День ${i+1} (${WD[i%7]})</span>
@@ -154,16 +211,58 @@ function render(days){
   showOut(h);
 }
 
+// ── сохранение / история ──
+async function savePlan(){
+  if(!currentDays) return;
+  const btn=$('saveBtn'); if(btn){btn.disabled=true;btn.textContent='Сохраняю…';}
+  const plan={target:currentTarget, days:currentDays};
+  try{
+    if(serverMode()){
+      const r=await(await fetch('api/self-serve/plan/save',{method:'POST',headers:H,body:JSON.stringify(authBody({plan}))})).json();
+      if(btn) btn.textContent=r.ok?'✓ Сохранено в историю':'Ошибка';
+    }else{
+      const plans=lsGet('ss_plans',[]);
+      const now=new Date().toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      plans.unshift({id:Date.now(),created_at:now,target:currentTarget,plan});
+      lsSet('ss_plans',plans.slice(0,30));
+      if(btn) btn.textContent='✓ Сохранено в этом браузере';
+    }
+  }catch(e){ if(btn)btn.textContent='Ошибка'; }
+  finally{ if(btn) btn.disabled=false; }
+}
+async function openHistory(){
+  showOut('<div class="spin">Загружаю историю…</div>');
+  try{
+    let plans;
+    if(serverMode()){ const r=await(await fetch('api/self-serve/plan/history',{method:'POST',headers:H,body:JSON.stringify(authBody())})).json(); plans=r.plans||[]; }
+    else plans=lsGet('ss_plans',[]).map(p=>({id:p.id,created_at:p.created_at,target:p.target}));
+    if(!plans.length){ showOut('<div class="card sub">Сохранённых планов пока нет. Собери неделю и нажми «💾 Сохранить план в историю».</div>'); return; }
+    let h='<div class="card"><div class="ct">📋 История планов</div>';
+    plans.forEach(p=>{const t=p.target||{};
+      h+=`<div class="row" style="cursor:pointer" onclick="viewHistory('${p.id}')"><span>📅 ${p.created_at}</span><span class="sub" style="margin:0">${t.kcal||''} ккал · Б${t.protein||''}</span></div>`;});
+    h+='</div>'; showOut(h);
+  }catch(e){ showOut('<div class="card sub" style="color:#c62828">Ошибка загрузки истории</div>'); }
+}
+async function viewHistory(id){
+  showOut('<div class="spin">Загружаю план…</div>');
+  try{
+    let plan=null;
+    if(serverMode()){ const r=await(await fetch('api/self-serve/plan/get',{method:'POST',headers:H,body:JSON.stringify(authBody({id:+id}))})).json(); plan=r.plan; }
+    else { const f=lsGet('ss_plans',[]).find(p=>String(p.id)===String(id)); plan=f?f.plan:null; }
+    if(plan&&plan.days){ currentDays=plan.days; currentTarget=plan.target||null; render(currentDays); }
+    else showOut('<div class="card sub">План не найден</div>');
+  }catch(e){ showOut('<div class="card sub">Ошибка</div>'); }
+}
+
 async function makeCart(){
   const btn=$('cartBtn'); btn.disabled=true; btn.textContent='Собираю корзину…';
   try{
     const r=await(await fetch('api/self-serve/cart',{method:'POST',headers:H,body:JSON.stringify({days:currentDays})})).json();
     let h='';
-    if(r.cart_url){
-      h=`<div class="cart-link" id="clink">${r.cart_url}</div>
-         <button class="btn btn-out" onclick="copyCart()">Скопировать ссылку</button>
-         <div class="sub">Открой в браузере. Товаров в корзине: ${r.count}.</div>`;
-    }else{ h='<div class="sub" style="color:#c62828">Не удалось собрать корзину. Попробуй ещё раз.</div>'; }
+    if(r.cart_url){ h=`<div class="cart-link" id="clink">${r.cart_url}</div>
+      <button class="btn btn-out" onclick="copyCart()">Скопировать ссылку</button>
+      <div class="sub">Открой в браузере. Товаров в корзине: ${r.count}.</div>`; }
+    else h='<div class="sub" style="color:#c62828">Не удалось собрать корзину. Попробуй ещё раз.</div>';
     $('cartOut').innerHTML=h;
   }catch(e){ $('cartOut').innerHTML='<div class="sub" style="color:#c62828">Ошибка</div>'; }
   finally{ btn.disabled=false; btn.textContent='Собрать корзину ВкусВилл'; }
@@ -173,6 +272,12 @@ function copyCart(){
   ta.style.cssText='position:fixed;opacity:0'; document.body.appendChild(ta); ta.select();
   document.execCommand('copy'); document.body.removeChild(ta); alert('Ссылка скопирована');
 }
+
+async function initApp(){
+  try{ const c=await(await fetch('api/self-serve/config')).json(); BOT=c.bot_username||''; }catch(e){}
+  await loadProfile();
+}
+initApp();
 </script>
 </body>
 </html>

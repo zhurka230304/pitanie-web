@@ -4,16 +4,29 @@
 без привязки к тренеру/клиенту и без квот. Состояние (профиль, история) на этом
 этапе хранится на стороне клиента (браузер); серверные аккаунты добавим позже.
 """
-from datetime import date
+import os
+from datetime import date, datetime, timezone
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from database import get_db
+from models import SelfServeStore
 from services.week_planner import generate_week
 from services.food_groups import coverage_report
 from services.vkusvill import create_cart
 
 router = APIRouter(prefix="/api/self-serve", tags=["self-serve"])
+
+
+def _tg_id(tg_user: dict):
+    """telegram_id из объекта Telegram Login Widget (мягкая проверка)."""
+    try:
+        return int(tg_user["id"]) if tg_user and tg_user.get("id") else None
+    except (ValueError, TypeError, KeyError):
+        return None
 
 
 # ── Расчёт КБЖУ по антропометрике (Харрис-Бенедикт — методика проекта) ──
@@ -98,3 +111,106 @@ async def selfserve_cart(b: CartBody):
                         xml_ids.append(xid)
     url = await create_cart(xml_ids) if xml_ids else ""
     return {"cart_url": url, "count": len(xml_ids)}
+
+
+# ── Вход (Telegram Login Widget) и хранилище: профиль + история планов ──
+class AuthBody(BaseModel):
+    tg_user: dict = {}
+
+
+class SaveProfileBody(BaseModel):
+    tg_user: dict = {}
+    data: dict = {}
+
+
+class SavePlanBody(BaseModel):
+    tg_user: dict = {}
+    plan: dict = {}
+
+
+class GetPlanBody(BaseModel):
+    tg_user: dict = {}
+    id: int = 0
+
+
+@router.get("/config")
+async def selfserve_config():
+    """Имя бота для кнопки «Войти через Telegram» (пусто — входа нет, только гость)."""
+    return {"bot_username": os.getenv("BOT_USERNAME", "")}
+
+
+async def _get_store(db: AsyncSession, tid: int):
+    return (await db.execute(
+        select(SelfServeStore).where(SelfServeStore.telegram_id == tid)
+    )).scalar_one_or_none()
+
+
+@router.post("/profile/get")
+async def profile_get(b: AuthBody, db: AsyncSession = Depends(get_db)):
+    tid = _tg_id(b.tg_user)
+    if not tid:
+        return {"authorized": False, "profile": None}
+    s = await _get_store(db, tid)
+    return {"authorized": True, "name": b.tg_user.get("first_name"),
+            "profile": (s.profile if s else None)}
+
+
+@router.post("/profile/save")
+async def profile_save(b: SaveProfileBody, db: AsyncSession = Depends(get_db)):
+    tid = _tg_id(b.tg_user)
+    if not tid:
+        return {"ok": False, "authorized": False}
+    s = await _get_store(db, tid)
+    if s:
+        s.profile = b.data
+        s.name = b.tg_user.get("first_name")
+        s.updated_at = datetime.now(timezone.utc)
+    else:
+        db.add(SelfServeStore(telegram_id=tid, name=b.tg_user.get("first_name"),
+                              profile=b.data, plans=[]))
+    await db.commit()
+    return {"ok": True}
+
+
+@router.post("/plan/save")
+async def plan_save(b: SavePlanBody, db: AsyncSession = Depends(get_db)):
+    tid = _tg_id(b.tg_user)
+    if not tid:
+        return {"ok": False, "authorized": False}
+    now = datetime.now()
+    entry = {"id": int(now.timestamp()), "created_at": now.strftime("%Y-%m-%d %H:%M"),
+             "target": (b.plan or {}).get("target", {}), "plan": b.plan}
+    s = await _get_store(db, tid)
+    if s:
+        plans = list(s.plans or [])
+        plans.insert(0, entry)
+        s.plans = plans[:30]                 # переприсваиваем — иначе JSON не обновится
+        s.updated_at = datetime.now(timezone.utc)
+    else:
+        db.add(SelfServeStore(telegram_id=tid, name=b.tg_user.get("first_name"),
+                              profile=None, plans=[entry]))
+    await db.commit()
+    return {"ok": True}
+
+
+@router.post("/plan/history")
+async def plan_history(b: AuthBody, db: AsyncSession = Depends(get_db)):
+    tid = _tg_id(b.tg_user)
+    if not tid:
+        return {"authorized": False, "plans": []}
+    s = await _get_store(db, tid)
+    out = [{"id": p.get("id"), "created_at": p.get("created_at"), "target": p.get("target", {})}
+           for p in (s.plans if s and s.plans else [])]
+    return {"authorized": True, "plans": out}
+
+
+@router.post("/plan/get")
+async def plan_get(b: GetPlanBody, db: AsyncSession = Depends(get_db)):
+    tid = _tg_id(b.tg_user)
+    if not tid:
+        return {"plan": None}
+    s = await _get_store(db, tid)
+    for p in (s.plans if s and s.plans else []):
+        if p.get("id") == b.id:
+            return {"plan": p.get("plan")}
+    return {"plan": None}

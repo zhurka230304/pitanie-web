@@ -285,3 +285,19 @@ class WeightLog(Base):
     weight_kg: Mapped[float] = mapped_column(Float, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+
+class SelfServeStore(Base):
+    """B2C self-serve (App 1): профиль и история планов пользователя без тренера.
+    Ключ — telegram_id (вход через Telegram Login Widget). Гости хранят данные
+    в браузере и эту таблицу не используют. Профиль/планы — JSON, одна строка
+    на пользователя (история — последние ~30 планов в списке)."""
+    __tablename__ = "selfserve_store"
+
+    telegram_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    name: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    profile: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    plans: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
