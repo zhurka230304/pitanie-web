@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<title>Журка — рацион под твою цель</title>
+<style>
+  :root{--green:#4A7C2F;--green-dark:#2D5016;--green-light:#EEF4E6;--bg:#F5F0E8;--white:#FDFAF4;--text:#1C1C1A;--muted:#6b7260;--border:#DDD8CC;--r:16px}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);max-width:680px;margin:0 auto;padding:16px;padding-bottom:60px}
+  h1{font-size:1.4rem;color:var(--green-dark);margin-bottom:2px}
+  .sub{color:var(--muted);font-size:.85rem;margin-bottom:14px}
+  .card{background:var(--white);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
+  .ct{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:10px}
+  .row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)}
+  .row:last-child{border-bottom:none}
+  .row label{font-size:.9rem;color:var(--muted)}
+  input,select{width:130px;border:1.5px solid var(--border);border-radius:10px;padding:7px 10px;font-size:.95rem;font-weight:600;text-align:right;font-family:inherit;background:var(--bg);color:var(--text);outline:none}
+  input:focus,select:focus{border-color:var(--green)}
+  .btn{display:block;width:100%;padding:14px;border:none;border-radius:99px;font-size:1rem;font-weight:600;cursor:pointer;font-family:inherit;background:var(--green-dark);color:#fff;margin:8px 0}
+  .btn-out{background:none;color:var(--green-dark);border:2px solid var(--green-dark)}
+  .btn:active{opacity:.85}.btn:disabled{opacity:.5}
+  .day{background:var(--white);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
+  .day-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .day-title{font-weight:700;color:var(--green-dark)}.kbju{font-size:.78rem;color:var(--muted)}
+  .meal{padding:8px 0;border-top:1px solid var(--border)}
+  .meal-label{font-weight:600;font-size:.88rem;margin-bottom:6px}
+  .dish{display:flex;gap:10px;align-items:center;padding:5px 0}
+  .dish img{width:54px;height:54px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--green-light);border:1px solid var(--border)}
+  .dish .di{flex:1;min-width:0}
+  .dish .dn{font-size:.85rem;font-weight:600;line-height:1.3}
+  .dish .dm{font-size:.75rem;color:var(--muted)}
+  .avatar{width:46px;height:46px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:700;color:var(--green-dark);flex-shrink:0;object-fit:cover}
+  .badge{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--green-light);color:var(--green-dark)}
+  .pill{display:inline-block;font-size:.7rem;background:var(--border);color:var(--muted);border-radius:99px;padding:2px 8px;margin-left:6px}
+  .spin{text-align:center;padding:30px;color:var(--muted)}
+  .cart-link{font-size:.78rem;color:var(--green-dark);word-break:break-all;background:var(--green-light);padding:10px;border-radius:8px;margin:8px 0;line-height:1.5}
+  .tgt{display:flex;gap:6px;flex-wrap:wrap}
+  .tgt span{background:var(--white);border-radius:99px;padding:3px 10px;font-size:.78rem;font-weight:600;color:var(--green-dark)}
+  #cabinet{background:var(--green-light)}
+  .tabs{display:flex;gap:8px;margin-bottom:12px}
+  .tab{flex:1;padding:11px;border:1.5px solid var(--border);border-radius:99px;background:var(--white);color:var(--muted);font-weight:600;font-size:.92rem;cursor:pointer;font-family:inherit}
+  .tab.active{background:var(--green-dark);color:#fff;border-color:var(--green-dark)}
+  .hide{display:none}
+  .thumb{width:88px;height:88px;border-radius:12px;object-fit:cover;flex-shrink:0;cursor:pointer;background:var(--green-light);border:1px solid var(--border)}
+  .thumb-e{width:88px;height:88px;border-radius:12px;flex-shrink:0;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1.8rem;cursor:pointer}
+  .bk{display:flex;gap:12px;align-items:flex-start;margin-top:6px}
+  .items{font-size:.82rem;color:var(--muted);line-height:1.5}
+  .session{background:var(--green-light);border-radius:12px;padding:10px 14px;margin-bottom:8px;font-size:.85rem}
+  .shop li{font-size:.85rem;padding:3px 0}.shop{margin-left:18px}
+  .rm{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;z-index:1000;padding:20px 12px;overflow-y:auto}
+  .rm.show{display:flex}
+  .rm-card{background:var(--white);border-radius:var(--r);padding:18px;max-width:560px;width:100%;position:relative;margin:auto}
+  .rm-close{position:absolute;top:8px;right:14px;font-size:1.8rem;color:var(--muted);cursor:pointer;line-height:1}
+</style>
+</head>
+<body>
+<h1>🥗 Журка</h1>
+<div class="sub">Каждую неделю — готовый рацион под твою цель и корзина ВкусВилл. Без тренера.</div>
+
+<div class="card" id="cabinet">
+  <div style="display:flex;gap:12px;align-items:center">
+    <div id="avatar" class="avatar">👤</div>
+    <div style="flex:1;min-width:0">
+      <div id="cabName" style="font-weight:700;font-size:1rem;color:var(--green-dark)">Гость</div>
+      <div id="cabStatus" class="sub" style="margin:0">Данные сохраняются в этом браузере</div>
+    </div>
+  </div>
+  <div id="cabTargets" style="margin-top:10px"></div>
+  <div id="loginArea" style="margin-top:10px"></div>
+  <button class="btn btn-out" onclick="openHistory()" style="margin:10px 0 0;padding:10px">📋 История планов</button>
+</div>
+
+<div class="card">
+  <div class="ct">Твои данные</div>
+  <div class="row"><label>Пол</label>
+    <select id="sex"><option value="female">Женский</option><option value="male">Мужской</option></select></div>
+  <div class="row"><label>Вес, кг</label><input id="weight" type="number" value="60"/></div>
+  <div class="row"><label>Рост, см</label><input id="height" type="number" value="165"/></div>
+  <div class="row"><label>Возраст</label><input id="age" type="number" value="30"/></div>
+  <div class="row"><label>Активность</label>
+    <select id="activity">
+      <option value="sedentary">Сидячий</option>
+      <option value="light">Низкая (1–3 трен/нед)</option>
+      <option value="moderate" selected>Умеренная (3–5 трен/нед)</option>
+      <option value="high">Высокая (6–7 трен/нед)</option>
+      <option value="very_high">Очень высокая</option>
+    </select></div>
+  <div class="row"><label>Цель</label>
+    <select id="goal"><option value="loss">Похудение</option><option value="maintain">Поддержание</option><option value="gain">Набор</option></select></div>
+  <button class="btn btn-out" onclick="calcKbju()" style="margin-top:8px">Рассчитать КБЖУ</button>
+</div>
+
+<div class="card">
+  <div class="ct">📄 Загрузить InBody (точнее)</div>
+  <div class="sub" style="margin:0 0 8px">Фото отчёта — числа подставятся сами. Проверь и поправь, если надо.</div>
+  <input id="ib_file" type="file" accept="image/*" onchange="ibUpload()" style="width:100%;font-size:.9rem;border:1px solid var(--border);border-radius:10px;padding:8px;background:var(--bg);text-align:left"/>
+  <div id="ib_status" class="sub" style="margin:6px 0"></div>
+  <div class="row"><label>Вес, кг</label><input id="ib_weight" type="number" step="0.1"/></div>
+  <div class="row"><label>% жира (PBF)</label><input id="ib_fat" type="number" step="0.1"/></div>
+  <div class="row"><label>Мышцы (SMM), кг</label><input id="ib_smm" type="number" step="0.1"/></div>
+  <div class="row"><label>Обмен (BMR), ккал</label><input id="ib_bmr" type="number"/></div>
+  <button class="btn btn-out" onclick="ibCalc()" style="margin-top:8px">Рассчитать КБЖУ по InBody</button>
+</div>
+
+<div class="card">
+  <div class="ct">Цель на день (можно править)</div>
+  <div class="row"><label>Калории</label><input id="kcal" type="number" value="1950"/></div>
+  <div class="row"><label>Белки, г</label><input id="protein" type="number" value="150"/></div>
+  <div class="row"><label>Жиры, г</label><input id="fat" type="number" value="65"/></div>
+  <div class="row"><label>Углеводы, г</label><input id="carbs" type="number" value="180"/></div>
+  <div id="dishOpts">
+  <div class="row"><label>Приёмов в день</label>
+    <select id="meal_count"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+  <div class="row"><label>Ограничения</label>
+    <select id="restrictions"><option value="">нет</option><option value="вегетарианское">вегетарианское</option><option value="без мяса">без мяса</option></select></div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button id="tabDishes" class="tab active" onclick="setMode('dishes')">🛒 Готовые блюда</button>
+  <button id="tabRecipes" class="tab" onclick="setMode('recipes')">👩‍🍳 Рецепты</button>
+</div>
+
+<div class="card hide" id="recipeCfg">
+  <div class="ct">🍳 Как часто готовить?</div>
+  <div class="row"><label>🍳 Завтрак</label>
+    <select id="r_bfreq"><option value="7" selected>каждый день</option><option value="4">через день</option><option value="2">2 раза в неделю</option></select></div>
+  <div class="row"><label>🥗 Обед</label>
+    <select id="r_lfreq"><option value="7">каждый день</option><option value="3">3 раза в неделю</option><option value="2" selected>2 раза в неделю</option></select></div>
+  <div class="row"><label>🍽 Ужин</label>
+    <select id="r_dfreq"><option value="7">каждый день</option><option value="3">3 раза в неделю</option><option value="2" selected>2 раза в неделю</option></select></div>
+  <div class="row"><label>🍎 Перекусы</label>
+    <select id="r_snacks"><option value="0" selected>не нужны</option><option value="1">1 в день</option><option value="2">2 в день</option></select></div>
+  <div class="row"><label>🍎 Перекус — готовить</label>
+    <select id="r_sspeed"><option value="1" selected>быстро (без готовки)</option><option value="0">можно подольше</option></select></div>
+  <div class="row"><label>🌙 Готовить с вечера</label>
+    <select id="r_overnight"><option value="1" selected>да</option><option value="0">нет</option></select></div>
+  <div class="row"><label>Завтрак ≤ мин</label>
+    <select id="r_bt"><option>10</option><option>15</option><option selected>20</option><option>30</option></select></div>
+</div>
+
+<button class="btn" id="go" onclick="build()">Собрать неделю</button>
+<div id="out"></div>
+
+<div class="rm" id="rm" onclick="if(event.target===this)closeRm()">
+  <div class="rm-card"><span class="rm-close" onclick="closeRm()">×</span><div id="rmBody"></div></div>
+</div>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const H={'Content-Type':'application/json'};
+let currentDays=null, currentTarget=null, BOT='';
+let mode='dishes', currentPlan=null, lastShopping=null, allMeals=[];
+let tgUser=null; try{ tgUser=JSON.parse(localStorage.getItem('ss_tgUser')||'null'); }catch(e){}
+let authToken=localStorage.getItem('ss_token')||'';
+let authName=localStorage.getItem('ss_name')||'';
+let tracking={done:{}};
+
+function serverMode(){ return !!(tgUser||authToken); }
+function authBody(extra){ return Object.assign({tg_user:tgUser||{}, token:authToken||''}, extra||{}); }
+function lsGet(k,def){ try{const v=JSON.parse(localStorage.getItem(k)); return v==null?def:v;}catch(e){return def;} }
+function lsSet(k,v){ try{localStorage.setItem(k,JSON.stringify(v));}catch(e){} }
+
+// ── трекинг: отметка «съел» по каждому блюду ──
+function normTrack(t){ t=t||{}; return {done:t.done||{}}; }
+async function loadTracking(){
+  if(serverMode()){ try{ const r=await(await fetch('api/self-serve/track/get',{method:'POST',headers:H,body:JSON.stringify(authBody())})).json(); tracking=normTrack(r.tracking); }catch(e){ tracking=normTrack(null); } }
+  else tracking=normTrack(lsGet('ss_tracking',null));
+}
+async function saveTracking(){
+  if(serverMode()){ try{await fetch('api/self-serve/track/save',{method:'POST',headers:H,body:JSON.stringify(authBody({tracking}))});}catch(e){} }
+  else lsSet('ss_tracking',tracking);
+}
+function toggleDish(key,el){
+  tracking.done[key]=!tracking.done[key];
+  if(!tracking.done[key]) delete tracking.done[key];
+  const on=!!tracking.done[key];
+  el.textContent=on?'✅':'⚪'; el.style.color=on?'var(--green)':'#cfcabb';
+  saveTracking();
+}
+
+// ── вход: почта или Telegram (опционально; гость работает без входа) ──
+const inStyle='width:100%;text-align:left;margin-bottom:6px';
+window.onTelegramAuth=function(user){ tgUser=user; lsSet('ss_tgUser',user); loadProfile(); alert('Вы вошли через Telegram'); };
+function logout(){ tgUser=null; authToken=''; authName='';
+  localStorage.removeItem('ss_tgUser'); localStorage.removeItem('ss_token'); localStorage.removeItem('ss_name'); loadProfile(); }
+async function emailAuth(kind){
+  const email=$('em_email').value.trim(), pass=$('em_pass').value, name=$('em_name')?$('em_name').value:'';
+  if(!email||!pass){ alert('Введите почту и пароль'); return; }
+  try{
+    const r=await fetch('api/self-serve/'+kind,{method:'POST',headers:H,body:JSON.stringify({email,password:pass,name})});
+    const d=await r.json();
+    if(!r.ok){ alert(d.detail||'Ошибка'); return; }
+    authToken=d.token; authName=d.name||email;
+    localStorage.setItem('ss_token',authToken); localStorage.setItem('ss_name',authName);
+    tgUser=null; localStorage.removeItem('ss_tgUser');
+    loadProfile();
+  }catch(e){ alert('Не удалось войти'); }
+}
+function loginAreaHtml(){
+  return '<div class="sub" style="margin:0 0 8px">Войдите, чтобы сохранять профиль и историю между устройствами:</div>'
+    +`<input id="em_email" type="email" placeholder="Почта" style="${inStyle}"/>`
+    +`<input id="em_pass" type="password" placeholder="Пароль (от 6 символов)" style="${inStyle}"/>`
+    +`<input id="em_name" type="text" placeholder="Имя (для регистрации)" style="${inStyle}"/>`
+    +'<div style="display:flex;gap:8px">'
+    +'<button class="btn btn-out" style="margin:0;padding:10px" onclick="emailAuth(\'login\')">Войти</button>'
+    +'<button class="btn" style="margin:0;padding:10px" onclick="emailAuth(\'register\')">Регистрация</button>'
+    +'</div><div id="tgLogin" style="margin-top:6px"></div>';
+}
+function injectTgWidget(){
+  const el=$('tgLogin'); if(!el||!BOT) return;
+  const note=document.createElement('div'); note.className='sub'; note.style.margin='6px 0'; note.textContent='или через Telegram:';
+  el.appendChild(note);
+  const s=document.createElement('script');
+  s.async=true; s.src='https://telegram.org/js/telegram-widget.js?22';
+  s.setAttribute('data-telegram-login',BOT); s.setAttribute('data-size','medium');
+  s.setAttribute('data-userpic','false'); s.setAttribute('data-request-access','write');
+  s.setAttribute('data-onauth','onTelegramAuth(user)');
+  el.appendChild(s);
+}
+
+// ── профиль ──
+const PROFILE_FIELDS=['sex','weight','height','age','activity','goal','kcal','protein','fat','carbs','meal_count','restrictions','r_bfreq','r_lfreq','r_dfreq','r_snacks','r_sspeed','r_overnight','r_bt'];
+function collectProfile(){const p={};PROFILE_FIELDS.forEach(k=>{if($(k))p[k]=$(k).value;});return p;}
+function applyProfile(p){ if(!p)return; PROFILE_FIELDS.forEach(k=>{ if(p[k]!=null&&$(k))$(k).value=p[k]; }); }
+async function saveProfile(){
+  const data=collectProfile();
+  if(serverMode()){ try{await fetch('api/self-serve/profile/save',{method:'POST',headers:H,body:JSON.stringify(authBody({data}))});}catch(e){} }
+  else lsSet('ss_profile',data);
+  renderCabinet();
+}
+async function loadProfile(){
+  let profile=null;
+  if(serverMode()){ try{ const r=await(await fetch('api/self-serve/profile/get',{method:'POST',headers:H,body:JSON.stringify(authBody())})).json(); profile=r.profile; }catch(e){} }
+  else profile=lsGet('ss_profile',null);
+  applyProfile(profile); renderCabinet();
+  await loadTracking();
+}
+function renderCabinet(){
+  const loggedIn=!!(tgUser||authToken);
+  const name = tgUser ? ([tgUser.first_name,tgUser.last_name].filter(Boolean).join(' ')||'Профиль') : (authToken?(authName||'Профиль'):'');
+  if(loggedIn){
+    $('cabName').textContent=name;
+    if(tgUser&&tgUser.photo_url) $('avatar').innerHTML=`<img src="${tgUser.photo_url}" style="width:46px;height:46px;border-radius:50%;object-fit:cover"/>`;
+    else { $('avatar').innerHTML=''; $('avatar').textContent=(name||'?')[0].toUpperCase(); }
+    $('cabStatus').textContent='Вход выполнен · данные синхронизируются между устройствами';
+    $('loginArea').innerHTML='<button class="btn btn-out" onclick="logout()" style="margin:0;padding:9px">Выйти</button>';
+  }else{
+    $('avatar').innerHTML=''; $('avatar').textContent='👤'; $('cabName').textContent='Гость';
+    $('cabStatus').textContent='Данные сохраняются в этом браузере';
+    const la=$('loginArea');
+    if(!la.querySelector('#em_email')){ la.innerHTML=loginAreaHtml(); injectTgWidget(); }
+  }
+  const k=$('kcal').value,p=$('protein').value,f=$('fat').value,c=$('carbs').value;
+  $('cabTargets').innerHTML=(k?`<div class="tgt"><span>${k} ккал</span><span>Б ${p}</span><span>Ж ${f}</span><span>У ${c}</span></div>`:'');
+}
+
+async function calcKbju(){
+  try{
+    const b={sex:$('sex').value,weight:+$('weight').value,height:+$('height').value,age:+$('age').value,activity:$('activity').value,goal:$('goal').value};
+    const r=await(await fetch('api/self-serve/kbju',{method:'POST',headers:H,body:JSON.stringify(b)})).json();
+    $('kcal').value=r.kcal; $('protein').value=r.protein; $('fat').value=r.fat; $('carbs').value=r.carbs;
+    saveProfile();
+  }catch(e){ alert('Не удалось рассчитать КБЖУ'); }
+}
+async function ibUpload(){
+  const f=$('ib_file').files[0]; if(!f) return;
+  $('ib_status').textContent='Распознаю отчёт…';
+  try{
+    const fd=new FormData(); fd.append('file', f);
+    const r=await(await fetch('api/self-serve/inbody',{method:'POST',body:fd})).json();
+    const x=r.fields||{};
+    if(x.weight!=null) $('ib_weight').value=x.weight;
+    if(x.body_fat_pct!=null) $('ib_fat').value=x.body_fat_pct;
+    if(x.muscle_mass!=null) $('ib_smm').value=x.muscle_mass;
+    if(x.bmr!=null) $('ib_bmr').value=x.bmr;
+    const got=Object.values(x).filter(v=>v!=null).length;
+    $('ib_status').textContent=got?'Распознано — проверь числа и нажми «Рассчитать КБЖУ по InBody».':'Не удалось распознать — введи числа вручную.';
+  }catch(e){ $('ib_status').textContent='Ошибка распознавания — введи числа вручную.'; }
+}
+async function ibCalc(){
+  const b={weight:+$('ib_weight').value, body_fat_pct:+$('ib_fat').value||null,
+    muscle_mass:+$('ib_smm').value||null, bmr:+$('ib_bmr').value||null,
+    activity:$('activity').value, goal:$('goal').value};
+  if(!b.weight){ alert('Укажи хотя бы вес'); return; }
+  try{
+    const r=await(await fetch('api/self-serve/inbody/kbju',{method:'POST',headers:H,body:JSON.stringify(b)})).json();
+    if(r.kcal){ $('kcal').value=r.kcal;$('protein').value=r.protein;$('fat').value=r.fat;$('carbs').value=r.carbs; saveProfile();
+      $('ib_status').textContent=`Готово: ${r.kcal} ккал · Б${r.protein} Ж${r.fat} У${r.carbs} (сухая масса ${r.lean} кг).`; }
+    else $('ib_status').textContent='Не удалось рассчитать — проверь вес.';
+  }catch(e){ alert('Не удалось рассчитать'); }
+}
+function showOut(html){ $('out').innerHTML=html; $('out').scrollIntoView({behavior:'smooth',block:'start'}); }
+
+async function build(){
+  saveProfile();
+  const btn=$('go'); btn.disabled=true; btn.textContent='Собираю меню…';
+  showOut('<div class="spin">Подбираю блюда под твою цель… это занимает до минуты.</div>');
+  try{
+    currentTarget={kcal:+$('kcal').value,protein:+$('protein').value,fat:+$('fat').value,carbs:+$('carbs').value};
+    if(mode==='recipes'){
+      const b=Object.assign({},currentTarget,{days:7,breakfast_max_time:+$('r_bt').value,
+        breakfast_freq:+$('r_bfreq').value,lunch_freq:+$('r_lfreq').value,dinner_freq:+$('r_dfreq').value,
+        snacks:+$('r_snacks').value,snack_quick:+$('r_sspeed').value,overnight:+$('r_overnight').value,exclude:''});
+      const r=await(await fetch('/recipes/api/plan',{method:'POST',headers:H,body:JSON.stringify(b)})).json();
+      currentPlan=r; lastShopping=Object.keys(r.shopping_raw_g||{}); renderRecipes(r);
+    }else{
+      const b=Object.assign({}, currentTarget, {meal_count:+$('meal_count').value,restrictions:$('restrictions').value||null,days_count:7});
+      const r=await(await fetch('api/self-serve/week',{method:'POST',headers:H,body:JSON.stringify(b)})).json();
+      currentDays=r.days||[]; render(currentDays);
+    }
+  }catch(e){ showOut('<div class="card sub" style="color:#c62828">Не удалось собрать. Попробуй ещё раз.</div>'); }
+  finally{ btn.disabled=false; btn.textContent='Собрать неделю'; }
+}
+
+const WD=['пн','вт','ср','чт','пт','сб','вс'];
+function dishNutr(d){ return (d.nutrition||{}).calories||0; }
+function dayTotals(day){
+  let k=0,p=0,f=0,c=0;
+  (day.meals||[]).forEach(m=>(m.dishes||[]).forEach(d=>{const n=d.nutrition||{};k+=n.calories||0;p+=n.protein||0;f+=n.fat||0;c+=(n.carbohydrates||0);}));
+  return {kcal:Math.round(k),protein:Math.round(p),fat:Math.round(f),carbs:Math.round(c)};
+}
+function dishRow(d,key,on){
+  const img=d.image_url?`<img src="${d.image_url}"/>`:`<div style="width:54px;height:54px;border-radius:10px;background:var(--green-light);flex-shrink:0"></div>`;
+  const g=d.portion_label || (d.needed_g?`${Math.round(d.needed_g)} г`:'');
+  const kc=Math.round(dishNutr(d));
+  const open=d.url?`onclick="window.open('${d.url}','_blank')"`:'';
+  const mark=`<div onclick="toggleDish('${key}',this)" title="съел" style="cursor:pointer;font-size:1.2rem;flex-shrink:0;color:${on?'var(--green)':'#cfcabb'}">${on?'✅':'⚪'}</div>`;
+  return `<div class="dish"><div style="display:flex;gap:10px;align-items:center;flex:1;min-width:0;cursor:pointer" ${open}>${img}<div class="di"><div class="dn">${d.name}</div>
+    <div class="dm">${g}${g&&kc?' · ':''}${kc?kc+' ккал':''}${d.price?' · '+d.price+' ₽':''}</div></div></div>${mark}</div>`;
+}
+function render(days){
+  if(!days||!days.length){ showOut('<div class="card sub">Ничего не подобралось. Попробуй изменить цель или ограничения.</div>'); return; }
+  let h='<button class="btn" id="saveBtn" onclick="savePlan()" style="margin-top:0">💾 Сохранить план в историю</button>';
+  days.forEach((day,i)=>{
+    const t=dayTotals(day);
+    h+=`<div class="day"><div class="day-head"><span class="day-title">День ${i+1} (${WD[i%7]})</span>
+      <span class="kbju">${t.kcal} ккал · Б${t.protein} Ж${t.fat} У${t.carbs}</span></div>`;
+    (day.meals||[]).forEach((m,mi)=>{
+      const mk=Math.round((m.dishes||[]).reduce((s,d)=>s+dishNutr(d),0));
+      h+=`<div class="meal"><div class="meal-label">${m.meal_label} <span class="badge">${mk} ккал</span></div>`;
+      (m.dishes||[]).forEach((d,di)=>{ const key=`${day.plan_date}#${mi}#${di}`; h+=dishRow(d,key,!!tracking.done[key]); });
+      h+='</div>';
+    });
+    h+='</div>';
+  });
+  h+='<div class="card"><div class="ct">🛒 Заказ ВкусВилл</div><div class="sub">Собрать корзину из продуктов на неделю одной ссылкой.</div>'
+    +'<button class="btn" id="cartBtn" onclick="makeCart()">Собрать корзину ВкусВилл</button><div id="cartOut"></div></div>';
+  showOut(h);
+}
+
+// ── сохранение / история ──
+async function savePlan(){
+  if(!currentDays) return;
+  const btn=$('saveBtn'); if(btn){btn.disabled=true;btn.textContent='Сохраняю…';}
+  const plan={target:currentTarget, days:currentDays};
+  try{
+    if(serverMode()){
+      const r=await(await fetch('api/self-serve/plan/save',{method:'POST',headers:H,body:JSON.stringify(authBody({plan}))})).json();
+      if(btn) btn.textContent=r.ok?'✓ Сохранено в историю':'Ошибка';
+    }else{
+      const plans=lsGet('ss_plans',[]);
+      const now=new Date().toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      plans.unshift({id:Date.now(),created_at:now,target:currentTarget,plan});
+      lsSet('ss_plans',plans.slice(0,30));
+      if(btn) btn.textContent='✓ Сохранено в этом браузере';
+    }
+  }catch(e){ if(btn)btn.textContent='Ошибка'; }
+  finally{ if(btn) btn.disabled=false; }
+}
+async function openHistory(){
+  showOut('<div class="spin">Загружаю историю…</div>');
+  try{
+    let plans;
+    if(serverMode()){ const r=await(await fetch('api/self-serve/plan/history',{method:'POST',headers:H,body:JSON.stringify(authBody())})).json(); plans=r.plans||[]; }
+    else plans=lsGet('ss_plans',[]).map(p=>({id:p.id,created_at:p.created_at,target:p.target}));
+    if(!plans.length){ showOut('<div class="card sub">Сохранённых планов пока нет. Собери неделю и нажми «💾 Сохранить план в историю».</div>'); return; }
+    let h='<div class="card"><div class="ct">📋 История планов</div>';
+    plans.forEach(p=>{const t=p.target||{};
+      h+=`<div class="row" style="cursor:pointer" onclick="viewHistory('${p.id}')"><span>📅 ${p.created_at}</span><span class="sub" style="margin:0">${t.kcal||''} ккал · Б${t.protein||''}</span></div>`;});
+    h+='</div>'; showOut(h);
+  }catch(e){ showOut('<div class="card sub" style="color:#c62828">Ошибка загрузки истории</div>'); }
+}
+async function viewHistory(id){
+  showOut('<div class="spin">Загружаю план…</div>');
+  try{
+    let plan=null;
+    if(serverMode()){ const r=await(await fetch('api/self-serve/plan/get',{method:'POST',headers:H,body:JSON.stringify(authBody({id:+id}))})).json(); plan=r.plan; }
+    else { const f=lsGet('ss_plans',[]).find(p=>String(p.id)===String(id)); plan=f?f.plan:null; }
+    if(plan&&plan.days){ currentDays=plan.days; currentTarget=plan.target||null; render(currentDays); }
+    else showOut('<div class="card sub">План не найден</div>');
+  }catch(e){ showOut('<div class="card sub">Ошибка</div>'); }
+}
+
+async function makeCart(){
+  const btn=$('cartBtn'); btn.disabled=true; btn.textContent='Собираю корзину…';
+  try{
+    const r=await(await fetch('api/self-serve/cart',{method:'POST',headers:H,body:JSON.stringify({days:currentDays})})).json();
+    let h='';
+    if(r.cart_url){ h=`<div class="cart-link" id="clink">${r.cart_url}</div>
+      <button class="btn btn-out" onclick="copyCart()">Скопировать ссылку</button>
+      <div class="sub">Открой в браузере. Товаров в корзине: ${r.count}.</div>`; }
+    else h='<div class="sub" style="color:#c62828">Не удалось собрать корзину. Попробуй ещё раз.</div>';
+    $('cartOut').innerHTML=h;
+  }catch(e){ $('cartOut').innerHTML='<div class="sub" style="color:#c62828">Ошибка</div>'; }
+  finally{ btn.disabled=false; btn.textContent='Собрать корзину ВкусВилл'; }
+}
+function copyCart(){
+  const t=$('clink').textContent; const ta=document.createElement('textarea'); ta.value=t;
+  ta.style.cssText='position:fixed;opacity:0'; document.body.appendChild(ta); ta.select();
+  document.execCommand('copy'); document.body.removeChild(ta); alert('Ссылка скопирована');
+}
+
+// ── вкладки: готовые блюда / рецепты ──
+function setMode(m){
+  mode=m;
+  $('tabDishes').classList.toggle('active', m==='dishes');
+  $('tabRecipes').classList.toggle('active', m==='recipes');
+  $('recipeCfg').classList.toggle('hide', m!=='recipes');
+  $('dishOpts').classList.toggle('hide', m==='recipes');
+  $('out').innerHTML='';
+}
+
+// ── рендер рецептов (движок recipes-app на /recipes/) ──
+function frac(x){const o=[[0.25,'¼'],[0.33,'⅓'],[0.5,'½'],[0.67,'⅔'],[0.75,'¾'],[1,'1'],[1.25,'1¼'],[1.5,'1½'],[1.75,'1¾'],[2,'2'],[2.5,'2½'],[3,'3'],[4,'4']];
+ let b=o[0];for(const e of o)if(Math.abs(e[0]-x)<Math.abs(b[0]-x))b=e;return b[1];}
+const PIECE_G={'Яйца':55,'Лаваш':80,'Тортилья':80,'Бананы':120,'Яблоки':180,'Груши':180,'Огурцы':100,'Болгарский перец':150,'Авокадо':150,'Кабачок':250,'Помидоры':120,'Морковь':90,'Киви':75,'Баклажан':250,'Свёкла':150,'Лук':90};
+const GRAIN_CUP={'Гречка':180,'Рис':180,'Киноа':180,'Булгур':180,'Перловка':180,'Овсяные хлопья':90,'Кускус':180,'Макароны':100};
+function shopAmount(name,g){
+  if(GRAIN_CUP[name]){const c=Math.round(g/GRAIN_CUP[name]*2)/2;return `~${c} стак. (${g>=1000?(g/1000).toFixed(1)+' кг':g+' г'})`;}
+  if(PIECE_G[name]){const n=g/PIECE_G[name];return n>=1?`~${Math.round(n)} шт`:`~${frac(n)} шт`;}
+  return `~${g>=1000?(g/1000).toFixed(1)+' кг':g+' г'}`;
+}
+const CUP_G={'мука':130,'овсян':90,'геркулес':90,'хлоп':90,'гречк':180,'рис':180,'киноа':180,'булгур':180,'перлов':180,'пшено':180,'кускус':180,'сахар':200,'подсласт':200,'какао':100,'творог':250,'йогурт':250,'сметан':250,'сливк':250,'молок':250,'вода':250,'сок':250,'кефир':250,'мёд':340,'мед':340,'масло':220,'орех':140,'миндал':140,'семен':150,'мак':150,'ягод':150,'черник':150,'голуб':150,'малин':150,'клубн':150};
+const PIECE_FRAC=[['авокадо',150],['огур',100],['цукини',250],['кабач',250],['морков',90],['репчат',90],['луковиц',90],['лук',90]];
+function pieceVeg(name){const n=(name||'').toLowerCase();if(n.includes('зелён')||n.includes('порей'))return null;for(const [k,w] of PIECE_FRAC)if(n.includes(k))return w;return null;}
+function friendly(name,amount,unit){
+  if(amount==null||amount==='') return unit&&unit!=='по вкусу'?unit:'по вкусу';
+  const u=(unit||'').toLowerCase();
+  if(['шт','зуб','долька','веточка','щепотка','горсть','ст.л.','ч.л.','стакан','саше','мерн.ложки'].includes(u)) return amount+' '+unit;
+  if(u!=='г'&&u!=='гр'&&u!=='мл') return amount+' '+(unit||'');
+  const n=(name||'').toLowerCase();
+  const pv=pieceVeg(name); if(pv) return `${frac(amount/pv)} шт`;
+  if(n.includes('сливочн')) return amount+' '+unit;
+  let cup=null; for(const k in CUP_G) if(n.includes(k)){cup=CUP_G[k];break;}
+  if(!cup) return amount+' '+unit;
+  const cups=amount/cup;
+  if(cups>=0.22) return `${frac(cups)} стак. (${amount} ${unit})`;
+  const tbsp=amount/(cup/16);
+  if(tbsp>=0.9) return `${Math.round(tbsp)} ст.л. (${amount} ${unit})`;
+  return `${Math.max(1,Math.round(amount/(cup/48)))} ч.л. (${amount} ${unit})`;
+}
+function recipeImg(m){ return m.image?('/recipes/'+m.image):''; }
+function closeRm(){ $('rm').classList.remove('show'); }
+function openRecipe(idx){
+  const m=allMeals[idx]; if(!m) return;
+  const ings=(m.ingredients||[]).map(x=>`<li>${x.name} — ${friendly(x.name,x.amount,x.unit)}</li>`).join('');
+  const steps=(m.steps||[]).map(s=>`<li>${s}</li>`).join('');
+  const img=recipeImg(m); const photo=img?`<img src="${img}" style="width:100%;border-radius:12px;margin-bottom:12px"/>`:'';
+  $('rmBody').innerHTML=`${photo}<h2 style="color:var(--green-dark);font-size:1.2rem;margin-bottom:4px">${m.title}</h2>
+    <div class="sub">${m.label||''}${m.time_min?' · '+m.time_min+' мин':''}</div>
+    <div class="badge" style="margin:0 0 12px">${m.nutrition.kcal} ккал · Б${m.nutrition.protein} Ж${m.nutrition.fat} У${m.nutrition.carbs}</div>
+    ${m.note?`<div class="sub" style="color:var(--green-dark);margin-bottom:10px">🍽 ${m.note}</div>`:''}
+    ${ings?`<div class="ct">Ингредиенты</div><ul class="shop">${ings}</ul>`:''}
+    ${steps?`<div class="ct" style="margin-top:12px">Приготовление</div><ol style="margin-left:18px;font-size:.9rem;line-height:1.6">${steps}</ol>`:''}`;
+  $('rm').classList.add('show');
+}
+function recipeMealBlock(m,emoji){
+  const idx=allMeals.push(m)-1;
+  const ings=(m.ingredients||[]).map(x=>x.name+' '+friendly(x.name,x.amount,x.unit)).join(', ');
+  const time=m.time_min?`<span class="pill">${m.time_min} мин</span>`:'';
+  const img=recipeImg(m);
+  const thumb=img?`<img class="thumb" src="${img}" onclick="openRecipe(${idx})"/>`:`<div class="thumb-e" onclick="openRecipe(${idx})">${emoji}</div>`;
+  const note=m.note?`<br><span style="color:var(--green-dark);font-size:.82rem">🍽 ${m.note}</span>`:'';
+  return `<div class="meal"><div class="meal-label">${m.label} ${time}<span class="badge">${m.nutrition.kcal} ккал · Б${m.nutrition.protein} Ж${m.nutrition.fat} У${m.nutrition.carbs}</span></div>
+    <div class="bk">${thumb}<div class="items" onclick="openRecipe(${idx})" style="cursor:pointer"><b>${m.title}</b><br>${ings}${note}<br><span style="color:var(--green-dark)">👆 нажми — рецепт</span></div></div></div>`;
+}
+function renderRecipes(p){
+  allMeals=[];
+  if(!p||!p.days){ showOut('<div class="card sub" style="color:#c62828">Не удалось собрать рецепты. Попробуй ещё раз.</div>'); return; }
+  let h='<div class="card"><div class="ct">🔥 Регулярность готовки</div>';
+  (p.cook_schedule||[]).forEach(s=>{const dd=s.days&&s.days.length?(' · дни: '+s.days.map(d=>WD[(d-1)%7]).join(', ')):'';
+    h+=`<div class="session"><b>${s.meal}</b> — ${s.label}${dd}</div>`;});
+  h+='</div>';
+  p.days.forEach((day,i)=>{const t=day.day_total;
+    h+=`<div class="day"><div class="day-head"><span class="day-title">День ${i+1} (${WD[i%7]})</span><span class="kbju">${t.kcal} · Б${t.protein} Ж${t.fat} У${t.carbs}</span></div>`;
+    h+=recipeMealBlock(day.breakfast,'🍳');
+    (day.meals||[]).forEach(m=>{const snack=m.label&&m.label.indexOf('Перекус')===0; h+=recipeMealBlock(m, m.label==='Обед'?'🥗':(snack?'🍎':'🍽'));});
+    h+='</div>';});
+  h+='<div class="card"><div class="ct">🛒 Закупка на неделю</div><ul class="shop">';
+  for(const [n,g] of Object.entries(p.shopping_raw_g||{})) h+=`<li>${n} — ${shopAmount(n,g)}</li>`;
+  h+='</ul><button class="btn" id="cartBtn" onclick="makeRecipeCart()" style="margin-top:10px">Собрать корзину ВкусВилл</button><div id="cartOut"></div></div>';
+  showOut(h);
+}
+async function makeRecipeCart(){
+  const btn=$('cartBtn'); btn.disabled=true; btn.textContent='Ищу товары…';
+  try{
+    const r=await(await fetch('/recipes/api/cart',{method:'POST',headers:H,body:JSON.stringify({ingredients:lastShopping})})).json();
+    let h='';
+    if(r.cart_url){ h=`<div class="cart-link" id="clink">${r.cart_url}</div>
+      <button class="btn btn-out" onclick="copyCart()">Скопировать ссылку</button>
+      <div class="sub">Открой в браузере. Найдено товаров: ${(r.found||[]).length}.</div>`; }
+    else h='<div class="sub" style="color:#c62828">Не удалось собрать корзину. Попробуй ещё раз.</div>';
+    $('cartOut').innerHTML=h;
+  }catch(e){ $('cartOut').innerHTML='<div class="sub" style="color:#c62828">Ошибка</div>'; }
+  finally{ btn.disabled=false; btn.textContent='Собрать корзину ВкусВилл'; }
+}
+
+async function initApp(){
+  try{ const c=await(await fetch('api/self-serve/config')).json(); BOT=c.bot_username||''; }catch(e){}
+  await loadProfile();
+}
+initApp();
+</script>
+</body>
+</html>
