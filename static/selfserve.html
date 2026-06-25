@@ -250,7 +250,8 @@ function render(days){
     h+=`<div class="day"><div class="day-head"><span class="day-title">День ${i+1} (${WD[i%7]})</span>
       <span class="kbju">${t.kcal} ккал · Б${t.protein} Ж${t.fat} У${t.carbs}</span></div>`;
     (day.meals||[]).forEach((m,mi)=>{
-      h+=`<div class="meal"><div class="meal-label">${m.meal_label} <span class="badge">${Math.round((m.kbju||{}).kcal||0)} ккал</span></div>`;
+      const mk=Math.round((m.dishes||[]).reduce((s,d)=>s+dishNutr(d),0));
+      h+=`<div class="meal"><div class="meal-label">${m.meal_label} <span class="badge">${mk} ккал</span></div>`;
       (m.dishes||[]).forEach((d,di)=>{ const key=`${day.plan_date}#${mi}#${di}`; h+=dishRow(d,key,!!tracking.done[key]); });
       h+='</div>';
     });
