@@ -7,7 +7,7 @@
 import os
 from datetime import date, datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,6 +19,7 @@ from auth import hash_password, verify_password, create_token, SECRET_KEY, ALGOR
 from services.week_planner import generate_week
 from services.food_groups import coverage_report
 from services.vkusvill import create_cart
+from services.inbody import extract_inbody, kbju_from_inbody
 
 router = APIRouter(prefix="/api/self-serve", tags=["self-serve"])
 
@@ -85,6 +86,28 @@ async def selfserve_kbju(b: KbjuBody):
         "kcal": round(kcal), "protein": protein, "fat": fat, "carbs": carbs,
         "bmr": round(bmr), "maintenance": round(norm),
     }
+
+
+# ── InBody: загрузка отчёта (распознавание) и КБЖУ по составу тела ──
+class InbodyKbjuBody(BaseModel):
+    weight: float = 0
+    body_fat_pct: float | None = None
+    muscle_mass: float | None = None
+    bmr: float | None = None
+    activity: str = "moderate"
+    goal: str = "loss"
+
+
+@router.post("/inbody")
+async def api_inbody(file: UploadFile = File(...)):
+    """Фото отчёта InBody -> распознанные числа (weight/body_fat_pct/muscle_mass/bmr)."""
+    data = await file.read()
+    return {"fields": await extract_inbody(data)}
+
+
+@router.post("/inbody/kbju")
+async def api_inbody_kbju(b: InbodyKbjuBody):
+    return kbju_from_inbody(b.weight, b.body_fat_pct, b.muscle_mass, b.bmr, b.activity, b.goal)
 
 
 # ── Недельный план готовых блюд под КБЖУ (тот же движок, что у тренера) ──
