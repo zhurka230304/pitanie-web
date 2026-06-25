@@ -410,7 +410,7 @@ function recipeMealBlock(m,emoji){
   const img=recipeImg(m);
   const thumb=img?`<img class="thumb" src="${img}" onclick="openRecipe(${idx})"/>`:`<div class="thumb-e" onclick="openRecipe(${idx})">${emoji}</div>`;
   const note=m.note?`<br><span style="color:var(--green-dark);font-size:.82rem">🍽 ${m.note}</span>`:'';
-  return `<div class="meal"><div class="meal-label">${m.label} ${time}<span class="badge">${m.nutrition.kcal} ккал · Б${m.nutrition.protein}</span></div>
+  return `<div class="meal"><div class="meal-label">${m.label} ${time}<span class="badge">${m.nutrition.kcal} ккал · Б${m.nutrition.protein} Ж${m.nutrition.fat} У${m.nutrition.carbs}</span></div>
     <div class="bk">${thumb}<div class="items" onclick="openRecipe(${idx})" style="cursor:pointer"><b>${m.title}</b><br>${ings}${note}<br><span style="color:var(--green-dark)">👆 нажми — рецепт</span></div></div></div>`;
 }
 function renderRecipes(p){
