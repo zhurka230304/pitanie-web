@@ -39,6 +39,19 @@
   .tgt{display:flex;gap:6px;flex-wrap:wrap}
   .tgt span{background:var(--white);border-radius:99px;padding:3px 10px;font-size:.78rem;font-weight:600;color:var(--green-dark)}
   #cabinet{background:var(--green-light)}
+  .tabs{display:flex;gap:8px;margin-bottom:12px}
+  .tab{flex:1;padding:11px;border:1.5px solid var(--border);border-radius:99px;background:var(--white);color:var(--muted);font-weight:600;font-size:.92rem;cursor:pointer;font-family:inherit}
+  .tab.active{background:var(--green-dark);color:#fff;border-color:var(--green-dark)}
+  .thumb{width:88px;height:88px;border-radius:12px;object-fit:cover;flex-shrink:0;cursor:pointer;background:var(--green-light);border:1px solid var(--border)}
+  .thumb-e{width:88px;height:88px;border-radius:12px;flex-shrink:0;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1.8rem;cursor:pointer}
+  .bk{display:flex;gap:12px;align-items:flex-start;margin-top:6px}
+  .items{font-size:.82rem;color:var(--muted);line-height:1.5}
+  .session{background:var(--green-light);border-radius:12px;padding:10px 14px;margin-bottom:8px;font-size:.85rem}
+  .shop li{font-size:.85rem;padding:3px 0}.shop{margin-left:18px}
+  .rm{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;z-index:1000;padding:20px 12px;overflow-y:auto}
+  .rm.show{display:flex}
+  .rm-card{background:var(--white);border-radius:var(--r);padding:18px;max-width:560px;width:100%;position:relative;margin:auto}
+  .rm-close{position:absolute;top:8px;right:14px;font-size:1.8rem;color:var(--muted);cursor:pointer;line-height:1}
 </style>
 </head>
 <body>
@@ -90,14 +103,23 @@
     <select id="restrictions"><option value="">нет</option><option value="вегетарианское">вегетарианское</option><option value="без мяса">без мяса</option></select></div>
 </div>
 
+<div class="tabs">
+  <button id="tabDishes" class="tab active" onclick="setMode('dishes')">🛒 Готовые блюда</button>
+  <button id="tabRecipes" class="tab" onclick="setMode('recipes')">👩‍🍳 Рецепты</button>
+</div>
 <button class="btn" id="go" onclick="build()">Собрать неделю</button>
 <div id="out"></div>
+
+<div class="rm" id="rm" onclick="if(event.target===this)closeRm()">
+  <div class="rm-card"><span class="rm-close" onclick="closeRm()">×</span><div id="rmBody"></div></div>
+</div>
 
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
 const H={'Content-Type':'application/json'};
 let currentDays=null, currentTarget=null, BOT='';
+let mode='dishes', currentPlan=null, lastShopping=null, allMeals=[];
 let tgUser=null; try{ tgUser=JSON.parse(localStorage.getItem('ss_tgUser')||'null'); }catch(e){}
 let authToken=localStorage.getItem('ss_token')||'';
 let authName=localStorage.getItem('ss_name')||'';
@@ -218,11 +240,16 @@ async function build(){
   showOut('<div class="spin">Подбираю блюда под твою цель… это занимает до минуты.</div>');
   try{
     currentTarget={kcal:+$('kcal').value,protein:+$('protein').value,fat:+$('fat').value,carbs:+$('carbs').value};
-    const b=Object.assign({}, currentTarget, {meal_count:+$('meal_count').value,restrictions:$('restrictions').value||null,days_count:7});
-    const r=await(await fetch('api/self-serve/week',{method:'POST',headers:H,body:JSON.stringify(b)})).json();
-    currentDays=r.days||[];
-    render(currentDays);
-  }catch(e){ showOut('<div class="card sub" style="color:#c62828">Не удалось собрать неделю. Попробуй ещё раз.</div>'); }
+    if(mode==='recipes'){
+      const b=Object.assign({},currentTarget,{days:7,breakfast_max_time:20,breakfast_freq:7,lunch_freq:2,dinner_freq:2,snacks:0,snack_quick:true,overnight:true,exclude:''});
+      const r=await(await fetch('/recipes/api/plan',{method:'POST',headers:H,body:JSON.stringify(b)})).json();
+      currentPlan=r; lastShopping=Object.keys(r.shopping_raw_g||{}); renderRecipes(r);
+    }else{
+      const b=Object.assign({}, currentTarget, {meal_count:+$('meal_count').value,restrictions:$('restrictions').value||null,days_count:7});
+      const r=await(await fetch('api/self-serve/week',{method:'POST',headers:H,body:JSON.stringify(b)})).json();
+      currentDays=r.days||[]; render(currentDays);
+    }
+  }catch(e){ showOut('<div class="card sub" style="color:#c62828">Не удалось собрать. Попробуй ещё раз.</div>'); }
   finally{ btn.disabled=false; btn.textContent='Собрать неделю'; }
 }
 
@@ -322,6 +349,99 @@ function copyCart(){
   const t=$('clink').textContent; const ta=document.createElement('textarea'); ta.value=t;
   ta.style.cssText='position:fixed;opacity:0'; document.body.appendChild(ta); ta.select();
   document.execCommand('copy'); document.body.removeChild(ta); alert('Ссылка скопирована');
+}
+
+// ── вкладки: готовые блюда / рецепты ──
+function setMode(m){
+  mode=m;
+  $('tabDishes').classList.toggle('active', m==='dishes');
+  $('tabRecipes').classList.toggle('active', m==='recipes');
+  $('out').innerHTML='';
+}
+
+// ── рендер рецептов (движок recipes-app на /recipes/) ──
+function frac(x){const o=[[0.25,'¼'],[0.33,'⅓'],[0.5,'½'],[0.67,'⅔'],[0.75,'¾'],[1,'1'],[1.25,'1¼'],[1.5,'1½'],[1.75,'1¾'],[2,'2'],[2.5,'2½'],[3,'3'],[4,'4']];
+ let b=o[0];for(const e of o)if(Math.abs(e[0]-x)<Math.abs(b[0]-x))b=e;return b[1];}
+const PIECE_G={'Яйца':55,'Лаваш':80,'Тортилья':80,'Бананы':120,'Яблоки':180,'Груши':180,'Огурцы':100,'Болгарский перец':150,'Авокадо':150,'Кабачок':250,'Помидоры':120,'Морковь':90,'Киви':75,'Баклажан':250,'Свёкла':150,'Лук':90};
+const GRAIN_CUP={'Гречка':180,'Рис':180,'Киноа':180,'Булгур':180,'Перловка':180,'Овсяные хлопья':90,'Кускус':180,'Макароны':100};
+function shopAmount(name,g){
+  if(GRAIN_CUP[name]){const c=Math.round(g/GRAIN_CUP[name]*2)/2;return `~${c} стак. (${g>=1000?(g/1000).toFixed(1)+' кг':g+' г'})`;}
+  if(PIECE_G[name]){const n=g/PIECE_G[name];return n>=1?`~${Math.round(n)} шт`:`~${frac(n)} шт`;}
+  return `~${g>=1000?(g/1000).toFixed(1)+' кг':g+' г'}`;
+}
+const CUP_G={'мука':130,'овсян':90,'геркулес':90,'хлоп':90,'гречк':180,'рис':180,'киноа':180,'булгур':180,'перлов':180,'пшено':180,'кускус':180,'сахар':200,'подсласт':200,'какао':100,'творог':250,'йогурт':250,'сметан':250,'сливк':250,'молок':250,'вода':250,'сок':250,'кефир':250,'мёд':340,'мед':340,'масло':220,'орех':140,'миндал':140,'семен':150,'мак':150,'ягод':150,'черник':150,'голуб':150,'малин':150,'клубн':150};
+const PIECE_FRAC=[['авокадо',150],['огур',100],['цукини',250],['кабач',250],['морков',90],['репчат',90],['луковиц',90],['лук',90]];
+function pieceVeg(name){const n=(name||'').toLowerCase();if(n.includes('зелён')||n.includes('порей'))return null;for(const [k,w] of PIECE_FRAC)if(n.includes(k))return w;return null;}
+function friendly(name,amount,unit){
+  if(amount==null||amount==='') return unit&&unit!=='по вкусу'?unit:'по вкусу';
+  const u=(unit||'').toLowerCase();
+  if(['шт','зуб','долька','веточка','щепотка','горсть','ст.л.','ч.л.','стакан','саше','мерн.ложки'].includes(u)) return amount+' '+unit;
+  if(u!=='г'&&u!=='гр'&&u!=='мл') return amount+' '+(unit||'');
+  const n=(name||'').toLowerCase();
+  const pv=pieceVeg(name); if(pv) return `${frac(amount/pv)} шт`;
+  if(n.includes('сливочн')) return amount+' '+unit;
+  let cup=null; for(const k in CUP_G) if(n.includes(k)){cup=CUP_G[k];break;}
+  if(!cup) return amount+' '+unit;
+  const cups=amount/cup;
+  if(cups>=0.22) return `${frac(cups)} стак. (${amount} ${unit})`;
+  const tbsp=amount/(cup/16);
+  if(tbsp>=0.9) return `${Math.round(tbsp)} ст.л. (${amount} ${unit})`;
+  return `${Math.max(1,Math.round(amount/(cup/48)))} ч.л. (${amount} ${unit})`;
+}
+function recipeImg(m){ return m.image?('/recipes/'+m.image):''; }
+function closeRm(){ $('rm').classList.remove('show'); }
+function openRecipe(idx){
+  const m=allMeals[idx]; if(!m) return;
+  const ings=(m.ingredients||[]).map(x=>`<li>${x.name} — ${friendly(x.name,x.amount,x.unit)}</li>`).join('');
+  const steps=(m.steps||[]).map(s=>`<li>${s}</li>`).join('');
+  const img=recipeImg(m); const photo=img?`<img src="${img}" style="width:100%;border-radius:12px;margin-bottom:12px"/>`:'';
+  $('rmBody').innerHTML=`${photo}<h2 style="color:var(--green-dark);font-size:1.2rem;margin-bottom:4px">${m.title}</h2>
+    <div class="sub">${m.label||''}${m.time_min?' · '+m.time_min+' мин':''}</div>
+    <div class="badge" style="margin:0 0 12px">${m.nutrition.kcal} ккал · Б${m.nutrition.protein} Ж${m.nutrition.fat} У${m.nutrition.carbs}</div>
+    ${m.note?`<div class="sub" style="color:var(--green-dark);margin-bottom:10px">🍽 ${m.note}</div>`:''}
+    ${ings?`<div class="ct">Ингредиенты</div><ul class="shop">${ings}</ul>`:''}
+    ${steps?`<div class="ct" style="margin-top:12px">Приготовление</div><ol style="margin-left:18px;font-size:.9rem;line-height:1.6">${steps}</ol>`:''}`;
+  $('rm').classList.add('show');
+}
+function recipeMealBlock(m,emoji){
+  const idx=allMeals.push(m)-1;
+  const ings=(m.ingredients||[]).map(x=>x.name+' '+friendly(x.name,x.amount,x.unit)).join(', ');
+  const time=m.time_min?`<span class="pill">${m.time_min} мин</span>`:'';
+  const img=recipeImg(m);
+  const thumb=img?`<img class="thumb" src="${img}" onclick="openRecipe(${idx})"/>`:`<div class="thumb-e" onclick="openRecipe(${idx})">${emoji}</div>`;
+  const note=m.note?`<br><span style="color:var(--green-dark);font-size:.82rem">🍽 ${m.note}</span>`:'';
+  return `<div class="meal"><div class="meal-label">${m.label} ${time}<span class="badge">${m.nutrition.kcal} ккал · Б${m.nutrition.protein}</span></div>
+    <div class="bk">${thumb}<div class="items" onclick="openRecipe(${idx})" style="cursor:pointer"><b>${m.title}</b><br>${ings}${note}<br><span style="color:var(--green-dark)">👆 нажми — рецепт</span></div></div></div>`;
+}
+function renderRecipes(p){
+  allMeals=[];
+  if(!p||!p.days){ showOut('<div class="card sub" style="color:#c62828">Не удалось собрать рецепты. Попробуй ещё раз.</div>'); return; }
+  let h='<div class="card"><div class="ct">🔥 Регулярность готовки</div>';
+  (p.cook_schedule||[]).forEach(s=>{const dd=s.days&&s.days.length?(' · дни: '+s.days.map(d=>WD[(d-1)%7]).join(', ')):'';
+    h+=`<div class="session"><b>${s.meal}</b> — ${s.label}${dd}</div>`;});
+  h+='</div>';
+  p.days.forEach((day,i)=>{const t=day.day_total;
+    h+=`<div class="day"><div class="day-head"><span class="day-title">День ${i+1} (${WD[i%7]})</span><span class="kbju">${t.kcal} · Б${t.protein} Ж${t.fat} У${t.carbs}</span></div>`;
+    h+=recipeMealBlock(day.breakfast,'🍳');
+    (day.meals||[]).forEach(m=>{const snack=m.label&&m.label.indexOf('Перекус')===0; h+=recipeMealBlock(m, m.label==='Обед'?'🥗':(snack?'🍎':'🍽'));});
+    h+='</div>';});
+  h+='<div class="card"><div class="ct">🛒 Закупка на неделю</div><ul class="shop">';
+  for(const [n,g] of Object.entries(p.shopping_raw_g||{})) h+=`<li>${n} — ${shopAmount(n,g)}</li>`;
+  h+='</ul><button class="btn" id="cartBtn" onclick="makeRecipeCart()" style="margin-top:10px">Собрать корзину ВкусВилл</button><div id="cartOut"></div></div>';
+  showOut(h);
+}
+async function makeRecipeCart(){
+  const btn=$('cartBtn'); btn.disabled=true; btn.textContent='Ищу товары…';
+  try{
+    const r=await(await fetch('/recipes/api/cart',{method:'POST',headers:H,body:JSON.stringify({ingredients:lastShopping})})).json();
+    let h='';
+    if(r.cart_url){ h=`<div class="cart-link" id="clink">${r.cart_url}</div>
+      <button class="btn btn-out" onclick="copyCart()">Скопировать ссылку</button>
+      <div class="sub">Открой в браузере. Найдено товаров: ${(r.found||[]).length}.</div>`; }
+    else h='<div class="sub" style="color:#c62828">Не удалось собрать корзину. Попробуй ещё раз.</div>';
+    $('cartOut').innerHTML=h;
+  }catch(e){ $('cartOut').innerHTML='<div class="sub" style="color:#c62828">Ошибка</div>'; }
+  finally{ btn.disabled=false; btn.textContent='Собрать корзину ВкусВилл'; }
 }
 
 async function initApp(){
