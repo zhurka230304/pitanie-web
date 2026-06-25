@@ -98,6 +98,36 @@ class WeekBody(BaseModel):
     days_count: int = 7
 
 
+def _day_kcal(meals):
+    return sum((d.get("nutrition") or {}).get("calories", 0)
+               for m in meals for d in m.get("dishes", []))
+
+
+def _scale_dish(dish, f):
+    """Масштабировать порцию блюда (долю упаковки) и его КБЖУ на коэффициент f.
+    Набор блюд и корзина не меняются — меняется только «сколько съесть»."""
+    n = dish.get("nutrition")
+    if n:
+        for k in ("protein", "fat", "carbohydrates", "calories"):
+            if isinstance(n.get(k), (int, float)):
+                n[k] = round(n[k] * f, 1)
+    if isinstance(dish.get("needed_g"), (int, float)):
+        dish["needed_g"] = int(round(dish["needed_g"] * f))
+    if isinstance(dish.get("portion"), (int, float)):
+        dish["portion"] = round(dish["portion"] * f, 2)
+
+
+def _fit_day(meals, target_kcal):
+    """Подогнать дневной итог под цель ±100 ккал, мягко масштабируя порции."""
+    total = _day_kcal(meals)
+    if total <= 0 or abs(total - target_kcal) <= 100:
+        return
+    f = max(0.6, min(1.4, target_kcal / total))
+    for m in meals:
+        for d in m.get("dishes", []):
+            _scale_dish(d, f)
+
+
 @router.post("/week")
 async def selfserve_week(b: WeekBody):
     days = await generate_week(
@@ -107,6 +137,8 @@ async def selfserve_week(b: WeekBody):
         start=date.today(),
         days_count=max(1, min(7, b.days_count)),
     )
+    for day in days:                      # дневная калорийность в пределах ±100
+        _fit_day(day.get("meals", []), b.kcal)
     return {"days": days, "coverage": coverage_report(days)}
 
 

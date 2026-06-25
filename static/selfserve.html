@@ -235,7 +235,7 @@ function dayTotals(day){
 }
 function dishRow(d,key,on){
   const img=d.image_url?`<img src="${d.image_url}"/>`:`<div style="width:54px;height:54px;border-radius:10px;background:var(--green-light);flex-shrink:0"></div>`;
-  const half=d.portion&&d.portion<1?` <span class="pill">½ упаковки</span>`:'';
+  const half=d.portion&&d.portion<1?` <span class="pill">часть упаковки</span>`:'';
   const g=d.needed_g?`${d.needed_g} г`:''; const kc=Math.round(dishNutr(d));
   const open=d.url?`onclick="window.open('${d.url}','_blank')"`:'';
   const mark=`<div onclick="toggleDish('${key}',this)" title="съел" style="cursor:pointer;font-size:1.2rem;flex-shrink:0;color:${on?'var(--green)':'#cfcabb'}">${on?'✅':'⚪'}</div>`;
