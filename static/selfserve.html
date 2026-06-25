@@ -42,6 +42,7 @@
   .tabs{display:flex;gap:8px;margin-bottom:12px}
   .tab{flex:1;padding:11px;border:1.5px solid var(--border);border-radius:99px;background:var(--white);color:var(--muted);font-weight:600;font-size:.92rem;cursor:pointer;font-family:inherit}
   .tab.active{background:var(--green-dark);color:#fff;border-color:var(--green-dark)}
+  .hide{display:none}
   .thumb{width:88px;height:88px;border-radius:12px;object-fit:cover;flex-shrink:0;cursor:pointer;background:var(--green-light);border:1px solid var(--border)}
   .thumb-e{width:88px;height:88px;border-radius:12px;flex-shrink:0;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1.8rem;cursor:pointer}
   .bk{display:flex;gap:12px;align-items:flex-start;margin-top:6px}
@@ -97,16 +98,37 @@
   <div class="row"><label>Белки, г</label><input id="protein" type="number" value="150"/></div>
   <div class="row"><label>Жиры, г</label><input id="fat" type="number" value="65"/></div>
   <div class="row"><label>Углеводы, г</label><input id="carbs" type="number" value="180"/></div>
+  <div id="dishOpts">
   <div class="row"><label>Приёмов в день</label>
     <select id="meal_count"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
   <div class="row"><label>Ограничения</label>
     <select id="restrictions"><option value="">нет</option><option value="вегетарианское">вегетарианское</option><option value="без мяса">без мяса</option></select></div>
+  </div>
 </div>
 
 <div class="tabs">
   <button id="tabDishes" class="tab active" onclick="setMode('dishes')">🛒 Готовые блюда</button>
   <button id="tabRecipes" class="tab" onclick="setMode('recipes')">👩‍🍳 Рецепты</button>
 </div>
+
+<div class="card hide" id="recipeCfg">
+  <div class="ct">🍳 Как часто готовить?</div>
+  <div class="row"><label>🍳 Завтрак</label>
+    <select id="r_bfreq"><option value="7" selected>каждый день</option><option value="4">через день</option><option value="2">2 раза в неделю</option></select></div>
+  <div class="row"><label>🥗 Обед</label>
+    <select id="r_lfreq"><option value="7">каждый день</option><option value="3">3 раза в неделю</option><option value="2" selected>2 раза в неделю</option></select></div>
+  <div class="row"><label>🍽 Ужин</label>
+    <select id="r_dfreq"><option value="7">каждый день</option><option value="3">3 раза в неделю</option><option value="2" selected>2 раза в неделю</option></select></div>
+  <div class="row"><label>🍎 Перекусы</label>
+    <select id="r_snacks"><option value="0" selected>не нужны</option><option value="1">1 в день</option><option value="2">2 в день</option></select></div>
+  <div class="row"><label>🍎 Перекус — готовить</label>
+    <select id="r_sspeed"><option value="1" selected>быстро (без готовки)</option><option value="0">можно подольше</option></select></div>
+  <div class="row"><label>🌙 Готовить с вечера</label>
+    <select id="r_overnight"><option value="1" selected>да</option><option value="0">нет</option></select></div>
+  <div class="row"><label>Завтрак ≤ мин</label>
+    <select id="r_bt"><option>10</option><option>15</option><option selected>20</option><option>30</option></select></div>
+</div>
+
 <button class="btn" id="go" onclick="build()">Собрать неделю</button>
 <div id="out"></div>
 
@@ -189,7 +211,7 @@ function injectTgWidget(){
 }
 
 // ── профиль ──
-const PROFILE_FIELDS=['sex','weight','height','age','activity','goal','kcal','protein','fat','carbs','meal_count','restrictions'];
+const PROFILE_FIELDS=['sex','weight','height','age','activity','goal','kcal','protein','fat','carbs','meal_count','restrictions','r_bfreq','r_lfreq','r_dfreq','r_snacks','r_sspeed','r_overnight','r_bt'];
 function collectProfile(){const p={};PROFILE_FIELDS.forEach(k=>{if($(k))p[k]=$(k).value;});return p;}
 function applyProfile(p){ if(!p)return; PROFILE_FIELDS.forEach(k=>{ if(p[k]!=null&&$(k))$(k).value=p[k]; }); }
 async function saveProfile(){
@@ -241,7 +263,9 @@ async function build(){
   try{
     currentTarget={kcal:+$('kcal').value,protein:+$('protein').value,fat:+$('fat').value,carbs:+$('carbs').value};
     if(mode==='recipes'){
-      const b=Object.assign({},currentTarget,{days:7,breakfast_max_time:20,breakfast_freq:7,lunch_freq:2,dinner_freq:2,snacks:0,snack_quick:true,overnight:true,exclude:''});
+      const b=Object.assign({},currentTarget,{days:7,breakfast_max_time:+$('r_bt').value,
+        breakfast_freq:+$('r_bfreq').value,lunch_freq:+$('r_lfreq').value,dinner_freq:+$('r_dfreq').value,
+        snacks:+$('r_snacks').value,snack_quick:+$('r_sspeed').value,overnight:+$('r_overnight').value,exclude:''});
       const r=await(await fetch('/recipes/api/plan',{method:'POST',headers:H,body:JSON.stringify(b)})).json();
       currentPlan=r; lastShopping=Object.keys(r.shopping_raw_g||{}); renderRecipes(r);
     }else{
@@ -356,6 +380,8 @@ function setMode(m){
   mode=m;
   $('tabDishes').classList.toggle('active', m==='dishes');
   $('tabRecipes').classList.toggle('active', m==='recipes');
+  $('recipeCfg').classList.toggle('hide', m!=='recipes');
+  $('dishOpts').classList.toggle('hide', m==='recipes');
   $('out').innerHTML='';
 }
 
