@@ -104,8 +104,7 @@ def _day_kcal(meals):
 
 
 def _scale_dish(dish, f):
-    """Масштабировать порцию блюда (долю упаковки) и его КБЖУ на коэффициент f.
-    Набор блюд и корзина не меняются — меняется только «сколько съесть»."""
+    """Масштабировать порцию блюда и его КБЖУ на коэффициент f."""
     n = dish.get("nutrition")
     if n:
         for k in ("protein", "fat", "carbohydrates", "calories"):
@@ -117,15 +116,55 @@ def _scale_dish(dish, f):
         dish["portion"] = round(dish["portion"] * f, 2)
 
 
+# человеку понятная доля упаковки (без весов): ¼, ⅓, ½, ⅔, ¾, вся
+_FRIENDLY = [0.25, 0.33, 0.5, 0.67, 0.75, 1.0]
+_FRIENDLY_LABEL = {0.25: "¼ упаковки", 0.33: "⅓ упаковки", 0.5: "половина упаковки",
+                   0.67: "⅔ упаковки", 0.75: "¾ упаковки", 1.0: "вся упаковка"}
+
+
+def _set_portion(dish, new_p):
+    cur = dish.get("portion") or 1.0
+    if cur > 0:
+        _scale_dish(dish, new_p / cur)
+    dish["portion"] = new_p
+    dish["portion_label"] = _FRIENDLY_LABEL.get(new_p, "вся упаковка")
+
+
 def _fit_day(meals, target_kcal):
-    """Подогнать дневной итог под цель ±100 ккал, мягко масштабируя порции."""
-    total = _day_kcal(meals)
-    if total <= 0 or abs(total - target_kcal) <= 100:
+    """Подогнать день под цель ±100, выбирая каждому блюду удобную долю упаковки
+    (¼/⅓/½/⅔/¾/вся) — без граммов и весов."""
+    dishes = [d for m in meals for d in m.get("dishes", [])
+              if (d.get("nutrition") or {}).get("calories")]
+    if not dishes or target_kcal <= 0:
         return
-    f = max(0.6, min(1.4, target_kcal / total))
-    for m in meals:
-        for d in m.get("dishes", []):
-            _scale_dish(d, f)
+    units = [d["nutrition"]["calories"] / (d.get("portion") or 1.0) for d in dishes]
+    cur_total = sum(d["nutrition"]["calories"] for d in dishes)
+    # не больше целой упаковки (в корзине одна упаковка на блюдо)
+    f = max(0.4, min(1.0, target_kcal / cur_total)) if cur_total else 1.0
+    choice = [min(_FRIENDLY, key=lambda fr: abs(fr - (d.get("portion") or 1.0) * f))
+              for d in dishes]
+
+    def day_total():
+        return sum(units[i] * choice[i] for i in range(len(dishes)))
+
+    for _ in range(60):                       # жадно двигаем доли к цели
+        err = day_total() - target_kcal
+        if abs(err) <= 80:
+            break
+        best = None
+        for i in range(len(dishes)):
+            ci = _FRIENDLY.index(choice[i])
+            for nj in (ci - 1, ci + 1):
+                if 0 <= nj < len(_FRIENDLY):
+                    ne = abs(err + units[i] * (_FRIENDLY[nj] - choice[i]))
+                    if best is None or ne < best[0]:
+                        best = (ne, i, _FRIENDLY[nj])
+        if best is None or best[0] >= abs(err):
+            break
+        choice[best[1]] = best[2]
+
+    for i, d in enumerate(dishes):
+        _set_portion(d, choice[i])
 
 
 @router.post("/week")
