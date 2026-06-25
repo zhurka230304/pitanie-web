@@ -242,17 +242,17 @@ def _score_combo(
         2.0 * abs(tp / max(P, 1) - 1) +
         1.5 * abs(tk / max(K, 1) - 1) +
         1.0 * abs(tc / max(C, 1) - 1) +
-        0.9 * abs(tf / max(F, 1) - 1) +
+        1.4 * abs(tf / max(F, 1) - 1) +
         0.85 * half_count
     )
 
     # Макронутриенты закрываются В РАМКАХ приёма: сильный перебор жира
     # и провал белка не компенсируются другими приёмами дня
-    if tf > max(F, 1) * 1.3:
+    if tf > max(F, 1) * 1.2:
         score += 1.0
-    if tf > max(F, 1) * 1.6:
+    if tf > max(F, 1) * 1.5:
         score += 1.5
-    if tf > max(F, 1) * 2.0:
+    if tf > max(F, 1) * 1.9:
         score += 2.0
     if tp < max(P, 1) * 0.45:
         score += 1.0
