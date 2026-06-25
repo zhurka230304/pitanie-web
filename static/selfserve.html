@@ -266,11 +266,29 @@ async function calcKbju(){
     saveProfile();
   }catch(e){ alert('Не удалось рассчитать КБЖУ'); }
 }
+function compressImage(file, maxDim, quality){
+  return new Promise(resolve=>{
+    try{
+      const img=new Image(); const url=URL.createObjectURL(file);
+      img.onload=()=>{ URL.revokeObjectURL(url);
+        let w=img.width, h=img.height;
+        const sc=Math.min(1, maxDim/Math.max(w,h));
+        w=Math.round(w*sc); h=Math.round(h*sc);
+        const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+        cv.getContext('2d').drawImage(img,0,0,w,h);
+        cv.toBlob(b=>resolve(b||file), 'image/jpeg', quality);
+      };
+      img.onerror=()=>{ URL.revokeObjectURL(url); resolve(file); };
+      img.src=url;
+    }catch(e){ resolve(file); }
+  });
+}
 async function ibUpload(){
   const f=$('ib_file').files[0]; if(!f) return;
-  $('ib_status').textContent='Распознаю отчёт…';
+  $('ib_status').textContent='Сжимаю и распознаю фото…';
   try{
-    const fd=new FormData(); fd.append('file', f);
+    const blob=await compressImage(f, 1800, 0.8);   // уменьшаем, чтобы не упереться в лимит nginx
+    const fd=new FormData(); fd.append('file', blob, 'inbody.jpg');
     const r=await(await fetch('api/self-serve/inbody',{method:'POST',body:fd})).json();
     const x=r.fields||{};
     if(x.weight!=null) $('ib_weight').value=x.weight;
