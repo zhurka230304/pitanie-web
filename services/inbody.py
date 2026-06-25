@@ -50,9 +50,18 @@ async def _ocr(image_bytes: bytes) -> str:
     try:
         async with httpx.AsyncClient(timeout=45) as c:
             r = await c.post(OCR_URL, json=body, headers=headers)
-            data = r.json()
-        return ((data.get("result") or {}).get("textAnnotation") or {}).get("fullText", "") or ""
-    except Exception:
+        if r.status_code != 200:
+            print(f"[inbody] OCR HTTP {r.status_code}: {r.text[:400]}", flush=True)
+            return ""
+        data = r.json()
+        text = ((data.get("result") or {}).get("textAnnotation") or {}).get("fullText", "") or ""
+        if not text:
+            print(f"[inbody] OCR пустой текст. Ответ: {str(data)[:400]}", flush=True)
+        else:
+            print(f"[inbody] OCR ок, символов: {len(text)}", flush=True)
+        return text
+    except Exception as e:
+        print(f"[inbody] OCR исключение: {e!r}", flush=True)
         return ""
 
 
@@ -71,8 +80,11 @@ def _parse_with_gpt(text: str) -> dict:
         ])
         out = res[0].text
         m = re.search(r"\{.*\}", out, re.S)
-        return json.loads(m.group(0)) if m else {}
-    except Exception:
+        parsed = json.loads(m.group(0)) if m else {}
+        print(f"[inbody] GPT разобрал: {parsed}", flush=True)
+        return parsed
+    except Exception as e:
+        print(f"[inbody] GPT parse исключение: {e!r}", flush=True)
         return {}
 
 
