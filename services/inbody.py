@@ -88,11 +88,39 @@ def _parse_with_gpt(text: str) -> dict:
         return {}
 
 
+def _to_jpeg(image_bytes: bytes) -> bytes:
+    """Любой формат (включая HEIC с айфона) -> чистый JPEG для OCR."""
+    try:
+        import io
+        from PIL import Image
+        try:
+            from pillow_heif import register_heif_opener
+            register_heif_opener()
+        except Exception:
+            pass
+        img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        mx = max(img.size)
+        if mx > 2200:                       # ограничиваем разрешение для OCR
+            k = 2200 / mx
+            img = img.resize((int(img.width * k), int(img.height * k)))
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=90)
+        print(f"[inbody] конвертировано в JPEG: {len(buf.getvalue())} байт", flush=True)
+        return buf.getvalue()
+    except Exception as e:
+        print(f"[inbody] _to_jpeg не сработал ({e!r}) — шлём как есть", flush=True)
+        return image_bytes
+
+
 async def extract_inbody(image_bytes: bytes) -> dict:
     """Фото отчёта -> {weight, body_fat_pct, muscle_mass, bmr} (best effort)."""
-    text = await _ocr(image_bytes)
+    n = len(image_bytes or b"")
+    head = image_bytes[:12].hex() if image_bytes else ""
+    print(f"[inbody] получено байт: {n}, начало(hex): {head}", flush=True)
+    loop = asyncio.get_running_loop()
+    jpeg = await loop.run_in_executor(None, lambda: _to_jpeg(image_bytes))
+    text = await _ocr(jpeg)
     if not text:
         return {}
-    loop = asyncio.get_running_loop()
     fields = await loop.run_in_executor(None, lambda: _parse_with_gpt(text))
     return {k: fields.get(k) for k in ("weight", "body_fat_pct", "muscle_mass", "bmr")}
