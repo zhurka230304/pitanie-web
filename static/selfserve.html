@@ -6,74 +6,69 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <title>ЖурКА — рацион под твою цель</title>
 <style>
-  :root{--green:#4A7C2F;--green-dark:#2D5016;--green-light:#EEF4E6;--bg:#F5F0E8;--white:#FDFAF4;--text:#1C1C1A;--muted:#6b7260;--border:#DDD8CC;--r:16px}
+  :root{--green:#4A7C2F;--green-dark:#2D5016;--green-light:#EEF4E6;--bg:#F5F0E8;--white:#FDFAF4;--text:#1C1C1A;--muted:#6b7260;--border:#DDD8CC;--r:16px;--shadow:0 10px 32px rgba(45,80,22,.10)}
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);max-width:680px;margin:0 auto;padding:16px;padding-bottom:60px}
-  h1{font-size:1.4rem;color:var(--green-dark);margin-bottom:2px}
-  .sub{color:var(--muted);font-size:.85rem;margin-bottom:14px}
-  .card{background:var(--white);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
-  .ct{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:10px}
-  .row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)}
+  h1{font-size:1.55rem;color:var(--green-dark);margin-bottom:4px;line-height:1.15}
+  .sub{color:var(--muted);font-size:.85rem;margin-bottom:14px;line-height:1.45}
+  .hero{background:linear-gradient(180deg,#fffaf1 0%,var(--white) 100%);border:1px solid var(--border);border-radius:24px;padding:20px 18px;margin-bottom:12px;box-shadow:var(--shadow)}
+  .hero-kicker{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:7px}
+  .hero-copy{font-size:.95rem;color:var(--muted);line-height:1.5;margin-bottom:14px}
+  .hero-pills{display:flex;gap:6px;flex-wrap:wrap}.hero-pills span{background:var(--green-light);color:var(--green-dark);border-radius:99px;padding:5px 10px;font-size:.78rem;font-weight:700}
+  .card{background:var(--white);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;border:1px solid rgba(221,216,204,.65)}
+  .card.soft{background:rgba(253,250,244,.72)}
+  .ct{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:10px}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)}
   .row:last-child{border-bottom:none}
   .row label{font-size:.9rem;color:var(--muted)}
-  input,select{width:130px;border:1.5px solid var(--border);border-radius:10px;padding:7px 10px;font-size:.95rem;font-weight:600;text-align:right;font-family:inherit;background:var(--bg);color:var(--text);outline:none}
+  input,select{width:150px;border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;font-size:.95rem;font-weight:650;text-align:right;font-family:inherit;background:var(--bg);color:var(--text);outline:none}
   input:focus,select:focus{border-color:var(--green)}
-  .btn{display:block;width:100%;padding:14px;border:none;border-radius:99px;font-size:1rem;font-weight:600;cursor:pointer;font-family:inherit;background:var(--green-dark);color:#fff;margin:8px 0}
+  .btn{display:block;width:100%;padding:15px;border:none;border-radius:99px;font-size:1rem;font-weight:750;cursor:pointer;font-family:inherit;background:var(--green-dark);color:#fff;margin:8px 0;transition:opacity .15s,transform .15s}
   .btn-out{background:none;color:var(--green-dark);border:2px solid var(--green-dark)}
-  .btn:active{opacity:.85}.btn:disabled{opacity:.5}
-  .day{background:var(--white);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
-  .day-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-  .day-title{font-weight:700;color:var(--green-dark)}.kbju{font-size:.78rem;color:var(--muted)}
-  .meal{padding:8px 0;border-top:1px solid var(--border)}
-  .meal-label{font-weight:600;font-size:.88rem;margin-bottom:6px}
-  .dish{display:flex;gap:10px;align-items:center;padding:5px 0}
-  .dish img{width:54px;height:54px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--green-light);border:1px solid var(--border)}
-  .dish .di{flex:1;min-width:0}
-  .dish .dn{font-size:.85rem;font-weight:600;line-height:1.3}
-  .dish .dm{font-size:.75rem;color:var(--muted)}
-  .avatar{width:46px;height:46px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:700;color:var(--green-dark);flex-shrink:0;object-fit:cover}
-  .badge{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--green-light);color:var(--green-dark)}
+  .btn:active{opacity:.85;transform:scale(.99)}.btn:disabled{opacity:.55;transform:none}
+  .primary-cta{position:sticky;bottom:10px;z-index:20;box-shadow:0 10px 26px rgba(45,80,22,.24)}
+  .day{background:var(--white);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;border:1px solid rgba(221,216,204,.7)}
+  .day-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;gap:10px}.day-title{font-weight:800;color:var(--green-dark)}.kbju{font-size:.78rem;color:var(--muted);text-align:right}
+  .meal{padding:8px 0;border-top:1px solid var(--border)}.meal-label{font-weight:700;font-size:.88rem;margin-bottom:6px}
+  .dish{display:flex;gap:10px;align-items:center;padding:5px 0}.dish img{width:54px;height:54px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--green-light);border:1px solid var(--border)}
+  .dish .di{flex:1;min-width:0}.dish .dn{font-size:.85rem;font-weight:700;line-height:1.3}.dish .dm{font-size:.75rem;color:var(--muted)}
+  .avatar{width:46px;height:46px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800;color:var(--green-dark);flex-shrink:0;object-fit:cover}
+  .badge{display:inline-block;font-size:.68rem;font-weight:800;padding:2px 8px;border-radius:99px;background:var(--green-light);color:var(--green-dark)}
   .pill{display:inline-block;font-size:.7rem;background:var(--border);color:var(--muted);border-radius:99px;padding:2px 8px;margin-left:6px}
-  .spin{text-align:center;padding:30px;color:var(--muted)}
+  .spin{text-align:center;padding:26px 18px;color:var(--muted)}.spin-title{font-weight:800;color:var(--green-dark);font-size:1rem;margin-bottom:6px}.spin-steps{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px}.spin-steps span{background:var(--green-light);color:var(--green-dark);border-radius:99px;padding:4px 9px;font-size:.74rem;font-weight:700}
   .cart-link{font-size:.78rem;color:var(--green-dark);word-break:break-all;background:var(--green-light);padding:10px;border-radius:8px;margin:8px 0;line-height:1.5}
-  .tgt{display:flex;gap:6px;flex-wrap:wrap}
-  .tgt span{background:var(--white);border-radius:99px;padding:3px 10px;font-size:.78rem;font-weight:600;color:var(--green-dark)}
-  #cabinet{background:var(--green-light)}
-  .tabs{display:flex;gap:8px;margin-bottom:12px}
-  .tab{flex:1;padding:11px;border:1.5px solid var(--border);border-radius:99px;background:var(--white);color:var(--muted);font-weight:600;font-size:.92rem;cursor:pointer;font-family:inherit}
-  .tab.active{background:var(--green-dark);color:#fff;border-color:var(--green-dark)}
-  .hide{display:none}
-  .thumb{width:88px;height:88px;border-radius:12px;object-fit:cover;flex-shrink:0;cursor:pointer;background:var(--green-light);border:1px solid var(--border)}
-  .thumb-e{width:88px;height:88px;border-radius:12px;flex-shrink:0;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1.8rem;cursor:pointer}
-  .bk{display:flex;gap:12px;align-items:flex-start;margin-top:6px}
-  .items{font-size:.82rem;color:var(--muted);line-height:1.5}
-  .session{background:var(--green-light);border-radius:12px;padding:10px 14px;margin-bottom:8px;font-size:.85rem}
-  .shop li{font-size:.85rem;padding:3px 0}.shop{margin-left:18px}
-  .rm{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;z-index:1000;padding:20px 12px;overflow-y:auto}
-  .rm.show{display:flex}
-  .rm-card{background:var(--white);border-radius:var(--r);padding:18px;max-width:560px;width:100%;position:relative;margin:auto}
-  .rm-close{position:absolute;top:8px;right:14px;font-size:1.8rem;color:var(--muted);cursor:pointer;line-height:1}
+  .tgt{display:flex;gap:6px;flex-wrap:wrap}.tgt span{background:var(--white);border-radius:99px;padding:3px 10px;font-size:.78rem;font-weight:700;color:var(--green-dark)}
+  #cabinet{background:var(--green-light)}.tabs{display:flex;gap:8px;margin-bottom:12px}.tab{flex:1;padding:11px;border:1.5px solid var(--border);border-radius:99px;background:var(--white);color:var(--muted);font-weight:700;font-size:.92rem;cursor:pointer;font-family:inherit}.tab.active{background:var(--green-dark);color:#fff;border-color:var(--green-dark)}
+  details.fold{background:var(--white);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}details.fold summary{list-style:none;cursor:pointer;padding:13px 16px;font-weight:800;color:var(--green-dark);display:flex;align-items:center;justify-content:space-between;gap:12px}details.fold summary::-webkit-details-marker{display:none}details.fold summary:after{content:'+';font-size:1.15rem;color:var(--muted)}details.fold[open] summary:after{content:'−'}.fold-body{padding:0 16px 14px}.muted-note{font-size:.78rem;color:var(--muted);line-height:1.45;margin-top:8px}.section-title{font-weight:800;color:var(--green-dark);font-size:1.05rem;margin-bottom:8px}.result-summary{background:var(--green-dark);color:#fff;border-radius:20px;padding:16px;margin-bottom:12px}.result-summary .ct{color:rgba(255,255,255,.72)}.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.summary-cell{background:rgba(255,255,255,.12);border-radius:12px;padding:10px;text-align:center}.summary-cell b{display:block;font-size:1rem}.summary-cell span{font-size:.72rem;opacity:.78}
+  .hide{display:none}.thumb{width:88px;height:88px;border-radius:12px;object-fit:cover;flex-shrink:0;cursor:pointer;background:var(--green-light);border:1px solid var(--border)}.thumb-e{width:88px;height:88px;border-radius:12px;flex-shrink:0;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1.8rem;cursor:pointer}.bk{display:flex;gap:12px;align-items:flex-start;margin-top:6px}.items{font-size:.82rem;color:var(--muted);line-height:1.5}.session{background:var(--green-light);border-radius:12px;padding:10px 14px;margin-bottom:8px;font-size:.85rem}.shop li{font-size:.85rem;padding:3px 0}.shop{margin-left:18px}.rm{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;z-index:1000;padding:20px 12px;overflow-y:auto}.rm.show{display:flex}.rm-card{background:var(--white);border-radius:var(--r);padding:18px;max-width:560px;width:100%;position:relative;margin:auto}.rm-close{position:absolute;top:8px;right:14px;font-size:1.8rem;color:var(--muted);cursor:pointer;line-height:1}
+  @media(max-width:520px){body{padding:12px;padding-bottom:70px}.hero{padding:18px 16px}input,select{width:138px}.summary-grid{grid-template-columns:1fr}.day-head{align-items:flex-start;flex-direction:column}.kbju{text-align:left}.primary-cta{bottom:8px}}
 </style>
 </head>
 <body>
-<h1>🥗 ЖурКА</h1>
-<div class="sub">Каждый день знаешь, что есть и что заказать</div>
+<section class="hero">
+  <div class="hero-kicker">ЖурКА для самостоятельного питания</div>
+  <h1>Меню на неделю под твою цель</h1>
+  <div class="hero-copy">Укажи базовые данные — ЖурКА посчитает КБЖУ, подберёт готовую еду или рецепты и соберёт корзину.</div>
+  <div class="hero-pills"><span>без тренера</span><span>можно без регистрации</span><span>ВкусВилл</span></div>
+</section>
 
 <div class="card" id="cabinet">
   <div style="display:flex;gap:12px;align-items:center">
     <div id="avatar" class="avatar">👤</div>
     <div style="flex:1;min-width:0">
-      <div id="cabName" style="font-weight:700;font-size:1rem;color:var(--green-dark)">Гость</div>
-      <div id="cabStatus" class="sub" style="margin:0">Данные сохраняются в этом браузере</div>
+      <div id="cabName" style="font-weight:800;font-size:1rem;color:var(--green-dark)">Гость</div>
+      <div id="cabStatus" class="sub" style="margin:0">Можно пользоваться без регистрации</div>
     </div>
   </div>
   <div id="cabTargets" style="margin-top:10px"></div>
-  <div id="loginArea" style="margin-top:10px"></div>
   <button class="btn btn-out" onclick="openHistory()" style="margin:10px 0 0;padding:10px">📋 История планов</button>
 </div>
 
 <div class="card">
-  <div class="ct">Твои данные</div>
+  <div class="ct">Быстрый старт</div>
+  <div class="section-title">Твои данные</div>
+  <div class="row"><label>Цель</label>
+    <select id="goal"><option value="loss">Похудение</option><option value="maintain">Поддержание</option><option value="gain">Набор</option></select></div>
   <div class="row"><label>Пол</label>
     <select id="sex"><option value="female">Женский</option><option value="male">Мужской</option></select></div>
   <div class="row"><label>Вес, кг</label><input id="weight" type="number" value="60"/></div>
@@ -87,40 +82,20 @@
       <option value="high">Высокая (6–7 трен/нед)</option>
       <option value="very_high">Очень высокая</option>
     </select></div>
-  <div class="row"><label>Цель</label>
-    <select id="goal"><option value="loss">Похудение</option><option value="maintain">Поддержание</option><option value="gain">Набор</option></select></div>
-  <button class="btn btn-out" onclick="calcKbju()" style="margin-top:8px">Рассчитать КБЖУ</button>
-</div>
-
-<div class="card">
-  <div class="ct">📄 Загрузить InBody (точнее)</div>
-  <div class="sub" style="margin:0 0 8px">Фото отчёта — числа подставятся сами. Проверь и поправь, если надо.</div>
-  <input id="ib_file" type="file" accept="image/*" onchange="ibUpload()" style="width:100%;font-size:.9rem;border:1px solid var(--border);border-radius:10px;padding:8px;background:var(--bg);text-align:left"/>
-  <div id="ib_status" class="sub" style="margin:6px 0"></div>
-  <div class="row"><label>Вес, кг</label><input id="ib_weight" type="number" step="0.1"/></div>
-  <div class="row"><label>% жира (PBF)</label><input id="ib_fat" type="number" step="0.1"/></div>
-  <div class="row"><label>Мышцы (SMM), кг</label><input id="ib_smm" type="number" step="0.1"/></div>
-  <div class="row"><label>Обмен (BMR), ккал</label><input id="ib_bmr" type="number"/></div>
-  <button class="btn btn-out" onclick="ibCalc()" style="margin-top:8px">Рассчитать КБЖУ по InBody</button>
-</div>
-
-<div class="card">
-  <div class="ct">Цель на день (можно править)</div>
-  <div class="row"><label>Калории</label><input id="kcal" type="number" value="1950"/></div>
-  <div class="row"><label>Белки, г</label><input id="protein" type="number" value="150"/></div>
-  <div class="row"><label>Жиры, г</label><input id="fat" type="number" value="65"/></div>
-  <div class="row"><label>Углеводы, г</label><input id="carbs" type="number" value="180"/></div>
-  <div id="dishOpts">
-  <div class="row"><label>Приёмов в день</label>
-    <select id="meal_count"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
-  <div class="row"><label>Ограничения</label>
-    <select id="restrictions"><option value="">нет</option><option value="вегетарианское">вегетарианское</option><option value="без мяса">без мяса</option></select></div>
-  </div>
+  <button class="btn btn-out" onclick="calcKbju()" style="margin-top:10px">Рассчитать дневную цель</button>
 </div>
 
 <div class="tabs">
-  <button id="tabDishes" class="tab active" onclick="setMode('dishes')">🛒 Готовые блюда</button>
+  <button id="tabDishes" class="tab active" onclick="setMode('dishes')">🛒 Готовая еда</button>
   <button id="tabRecipes" class="tab" onclick="setMode('recipes')">👩‍🍳 Рецепты</button>
+</div>
+
+<div class="card soft" id="dishOpts">
+  <div class="ct">Настройки меню</div>
+  <div class="row"><label>Приёмов в день</label>
+    <select id="meal_count"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+  <div class="row"><label>Что исключить</label>
+    <select id="restrictions"><option value="">ничего</option><option value="вегетарианское">вегетарианское</option><option value="без мяса">без мяса</option></select></div>
 </div>
 
 <div class="card hide" id="recipeCfg">
@@ -141,7 +116,37 @@
     <select id="r_bt"><option>10</option><option>15</option><option selected>20</option><option>30</option></select></div>
 </div>
 
-<button class="btn" id="go" onclick="build()">Собрать неделю</button>
+<details class="fold">
+  <summary>Точная настройка КБЖУ</summary>
+  <div class="fold-body">
+    <div class="sub" style="margin:0 0 8px">Можно оставить как есть: ЖурКА заполнит эти числа после расчёта.</div>
+    <div class="row"><label>Калории</label><input id="kcal" type="number" value="1950"/></div>
+    <div class="row"><label>Белки, г</label><input id="protein" type="number" value="150"/></div>
+    <div class="row"><label>Жиры, г</label><input id="fat" type="number" value="65"/></div>
+    <div class="row"><label>Углеводы, г</label><input id="carbs" type="number" value="180"/></div>
+  </div>
+</details>
+
+<details class="fold">
+  <summary>У меня есть InBody</summary>
+  <div class="fold-body">
+    <div class="sub" style="margin:0 0 8px">Фото отчёта — числа подставятся сами. Проверь и поправь, если надо.</div>
+    <input id="ib_file" type="file" accept="image/*" onchange="ibUpload()" style="width:100%;font-size:.9rem;border:1px solid var(--border);border-radius:10px;padding:8px;background:var(--bg);text-align:left"/>
+    <div id="ib_status" class="sub" style="margin:6px 0"></div>
+    <div class="row"><label>Вес, кг</label><input id="ib_weight" type="number" step="0.1"/></div>
+    <div class="row"><label>% жира (PBF)</label><input id="ib_fat" type="number" step="0.1"/></div>
+    <div class="row"><label>Мышцы (SMM), кг</label><input id="ib_smm" type="number" step="0.1"/></div>
+    <div class="row"><label>Обмен (BMR), ккал</label><input id="ib_bmr" type="number"/></div>
+    <button class="btn btn-out" onclick="ibCalc()" style="margin-top:8px">Рассчитать по InBody</button>
+  </div>
+</details>
+
+<details class="fold">
+  <summary>Войти и синхронизировать</summary>
+  <div class="fold-body" id="loginArea"></div>
+</details>
+
+<button class="btn primary-cta" id="go" onclick="build()">Собрать меню на неделю</button>
 <div id="out"></div>
 
 <div class="rm" id="rm" onclick="if(event.target===this)closeRm()">
@@ -201,7 +206,7 @@ async function emailAuth(kind){
   }catch(e){ alert('Не удалось войти'); }
 }
 function loginAreaHtml(){
-  return '<div class="sub" style="margin:0 0 8px">Войдите, чтобы сохранять профиль и историю между устройствами:</div>'
+  return '<div class="sub" style="margin:0 0 8px">Вход нужен только для истории между устройствами. Меню можно собрать и гостем.</div>'
     +`<input id="em_email" type="email" placeholder="Почта" style="${inStyle}"/>`
     +`<input id="em_pass" type="password" placeholder="Пароль (от 6 символов)" style="${inStyle}"/>`
     +`<input id="em_name" type="text" placeholder="Имя (для регистрации)" style="${inStyle}"/>`
@@ -250,7 +255,7 @@ function renderCabinet(){
     $('loginArea').innerHTML='<button class="btn btn-out" onclick="logout()" style="margin:0;padding:9px">Выйти</button>';
   }else{
     $('avatar').innerHTML=''; $('avatar').textContent='👤'; $('cabName').textContent='Гость';
-    $('cabStatus').textContent='Данные сохраняются в этом браузере';
+    $('cabStatus').textContent='Можно пользоваться без регистрации';
     const la=$('loginArea');
     if(!la.querySelector('#em_email')){ la.innerHTML=loginAreaHtml(); injectTgWidget(); }
   }
@@ -287,7 +292,7 @@ async function ibUpload(){
   const f=$('ib_file').files[0]; if(!f) return;
   $('ib_status').textContent='Сжимаю и распознаю фото…';
   try{
-    const blob=await compressImage(f, 1800, 0.8);   // уменьшаем, чтобы не упереться в лимит nginx
+    const blob=await compressImage(f, 1800, 0.8);
     const fd=new FormData(); fd.append('file', blob, 'inbody.jpg');
     const r=await(await fetch('api/self-serve/inbody',{method:'POST',body:fd})).json();
     const x=r.fields||{};
@@ -296,7 +301,7 @@ async function ibUpload(){
     if(x.muscle_mass!=null) $('ib_smm').value=x.muscle_mass;
     if(x.bmr!=null) $('ib_bmr').value=x.bmr;
     const got=Object.values(x).filter(v=>v!=null).length;
-    $('ib_status').textContent=got?'Распознано — проверь числа и нажми «Рассчитать КБЖУ по InBody».':'Не удалось распознать — введи числа вручную.';
+    $('ib_status').textContent=got?'Распознано — проверь числа и нажми «Рассчитать по InBody».':'Не удалось распознать — введи числа вручную.';
   }catch(e){ $('ib_status').textContent='Ошибка распознавания — введи числа вручную.'; }
 }
 async function ibCalc(){
@@ -312,11 +317,12 @@ async function ibCalc(){
   }catch(e){ alert('Не удалось рассчитать'); }
 }
 function showOut(html){ $('out').innerHTML=html; $('out').scrollIntoView({behavior:'smooth',block:'start'}); }
+function loadingHtml(){return '<div class="card spin"><div class="spin-title">Собираю меню под твою цель</div><div>Это может занять до минуты: ЖурКА ищет блюда, проверяет КБЖУ и собирает неделю.</div><div class="spin-steps"><span>завтраки</span><span>обеды</span><span>ужины</span><span>КБЖУ</span></div><div class="muted-note">Не закрывай страницу — результат появится здесь автоматически.</div></div>';}
 
 async function build(){
   saveProfile();
   const btn=$('go'); btn.disabled=true; btn.textContent='Собираю меню…';
-  showOut('<div class="spin">Подбираю блюда под твою цель… это занимает до минуты.</div>');
+  showOut(loadingHtml());
   try{
     currentTarget={kcal:+$('kcal').value,protein:+$('protein').value,fat:+$('fat').value,carbs:+$('carbs').value};
     if(mode==='recipes'){
@@ -330,8 +336,8 @@ async function build(){
       const r=await(await fetch('api/self-serve/week',{method:'POST',headers:H,body:JSON.stringify(b)})).json();
       currentDays=r.days||[]; render(currentDays);
     }
-  }catch(e){ showOut('<div class="card sub" style="color:#c62828">Не удалось собрать. Попробуй ещё раз.</div>'); }
-  finally{ btn.disabled=false; btn.textContent='Собрать неделю'; }
+  }catch(e){ showOut('<div class="card sub" style="color:#c62828">Не удалось собрать меню. Попробуй ещё раз или смягчи ограничения.</div>'); }
+  finally{ btn.disabled=false; btn.textContent='Собрать меню на неделю'; }
 }
 
 const WD=['пн','вт','ср','чт','пт','сб','вс'];
@@ -341,6 +347,13 @@ function dayTotals(day){
   (day.meals||[]).forEach(m=>(m.dishes||[]).forEach(d=>{const n=d.nutrition||{};k+=n.calories||0;p+=n.protein||0;f+=n.fat||0;c+=(n.carbohydrates||0);}));
   return {kcal:Math.round(k),protein:Math.round(p),fat:Math.round(f),carbs:Math.round(c)};
 }
+function weekSummary(days){
+  const sum=days.reduce((a,d)=>{const t=dayTotals(d);a.kcal+=t.kcal;a.protein+=t.protein;a.fat+=t.fat;a.carbs+=t.carbs;return a;},{kcal:0,protein:0,fat:0,carbs:0});
+  const n=Math.max(days.length,1);
+  let dishes=0; days.forEach(d=>(d.meals||[]).forEach(m=>dishes+=(m.dishes||[]).length));
+  return {kcal:Math.round(sum.kcal/n),protein:Math.round(sum.protein/n),fat:Math.round(sum.fat/n),carbs:Math.round(sum.carbs/n),dishes};
+}
+function summaryHtml(days){const s=weekSummary(days);return `<div class="result-summary"><div class="ct">Итог недели</div><div style="font-weight:800;font-size:1.05rem;margin-bottom:10px">Меню готово: ${days.length} дней, ${s.dishes} позиций</div><div class="summary-grid"><div class="summary-cell"><b>${s.kcal}</b><span>ккал в среднем</span></div><div class="summary-cell"><b>Б${s.protein} Ж${s.fat}</b><span>в среднем</span></div><div class="summary-cell"><b>У${s.carbs}</b><span>углеводы</span></div></div></div>`;}
 function dishRow(d,key,on){
   const img=d.image_url?`<img src="${d.image_url}"/>`:`<div style="width:54px;height:54px;border-radius:10px;background:var(--green-light);flex-shrink:0"></div>`;
   const g=d.portion_label || (d.needed_g?`${Math.round(d.needed_g)} г`:'');
@@ -352,7 +365,7 @@ function dishRow(d,key,on){
 }
 function render(days){
   if(!days||!days.length){ showOut('<div class="card sub">Ничего не подобралось. Попробуй изменить цель или ограничения.</div>'); return; }
-  let h='<button class="btn" id="saveBtn" onclick="savePlan()" style="margin-top:0">💾 Сохранить план в историю</button>';
+  let h=summaryHtml(days)+'<button class="btn" id="saveBtn" onclick="savePlan()" style="margin-top:0">💾 Сохранить план в историю</button>';
   days.forEach((day,i)=>{
     const t=dayTotals(day);
     h+=`<div class="day"><div class="day-head"><span class="day-title">День ${i+1} (${WD[i%7]})</span>
@@ -395,7 +408,7 @@ async function openHistory(){
     let plans;
     if(serverMode()){ const r=await(await fetch('api/self-serve/plan/history',{method:'POST',headers:H,body:JSON.stringify(authBody())})).json(); plans=r.plans||[]; }
     else plans=lsGet('ss_plans',[]).map(p=>({id:p.id,created_at:p.created_at,target:p.target}));
-    if(!plans.length){ showOut('<div class="card sub">Сохранённых планов пока нет. Собери неделю и нажми «💾 Сохранить план в историю».</div>'); return; }
+    if(!plans.length){ showOut('<div class="card sub">Сохранённых планов пока нет. Собери меню и нажми «💾 Сохранить план в историю».</div>'); return; }
     let h='<div class="card"><div class="ct">📋 История планов</div>';
     plans.forEach(p=>{const t=p.target||{};
       h+=`<div class="row" style="cursor:pointer" onclick="viewHistory('${p.id}')"><span>📅 ${p.created_at}</span><span class="sub" style="margin:0">${t.kcal||''} ккал · Б${t.protein||''}</span></div>`;});
