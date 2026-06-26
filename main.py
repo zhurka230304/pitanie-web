@@ -2,7 +2,7 @@ import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, Response, RedirectResponse
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -52,13 +52,19 @@ async def serve_mealprep():
     )
 
 
-@app.get("/menu")
+@app.get("/meal-plan")
 async def serve_selfserve():
-    """App 1 (B2C self-serve) — сайт подбора готовых блюд без тренера."""
+    """App 1 (B2C self-serve) — персональный план питания на неделю."""
     return FileResponse(
         "static/selfserve.html",
         headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
     )
+
+
+@app.get("/menu")
+async def redirect_menu_to_meal_plan():
+    """Старый адрес оставляем как редирект, чтобы внешние ссылки не ломались."""
+    return RedirectResponse(url="/meal-plan", status_code=307)
 
 
 @app.get("/{full_path:path}")
