@@ -1,10 +1,6 @@
-"""B2C self-serve — человек без тренера сам собирает себе рацион.
-
-Переиспользует общий движок готовых блюд (generate_week, create_cart) напрямую,
-без привязки к тренеру/клиенту и без квот. Состояние (профиль, история) на этом
-этапе хранится на стороне клиента (браузер); серверные аккаунты добавим позже.
-"""
+"""B2C self-serve — человек без тренера сам собирает себе рацион."""
 import os
+import random
 from datetime import date, datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
@@ -18,14 +14,16 @@ from models import SelfServeStore, User
 from auth import hash_password, verify_password, create_token, SECRET_KEY, ALGORITHM
 from services.week_planner import generate_week
 from services.food_groups import coverage_report
-from services.vkusvill import create_cart
+from services.vkusvill import (
+    create_cart, fetch_enriched_items, format_item_dict, MEAL_TYPE_QUERIES,
+)
+from services.gpt import run_gpt_selection
 from services.inbody import extract_inbody, kbju_from_inbody
 
 router = APIRouter(prefix="/api/self-serve", tags=["self-serve"])
 
 
 def _tg_id(tg_user: dict):
-    """telegram_id из объекта Telegram Login Widget (мягкая проверка)."""
     try:
         return int(tg_user["id"]) if tg_user and tg_user.get("id") else None
     except (ValueError, TypeError, KeyError):
@@ -33,7 +31,6 @@ def _tg_id(tg_user: dict):
 
 
 def _uid_from_token(token: str):
-    """user_id из JWT-токена (вход по почте) или None."""
     if not token:
         return None
     try:
@@ -43,7 +40,6 @@ def _uid_from_token(token: str):
 
 
 def _user_key(token: str, tg_user: dict):
-    """Единый ключ пользователя: 'u<id>' (почта) или 'tg<id>' (Telegram)."""
     uid = _uid_from_token(token)
     if uid:
         return f"u{uid}"
@@ -53,7 +49,6 @@ def _user_key(token: str, tg_user: dict):
     return None
 
 
-# ── Расчёт КБЖУ по антропометрике (Харрис-Бенедикт — методика проекта) ──
 ACTIVITY = {
     "sedentary": 1.2, "light": 1.375, "moderate": 1.55, "high": 1.725, "very_high": 1.9,
 }
@@ -71,7 +66,7 @@ class KbjuBody(BaseModel):
     height: float = 165
     age: int = 30
     activity: str = "moderate"
-    goal: str = "loss"          # loss (−15%) | maintain | gain (+10%)
+    goal: str = "loss"
 
 
 @router.post("/kbju")
@@ -88,7 +83,6 @@ async def selfserve_kbju(b: KbjuBody):
     }
 
 
-# ── InBody: загрузка отчёта (распознавание) и КБЖУ по составу тела ──
 class InbodyKbjuBody(BaseModel):
     weight: float = 0
     body_fat_pct: float | None = None
@@ -100,7 +94,6 @@ class InbodyKbjuBody(BaseModel):
 
 @router.post("/inbody")
 async def api_inbody(file: UploadFile = File(...)):
-    """Фото отчёта InBody -> распознанные числа (weight/body_fat_pct/muscle_mass/bmr)."""
     data = await file.read()
     return {"fields": await extract_inbody(data)}
 
@@ -110,7 +103,6 @@ async def api_inbody_kbju(b: InbodyKbjuBody):
     return kbju_from_inbody(b.weight, b.body_fat_pct, b.muscle_mass, b.bmr, b.activity, b.goal)
 
 
-# ── Недельный план готовых блюд под КБЖУ (тот же движок, что у тренера) ──
 class WeekBody(BaseModel):
     kcal: float = 1950
     protein: float = 150
@@ -121,13 +113,7 @@ class WeekBody(BaseModel):
     days_count: int = 7
 
 
-def _day_kcal(meals):
-    return sum((d.get("nutrition") or {}).get("calories", 0)
-               for m in meals for d in m.get("dishes", []))
-
-
 def _scale_dish(dish, f):
-    """Масштабировать порцию блюда и его КБЖУ на коэффициент f."""
     n = dish.get("nutrition")
     if n:
         for k in ("protein", "fat", "carbohydrates", "calories"):
@@ -139,7 +125,6 @@ def _scale_dish(dish, f):
         dish["portion"] = round(dish["portion"] * f, 2)
 
 
-# человеку понятная доля упаковки (без весов): ¼, ⅓, ½, ⅔, ¾, вся
 _FRIENDLY = [0.25, 0.33, 0.5, 0.67, 0.75, 1.0]
 _FRIENDLY_LABEL = {0.25: "¼ упаковки", 0.33: "⅓ упаковки", 0.5: "половина упаковки",
                    0.67: "⅔ упаковки", 0.75: "¾ упаковки", 1.0: "вся упаковка"}
@@ -154,15 +139,12 @@ def _set_portion(dish, new_p):
 
 
 def _fit_day(meals, target_kcal):
-    """Подогнать день под цель ±100, выбирая каждому блюду удобную долю упаковки
-    (¼/⅓/½/⅔/¾/вся) — без граммов и весов."""
     dishes = [d for m in meals for d in m.get("dishes", [])
               if (d.get("nutrition") or {}).get("calories")]
     if not dishes or target_kcal <= 0:
         return
     units = [d["nutrition"]["calories"] / (d.get("portion") or 1.0) for d in dishes]
     cur_total = sum(d["nutrition"]["calories"] for d in dishes)
-    # не больше целой упаковки (в корзине одна упаковка на блюдо)
     f = max(0.4, min(1.0, target_kcal / cur_total)) if cur_total else 1.0
     choice = [min(_FRIENDLY, key=lambda fr: abs(fr - (d.get("portion") or 1.0) * f))
               for d in dishes]
@@ -170,7 +152,7 @@ def _fit_day(meals, target_kcal):
     def day_total():
         return sum(units[i] * choice[i] for i in range(len(dishes)))
 
-    for _ in range(60):                       # жадно двигаем доли к цели
+    for _ in range(60):
         err = day_total() - target_kcal
         if abs(err) <= 80:
             break
@@ -199,15 +181,14 @@ async def selfserve_week(b: WeekBody):
         start=date.today(),
         days_count=max(1, min(7, b.days_count)),
     )
-    for day in days:                      # дневная калорийность в пределах ±100
+    for day in days:
         _fit_day(day.get("meals", []), b.kcal)
     return {"days": days, "coverage": coverage_report(days)}
 
 
-# ── Корзина ВкусВилл из выбранных дней (блюда с in_cart=True) ──
 class CartBody(BaseModel):
-    days: list = []            # дни плана (или их подмножество)
-    xml_ids: list = []         # либо напрямую список xml_id
+    days: list = []
+    xml_ids: list = []
 
 
 @router.post("/cart")
@@ -230,7 +211,70 @@ async def selfserve_cart(b: CartBody):
     return {"cart_url": url, "count": len(xml_ids)}
 
 
-# ── Регистрация/вход по почте (переиспользуем auth.py + модель User) ──
+class ReplaceDishBody(BaseModel):
+    meal_label: str
+    meal_type: str = "lunch"
+    kbju: dict = {}
+    restrictions: str | None = None
+    exclude_xml_ids: list = []
+
+
+_MEAL_TYPE_MAP = {
+    "завтрак": "breakfast",
+    "обед": "lunch",
+    "обед / ужин": "lunch",
+    "ужин": "dinner",
+    "перекус": "snack",
+    "перекус 1": "snack",
+    "перекус 2": "snack",
+}
+
+
+def _item_full_kcal(item: dict) -> float:
+    nutr = item.get("nutrition_per_100g") or {}
+    kcal_100 = nutr.get("calories", 0) or 0
+    weight = item.get("weight_g") or 100
+    return float(kcal_100) * float(weight) / 100
+
+
+@router.post("/replace-dish")
+async def selfserve_replace_dish(b: ReplaceDishBody):
+    meal_type_key = _MEAL_TYPE_MAP.get((b.meal_type or "").lower(), b.meal_type or "lunch")
+    if meal_type_key not in MEAL_TYPE_QUERIES:
+        meal_type_key = "lunch"
+
+    queries = MEAL_TYPE_QUERIES.get(meal_type_key, MEAL_TYPE_QUERIES["lunch"])
+    selected_queries = random.sample(queries, min(6, len(queries)))
+    target = b.kbju or {}
+    kcal = float(target.get("kcal") or target.get("calories") or 500)
+    protein = float(target.get("protein") or 30)
+    fat = float(target.get("fat") or 15)
+    carbs = float(target.get("carbs") or target.get("carbohydrates") or 50)
+    exclude_set = {str(x) for x in (b.exclude_xml_ids or [])}
+
+    enriched = await fetch_enriched_items(
+        queries=selected_queries,
+        preference=b.restrictions or None,
+        meal_type=b.meal_type,
+    )
+    enriched = [i for i in enriched if str(i.get("xml_id", "")) not in exclude_set]
+    if not enriched:
+        raise HTTPException(404, "Не удалось найти замену, попробуйте ещё раз")
+
+    selected = await run_gpt_selection(
+        enriched_items=enriched,
+        P=protein, F=fat, C=carbs, K=kcal,
+        preference=b.restrictions or None,
+        count=5,
+        meal_label=b.meal_label,
+    )
+    if not selected:
+        raise HTTPException(404, "Не удалось найти замену, попробуйте ещё раз")
+
+    item = min(selected, key=lambda it: abs(_item_full_kcal(it) - kcal))
+    return {"dish": format_item_dict(item, item.get("weight_g", 0))}
+
+
 class RegisterBody(BaseModel):
     name: str = ""
     email: str
@@ -269,7 +313,6 @@ async def selfserve_login(b: LoginBody, db: AsyncSession = Depends(get_db)):
     return {"token": create_token(user.id), "name": user.name}
 
 
-# ── Хранилище: профиль + история планов (вход по почте или Telegram) ──
 class AuthBody(BaseModel):
     tg_user: dict = {}
     token: str = ""
@@ -295,7 +338,6 @@ class GetPlanBody(BaseModel):
 
 @router.get("/config")
 async def selfserve_config():
-    """Имя бота для кнопки «Войти через Telegram» (пусто — Telegram-вход не настроен)."""
     return {"bot_username": os.getenv("BOT_USERNAME", "")}
 
 
@@ -346,7 +388,7 @@ async def plan_save(b: SavePlanBody, db: AsyncSession = Depends(get_db)):
     if s:
         plans = list(s.plans or [])
         plans.insert(0, entry)
-        s.plans = plans[:30]                 # переприсваиваем — иначе JSON не обновится
+        s.plans = plans[:30]
         s.updated_at = datetime.now(timezone.utc)
     else:
         db.add(SelfServeStore(user_key=key, name=_disp_name(b), profile=None, plans=[entry]))
@@ -377,7 +419,6 @@ async def plan_get(b: GetPlanBody, db: AsyncSession = Depends(get_db)):
     return {"plan": None}
 
 
-# ── Трекинг: вес ({date,kg}) и отметки «съел/заказал» по датам ──
 class TrackBody(BaseModel):
     tg_user: dict = {}
     token: str = ""
