@@ -6,15 +6,15 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <title>ЖурКА — рацион под твою цель</title>
 <style>
-  :root{--green:#4A7C2F;--green-dark:#2D5016;--green-light:#EEF4E6;--bg:#F5F0E8;--white:#FDFAF4;--text:#1C1C1A;--muted:#6b7260;--border:#DDD8CC;--r:16px;--shadow:0 10px 32px rgba(45,80,22,.10)}
+  :root{--green:#8C5A72;--green-dark:#33262E;--green-light:#F1E4EA;--bg:#F4EFE7;--white:#FFF9F0;--text:#1F1E1C;--muted:#706B63;--border:#E2D8CA;--caramel:#C9874A;--r:16px;--shadow:0 14px 38px rgba(51,38,46,.10)}
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);max-width:680px;margin:0 auto;padding:16px;padding-bottom:60px}
   h1{font-size:1.55rem;color:var(--green-dark);margin-bottom:4px;line-height:1.15}
   .sub{color:var(--muted);font-size:.85rem;margin-bottom:14px;line-height:1.45}
-  .hero{background:linear-gradient(180deg,#fffaf1 0%,var(--white) 100%);border:1px solid var(--border);border-radius:24px;padding:20px 18px;margin-bottom:12px;box-shadow:var(--shadow)}
+  .hero{background:linear-gradient(180deg,#fff7ee 0%,var(--white) 100%);border:1px solid var(--border);border-radius:24px;padding:22px 18px;margin-bottom:12px;box-shadow:var(--shadow)}
   .hero-kicker{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:7px}
   .hero-copy{font-size:.95rem;color:var(--muted);line-height:1.5;margin-bottom:14px}
-  .hero-pills{display:flex;gap:6px;flex-wrap:wrap}.hero-pills span{background:var(--green-light);color:var(--green-dark);border-radius:99px;padding:5px 10px;font-size:.78rem;font-weight:700}
+  .hero-pills{display:flex;gap:6px;flex-wrap:wrap}.hero-pills span{background:var(--green-light);color:var(--green-dark);border-radius:99px;padding:5px 10px;font-size:.78rem;font-weight:700}.hero-pills span:first-child{background:#F6E2D0;color:#5F3B24}
   .card{background:var(--white);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;border:1px solid rgba(221,216,204,.65)}
   .card.soft{background:rgba(253,250,244,.72)}
   .ct{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:10px}
@@ -22,11 +22,11 @@
   .row:last-child{border-bottom:none}
   .row label{font-size:.9rem;color:var(--muted)}
   input,select{width:150px;border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;font-size:.95rem;font-weight:650;text-align:right;font-family:inherit;background:var(--bg);color:var(--text);outline:none}
-  input:focus,select:focus{border-color:var(--green)}
+  input:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(140,90,114,.10)}
   .btn{display:block;width:100%;padding:15px;border:none;border-radius:99px;font-size:1rem;font-weight:750;cursor:pointer;font-family:inherit;background:var(--green-dark);color:#fff;margin:8px 0;transition:opacity .15s,transform .15s}
   .btn-out{background:none;color:var(--green-dark);border:2px solid var(--green-dark)}
   .btn:active{opacity:.85;transform:scale(.99)}.btn:disabled{opacity:.55;transform:none}
-  .primary-cta{position:sticky;bottom:10px;z-index:20;box-shadow:0 10px 26px rgba(45,80,22,.24)}
+  .primary-cta{position:sticky;bottom:10px;z-index:20;box-shadow:0 12px 30px rgba(51,38,46,.22)}
   .day{background:var(--white);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;border:1px solid rgba(221,216,204,.7)}
   .day-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;gap:10px}.day-title{font-weight:800;color:var(--green-dark)}.kbju{font-size:.78rem;color:var(--muted);text-align:right}
   .meal{padding:8px 0;border-top:1px solid var(--border)}.meal-label{font-weight:700;font-size:.88rem;margin-bottom:6px}
@@ -39,18 +39,18 @@
   .cart-link{font-size:.78rem;color:var(--green-dark);word-break:break-all;background:var(--green-light);padding:10px;border-radius:8px;margin:8px 0;line-height:1.5}
   .tgt{display:flex;gap:6px;flex-wrap:wrap}.tgt span{background:var(--white);border-radius:99px;padding:3px 10px;font-size:.78rem;font-weight:700;color:var(--green-dark)}
   #cabinet{background:var(--green-light)}.tabs{display:flex;gap:8px;margin-bottom:12px}.tab{flex:1;padding:11px;border:1.5px solid var(--border);border-radius:99px;background:var(--white);color:var(--muted);font-weight:700;font-size:.92rem;cursor:pointer;font-family:inherit}.tab.active{background:var(--green-dark);color:#fff;border-color:var(--green-dark)}
-  details.fold{background:var(--white);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}details.fold summary{list-style:none;cursor:pointer;padding:13px 16px;font-weight:800;color:var(--green-dark);display:flex;align-items:center;justify-content:space-between;gap:12px}details.fold summary::-webkit-details-marker{display:none}details.fold summary:after{content:'+';font-size:1.15rem;color:var(--muted)}details.fold[open] summary:after{content:'−'}.fold-body{padding:0 16px 14px}.muted-note{font-size:.78rem;color:var(--muted);line-height:1.45;margin-top:8px}.section-title{font-weight:800;color:var(--green-dark);font-size:1.05rem;margin-bottom:8px}.result-summary{background:var(--green-dark);color:#fff;border-radius:20px;padding:16px;margin-bottom:12px}.result-summary .ct{color:rgba(255,255,255,.72)}.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.summary-cell{background:rgba(255,255,255,.12);border-radius:12px;padding:10px;text-align:center}.summary-cell b{display:block;font-size:1rem}.summary-cell span{font-size:.72rem;opacity:.78}
-  .target-card{display:none;background:var(--green-light);border-radius:14px;padding:12px;margin-top:10px;color:var(--green-dark);line-height:1.45}.target-card b{display:block;font-size:1rem;margin-bottom:4px}.restrictions-input{width:220px;text-align:left}.day-summary-lines{font-size:.92rem;line-height:1.65;color:var(--text);margin-top:8px}.day-summary-lines b{color:var(--green-dark)}.day-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.day-actions .btn{flex:1;min-width:150px;margin:0;padding:11px;font-size:.9rem}.details-body{margin-top:10px}.dish-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}.btn-mini{border:1.5px solid var(--green-dark);background:transparent;color:var(--green-dark);border-radius:99px;padding:6px 10px;font-size:.78rem;font-weight:800;cursor:pointer;font-family:inherit}.btn-mini:disabled{opacity:.55;cursor:default}
+  details.fold{background:var(--white);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}details.fold summary{list-style:none;cursor:pointer;padding:13px 16px;font-weight:800;color:var(--green-dark);display:flex;align-items:center;justify-content:space-between;gap:12px}details.fold summary::-webkit-details-marker{display:none}details.fold summary:after{content:'+';font-size:1.15rem;color:var(--muted)}details.fold[open] summary:after{content:'−'}.fold-body{padding:0 16px 14px}.muted-note{font-size:.78rem;color:var(--muted);line-height:1.45;margin-top:8px}.section-title{font-weight:800;color:var(--green-dark);font-size:1.05rem;margin-bottom:8px}.result-summary{background:var(--green-dark);color:#fff;border-radius:20px;padding:18px;margin-bottom:12px;box-shadow:var(--shadow)}.result-summary .ct{color:rgba(255,255,255,.68)}.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.summary-cell{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:10px;text-align:center}.summary-cell b{display:block;font-size:1rem}.summary-cell span{font-size:.72rem;opacity:.78}
+  .target-card{display:none;background:var(--green-light);border:1px solid rgba(140,90,114,.18);border-radius:14px;padding:12px;margin-top:10px;color:var(--green-dark);line-height:1.45}.target-card b{display:block;font-size:1rem;margin-bottom:4px}.restrictions-input{width:220px;text-align:left}.day-summary-lines{font-size:.95rem;line-height:1.7;color:var(--text);margin-top:8px}.day-summary-lines b{color:var(--green-dark)}.day-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.day-actions .btn{flex:1;min-width:150px;margin:0;padding:11px;font-size:.9rem}.details-body{margin-top:10px}.dish-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}.btn-mini{border:1.5px solid var(--green-dark);background:transparent;color:var(--green-dark);border-radius:99px;padding:6px 10px;font-size:.78rem;font-weight:800;cursor:pointer;font-family:inherit}.btn-mini:disabled{opacity:.55;cursor:default}
   .hide{display:none}.thumb{width:88px;height:88px;border-radius:12px;object-fit:cover;flex-shrink:0;cursor:pointer;background:var(--green-light);border:1px solid var(--border)}.thumb-e{width:88px;height:88px;border-radius:12px;flex-shrink:0;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1.8rem;cursor:pointer}.bk{display:flex;gap:12px;align-items:flex-start;margin-top:6px}.items{font-size:.82rem;color:var(--muted);line-height:1.5}.session{background:var(--green-light);border-radius:12px;padding:10px 14px;margin-bottom:8px;font-size:.85rem}.shop li{font-size:.85rem;padding:3px 0}.shop{margin-left:18px}.rm{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;z-index:1000;padding:20px 12px;overflow-y:auto}.rm.show{display:flex}.rm-card{background:var(--white);border-radius:var(--r);padding:18px;max-width:560px;width:100%;position:relative;margin:auto}.rm-close{position:absolute;top:8px;right:14px;font-size:1.8rem;color:var(--muted);cursor:pointer;line-height:1}
   @media(max-width:520px){body{padding:12px;padding-bottom:70px}.hero{padding:18px 16px}input,select{width:138px}.summary-grid{grid-template-columns:1fr}.day-head{align-items:flex-start;flex-direction:column}.kbju{text-align:left}.primary-cta{bottom:8px}}
 </style>
 </head>
 <body>
 <section class="hero">
-  <div class="hero-kicker">ЖурКА для самостоятельного питания</div>
-  <h1>Меню на неделю под твою цель</h1>
-  <div class="hero-copy">Укажи базовые данные — ЖурКА посчитает КБЖУ, подберёт готовую еду или рецепты и соберёт корзину.</div>
-  <div class="hero-pills"><span>без тренера</span><span>можно без регистрации</span><span>ВкусВилл</span></div>
+  <div class="hero-kicker">Decision-first питание</div>
+  <h1>ЖурКА решает, что есть дальше</h1>
+  <div class="hero-copy">Получите готовое решение: что есть, что заказать и что можно заменить, без долгого выбора и подсчётов.</div>
+  <div class="hero-pills"><span>AI уже предлагает</span><span>вы подтверждаете</span><span>без тренера</span></div>
 </section>
 
 <div class="card" id="cabinet">
@@ -66,8 +66,9 @@
 </div>
 
 <div class="card">
-  <div class="ct">Быстрый старт</div>
-  <div class="section-title">Твои данные</div>
+  <div class="ct">Основа решения</div>
+  <div class="section-title">Соберу решение под вашу цель</div>
+  <div class="sub">Нужно только несколько вводных. Дальше ЖурКА предложит готовый день и неделю, а детали можно открыть позже.</div>
   <div class="row"><label>Цель</label>
     <select id="goal"><option value="loss">Похудение</option><option value="maintain">Поддержание</option><option value="gain">Набор</option></select></div>
   <div class="row"><label>Пол</label>
@@ -83,17 +84,17 @@
       <option value="high">Высокая (6–7 трен/нед)</option>
       <option value="very_high">Очень высокая</option>
     </select></div>
-  <button class="btn btn-out" onclick="calcKbju()" style="margin-top:10px">Рассчитать дневную цель</button>
+  <button class="btn btn-out" onclick="calcKbju()" style="margin-top:10px">Показать дневную цель</button>
   <div id="targetPreview" class="target-card"></div>
 </div>
 
 <div class="tabs">
-  <button id="tabDishes" class="tab active" onclick="setMode('dishes')">🛒 Готовая еда</button>
-  <button id="tabRecipes" class="tab" onclick="setMode('recipes')">👩‍🍳 Рецепты</button>
+  <button id="tabDishes" class="tab active" onclick="setMode('dishes')">Заказать</button>
+  <button id="tabRecipes" class="tab" onclick="setMode('recipes')">Готовить</button>
 </div>
 
 <div class="card soft" id="dishOpts">
-  <div class="ct">Настройки меню</div>
+  <div class="ct">Уточнить решение</div>
   <div class="row"><label>Приёмов в день</label>
     <select id="meal_count"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
   <div class="row"><label>Что исключить</label>
@@ -148,7 +149,7 @@
   <div class="fold-body" id="loginArea"></div>
 </details>
 
-<button class="btn primary-cta" id="go" onclick="build()">Собрать меню на неделю</button>
+<button class="btn primary-cta" id="go" onclick="build()">Получить решение на неделю</button>
 <div id="out"></div>
 
 <div class="rm" id="rm" onclick="if(event.target===this)closeRm()">
@@ -208,7 +209,7 @@ async function emailAuth(kind){
   }catch(e){ alert('Не удалось войти'); }
 }
 function loginAreaHtml(){
-  return '<div class="sub" style="margin:0 0 8px">Вход нужен только для истории между устройствами. Меню можно собрать и гостем.</div>'
+  return '<div class="sub" style="margin:0 0 8px">Вход нужен только для истории между устройствами. Решение можно получить и гостем.</div>'
     +`<input id="em_email" type="email" placeholder="Почта" style="${inStyle}"/>`
     +`<input id="em_pass" type="password" placeholder="Пароль (от 6 символов)" style="${inStyle}"/>`
     +`<input id="em_name" type="text" placeholder="Имя (для регистрации)" style="${inStyle}"/>`
@@ -327,11 +328,11 @@ async function ibCalc(){
   }catch(e){ alert('Не удалось рассчитать'); }
 }
 function showOut(html){ $('out').innerHTML=html; $('out').scrollIntoView({behavior:'smooth',block:'start'}); }
-function loadingHtml(){return '<div class="card spin"><div class="spin-title">Собираю меню под твою цель</div><div>Это может занять до минуты: ЖурКА ищет блюда, проверяет КБЖУ и собирает неделю.</div><div class="spin-steps"><span>завтраки</span><span>обеды</span><span>ужины</span><span>КБЖУ</span></div><div class="muted-note">Не закрывай страницу — результат появится здесь автоматически.</div></div>';}
+function loadingHtml(){return '<div class="card spin"><div class="spin-title">ЖурКА принимает решение</div><div>Собираю неделю, проверяю цель и убираю лишний выбор.</div><div class="spin-steps"><span>решение</span><span>заказ</span><span>замены</span><span>КБЖУ</span></div><div class="muted-note">Не закрывайте страницу — готовый план появится здесь автоматически.</div></div>';}
 
 async function build(){
   saveProfile();
-  const btn=$('go'); btn.disabled=true; btn.textContent='Собираю меню…';
+  const btn=$('go'); btn.disabled=true; btn.textContent='Принимаю решение…';
   showOut(loadingHtml());
   try{
     currentTarget={kcal:+$('kcal').value,protein:+$('protein').value,fat:+$('fat').value,carbs:+$('carbs').value};
@@ -346,11 +347,11 @@ async function build(){
       const r=await(await fetch('api/self-serve/week',{method:'POST',headers:H,body:JSON.stringify(b)})).json();
       currentDays=r.days||[]; render(currentDays);
     }
-  }catch(e){ showOut('<div class="card sub" style="color:#c62828">Не удалось собрать меню. Попробуй ещё раз или смягчи ограничения.</div>'); }
-  finally{ btn.disabled=false; btn.textContent='Собрать меню на неделю'; }
+  }catch(e){ showOut('<div class="card sub" style="color:#c62828">Что-то не получилось. Попробуйте ещё раз или смягчите ограничения.</div>'); }
+  finally{ btn.disabled=false; btn.textContent='Получить решение на неделю'; }
 }
 
-const WD=['пн','вт','ср','чт','пт','сб','вс'];
+const WD=['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
 function dishNutr(d){ return (d.nutrition||{}).calories||0; }
 function dayTotals(day){
   let k=0,p=0,f=0,c=0;
@@ -363,7 +364,7 @@ function weekSummary(days){
   let dishes=0; days.forEach(d=>(d.meals||[]).forEach(m=>dishes+=(m.dishes||[]).length));
   return {kcal:Math.round(sum.kcal/n),protein:Math.round(sum.protein/n),fat:Math.round(sum.fat/n),carbs:Math.round(sum.carbs/n),dishes};
 }
-function summaryHtml(days){const s=weekSummary(days);return `<div class="result-summary"><div class="ct">Итог недели</div><div style="font-weight:800;font-size:1.05rem;margin-bottom:10px">Меню готово: ${days.length} дней, ${s.dishes} позиций</div><div class="summary-grid"><div class="summary-cell"><b>${s.kcal}</b><span>ккал в среднем</span></div><div class="summary-cell"><b>Б${s.protein} Ж${s.fat}</b><span>в среднем</span></div><div class="summary-cell"><b>У${s.carbs}</b><span>углеводы</span></div></div></div>`;}
+function summaryHtml(days){const s=weekSummary(days);return `<div class="result-summary"><div class="ct">Готовое решение</div><div style="font-weight:800;font-size:1.12rem;margin-bottom:8px">ЖурКА уже спланировала неделю</div><div style="font-size:.9rem;line-height:1.5;opacity:.82;margin-bottom:12px">Можно заказать день целиком, заменить отдельное блюдо или открыть детали, если хочется проверить состав.</div><div class="summary-grid"><div class="summary-cell"><b>${s.kcal}</b><span>ккал в среднем</span></div><div class="summary-cell"><b>Б${s.protein} Ж${s.fat}</b><span>в среднем</span></div><div class="summary-cell"><b>У${s.carbs}</b><span>углеводы</span></div></div></div>`;}
 function shortDishName(name){
   return String(name||'Блюдо').replace(/^Комбо-набор:\s*/i,'').replace(/\s+\d+\s*г\b/ig,'').split(',')[0].trim();
 }
@@ -396,17 +397,17 @@ function renderDayDetails(day,i){
 }
 function render(days){
   if(!days||!days.length){ showOut('<div class="card sub">Ничего не подобралось. Попробуй изменить цель или ограничения.</div>'); return; }
-  let h=summaryHtml(days)+'<button class="btn" id="saveBtn" onclick="savePlan()" style="margin-top:0">💾 Сохранить план в историю</button>';
+  let h=summaryHtml(days)+'<button class="btn btn-out" id="saveBtn" onclick="savePlan()" style="margin-top:0">Сохранить решение</button>';
   days.forEach((day,i)=>{
     const t=dayTotals(day);
-    h+=`<div class="day"><div class="day-head"><span class="day-title">День ${i+1} (${WD[i%7]})</span>
+    h+=`<div class="day"><div class="day-head"><span class="day-title">${WD[i%7]}</span>
       <span class="kbju">${t.kcal} ккал · Б${t.protein} Ж${t.fat} У${t.carbs}</span></div>
       <div class="day-summary-lines">${(day.meals||[]).map(mealShortLine).join('')}</div>
-      <div class="day-actions"><button class="btn" onclick="makeDayCart(${i})">Заказать день</button><button class="btn btn-out" onclick="renderDayDetails(currentDays[${i}],${i})">Подробнее</button></div>
+      <div class="day-actions"><button class="btn" onclick="makeDayCart(${i})">Заказать день</button><button class="btn btn-out" onclick="renderDayDetails(currentDays[${i}],${i})">Показать детали</button></div>
       <div id="dayCart${i}"></div><div id="dayDetails${i}" data-open="0"></div></div>`;
   });
-  h+='<div class="card"><div class="ct">🛒 Заказ ВкусВилл</div><div class="sub">Собрать корзину из продуктов на неделю одной ссылкой.</div>'
-    +'<button class="btn" id="cartBtn" onclick="makeCart()">Собрать корзину ВкусВилл</button><div id="cartOut"></div></div>';
+  h+='<div class="card soft"><div class="ct">Неделя целиком</div><div class="sub">Если решение подходит, можно собрать корзину на всю неделю одной ссылкой.</div>'
+    +'<button class="btn btn-out" id="cartBtn" onclick="makeCart()">Собрать корзину на неделю</button><div id="cartOut"></div></div>';
   showOut(h);
 }
 
@@ -435,7 +436,7 @@ async function openHistory(){
     let plans;
     if(serverMode()){ const r=await(await fetch('api/self-serve/plan/history',{method:'POST',headers:H,body:JSON.stringify(authBody())})).json(); plans=r.plans||[]; }
     else plans=lsGet('ss_plans',[]).map(p=>({id:p.id,created_at:p.created_at,target:p.target}));
-    if(!plans.length){ showOut('<div class="card sub">Сохранённых планов пока нет. Собери меню и нажми «💾 Сохранить план в историю».</div>'); return; }
+    if(!plans.length){ showOut('<div class="card sub">Сохранённых решений пока нет. Получите план и нажмите «Сохранить решение».</div>'); return; }
     let h='<div class="card"><div class="ct">📋 История планов</div>';
     plans.forEach(p=>{const t=p.target||{};
       h+=`<div class="row" style="cursor:pointer" onclick="viewHistory('${p.id}')"><span>📅 ${p.created_at}</span><span class="sub" style="margin:0">${t.kcal||''} ккал · Б${t.protein||''}</span></div>`;});
@@ -464,7 +465,7 @@ async function makeCart(){
     else h='<div class="sub" style="color:#c62828">Не удалось собрать корзину. Попробуй ещё раз.</div>';
     $('cartOut').innerHTML=h;
   }catch(e){ $('cartOut').innerHTML='<div class="sub" style="color:#c62828">Ошибка</div>'; }
-  finally{ btn.disabled=false; btn.textContent='Собрать корзину ВкусВилл'; }
+  finally{ btn.disabled=false; btn.textContent='Собрать корзину на неделю'; }
 }
 async function makeDayCart(dayIdx){
   const day=currentDays&&currentDays[dayIdx]; if(!day) return;
