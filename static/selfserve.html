@@ -15,21 +15,22 @@
   body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
   button,input,select,textarea{font:inherit}
   button{cursor:pointer}
-  .app{min-height:100vh;display:grid;grid-template-columns:260px minmax(0,1fr)}
-  .side{border-right:1px solid var(--border);padding:22px 18px;background:rgba(255,249,240,.56);min-height:100vh}
-  .brand{font-size:1.1rem;font-weight:850;margin-bottom:22px}
-  .side-btn{width:100%;border:0;background:var(--action);color:#fff;border-radius:999px;padding:12px 16px;font-weight:800;margin-bottom:22px}
-  .nav-title{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;margin:18px 0 8px}
-  .nav-item{padding:9px 10px;border-radius:12px;color:var(--muted);font-size:.92rem}
-  .nav-item.active{background:var(--plum-soft);color:var(--action);font-weight:750}
-  .main{padding:34px 28px 70px;display:flex;justify-content:center}
-  .shell{width:min(880px,100%)}
-  .topbar{display:none}
+  .app{min-height:100vh}
+  .main{padding:22px 24px 70px;display:flex;justify-content:center}
+  .shell{width:min(1040px,100%)}
+  .app-header{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:22px}
+  .brand{font-size:1.35rem;font-weight:900;letter-spacing:0}.tagline{font-size:.92rem;color:var(--muted);font-weight:700;margin-top:3px}
+  .header-link{border:1px solid var(--border);background:rgba(255,249,240,.62);color:var(--muted);border-radius:999px;padding:9px 13px;font-weight:800}
   .hero{padding:42px;border:1px solid var(--border);border-radius:28px;background:linear-gradient(180deg,#fffaf3 0%,var(--surface) 100%);box-shadow:var(--shadow)}
   .kicker{font-size:.76rem;text-transform:uppercase;letter-spacing:.1em;color:var(--plum);font-weight:850;margin-bottom:12px}
   h1{font-size:clamp(2rem,5vw,3rem);line-height:1.05;letter-spacing:0;font-weight:850;max-width:680px;margin-bottom:14px}
   .lead{font-size:1.05rem;line-height:1.55;color:var(--muted);max-width:620px;margin-bottom:26px}
   .steps-note{border:1px solid var(--border);border-radius:18px;background:rgba(244,234,216,.5);padding:14px 16px;color:var(--muted);line-height:1.5;margin-bottom:20px}
+  .home-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(320px,.65fr);gap:18px;align-items:stretch}
+  .preview{border:1px solid var(--border);border-radius:28px;background:var(--surface);padding:26px;box-shadow:var(--shadow)}
+  .preview h2{font-size:1.2rem;margin-bottom:16px}.preview-list{display:grid;gap:12px}.preview-item{display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-weight:750}.preview-item b{color:var(--action)}
+  .history-strip{margin-top:18px;border:1px solid var(--border);border-radius:22px;background:rgba(255,249,240,.6);padding:16px;display:flex;gap:10px;align-items:center;justify-content:space-between;color:var(--muted)}
+  .history-items{display:flex;gap:8px;flex-wrap:wrap}.history-pill{border:1px solid var(--border);border-radius:999px;padding:7px 10px;background:var(--surface);font-size:.86rem;font-weight:750;color:var(--muted)}
   .btn{border:0;background:var(--action);color:#fff;border-radius:999px;padding:15px 22px;font-weight:850;font-size:1rem}
   .btn.secondary{background:transparent;color:var(--action);border:1.5px solid var(--action)}
   .btn.soft{background:var(--plum-soft);color:var(--action)}
@@ -65,27 +66,18 @@
   .bottom-nav{display:none}
   .muted{color:var(--muted)}
   @media(max-width:780px){
-    .app{display:block}.side{display:none}.main{padding:12px 12px 84px}.shell{width:100%}.topbar{display:flex;justify-content:space-between;align-items:center;padding:8px 4px 14px}.hero{padding:24px 20px;border-radius:24px;box-shadow:none}h1{font-size:2rem}.lead{font-size:.98rem}.card{padding:22px;border-radius:22px;box-shadow:none}.options,.fields,.result-grid{grid-template-columns:1fr}.question{font-size:1.45rem}.step-actions{flex-direction:column}.step-actions .btn{width:100%}.drawer{top:auto;bottom:0;height:min(82vh,680px);width:100%;border-left:0;border-top:1px solid var(--border);border-radius:24px 24px 0 0;transform:translateY(105%)}.drawer.show{transform:translateY(0)}.bottom-nav{display:flex;position:fixed;left:0;right:0;bottom:0;background:rgba(255,249,240,.94);border-top:1px solid var(--border);padding:9px 16px calc(9px + env(safe-area-inset-bottom));justify-content:space-around;z-index:10}.bottom-nav span{font-size:.78rem;color:var(--muted);font-weight:800}.bottom-nav span.active{color:var(--action)}
+    .main{padding:12px 12px 84px}.shell{width:100%}.app-header{padding:8px 4px 4px;margin-bottom:12px}.brand{font-size:1.12rem}.tagline{font-size:.82rem}.header-link{display:none}.home-grid{grid-template-columns:1fr;gap:12px}.hero{padding:24px 20px;border-radius:24px;box-shadow:none}h1{font-size:2rem}.lead{font-size:.98rem}.preview{padding:20px;border-radius:22px;box-shadow:none}.history-strip{display:none}.card{padding:22px;border-radius:22px;box-shadow:none}.options,.fields,.result-grid{grid-template-columns:1fr}.question{font-size:1.45rem}.step-actions{flex-direction:column}.step-actions .btn{width:100%}.drawer{top:auto;bottom:0;height:min(82vh,680px);width:100%;border-left:0;border-top:1px solid var(--border);border-radius:24px 24px 0 0;transform:translateY(105%)}.drawer.show{transform:translateY(0)}.bottom-nav{display:flex;position:fixed;left:0;right:0;bottom:0;background:rgba(255,249,240,.94);border-top:1px solid var(--border);padding:9px 16px calc(9px + env(safe-area-inset-bottom));justify-content:space-around;z-index:10}.bottom-nav span{font-size:.78rem;color:var(--muted);font-weight:800}.bottom-nav span.active{color:var(--action)}
   }
 </style>
 </head>
 <body>
 <div class="app">
-  <aside class="side">
-    <div class="brand">Журка</div>
-    <button class="side-btn" onclick="startPlan()">+ Собрать план</button>
-    <div class="nav-title">История</div>
-    <div class="nav-item active">Последний план</div>
-    <div class="nav-item">План от 24 июня</div>
-    <div class="nav-item">План от 18 июня</div>
-    <div class="nav-title">Сохранённое</div>
-    <div class="nav-item">Мои планы</div>
-    <div class="nav-item">Корзины</div>
-    <div class="nav-item">Настройки</div>
-  </aside>
   <main class="main">
     <div class="shell">
-      <div class="topbar"><b>Журка</b><span class="muted">Профиль</span></div>
+      <header class="app-header">
+        <div><div class="brand">Журка</div><div class="tagline">План питания на неделю</div></div>
+        <button class="header-link" onclick="scrollToHistory()">История планов</button>
+      </header>
       <div id="view"></div>
     </div>
   </main>
@@ -110,8 +102,9 @@ const steps=[
 ];
 function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function renderHome(){
-  view.innerHTML=`<section class="hero"><div class="kicker">План питания на неделю</div><h1>Соберём персональный план питания на неделю за пару минут.</h1><p class="lead">Журка задаст несколько простых вопросов и составит недельный план с возможностью собрать корзину на неделю.</p><div class="steps-note"><b>5 коротких шагов</b><br/>цель · данные · параметры · ограничения · формат</div><button class="btn" onclick="startPlan()">Собрать план</button></section>`;
+  view.innerHTML=`<section class="home-grid"><div class="hero"><div class="kicker">Персональный план</div><h1>Соберём план питания на неделю за пару минут</h1><p class="lead">5 коротких шагов → готовый план → корзина.</p><div class="steps-note"><b>Как это работает</b><br/>Журка задаст несколько простых вопросов и соберёт недельный план с возможностью сразу перейти к корзине.</div><button class="btn" onclick="startPlan()">Собрать план</button></div><aside class="preview"><div class="kicker">Что вы получите</div><h2>Готовый результат без долгого выбора</h2><div class="preview-list"><div class="preview-item"><b>✓</b><span>7 дней персонального плана</span></div><div class="preview-item"><b>✓</b><span>21 приём пищи</span></div><div class="preview-item"><b>✓</b><span>Средние КБЖУ за день</span></div><div class="preview-item"><b>✓</b><span>Корзина на неделю</span></div></div></aside></section><section class="history-strip" id="historyStrip"><div><b>Сохранённые планы</b><br/><span>История не мешает собрать новый план, но остаётся под рукой.</span></div><div class="history-items"><span class="history-pill">Последний план</span><span class="history-pill">План от 24 июня</span><span class="history-pill">План от 18 июня</span></div></section>`;
 }
+function scrollToHistory(){const el=document.getElementById('historyStrip'); if(el) el.scrollIntoView({behavior:'smooth',block:'center'});}
 function startPlan(){step=0;renderStep();}
 function progress(){return `<div class="progress-label">Шаг ${step+1} из ${steps.length}</div><div class="dots">${steps.map((_,i)=>`<span class="dot ${i<=step?'on':''}"></span>`).join('')}</div>`;}
 function renderStep(){
