@@ -31,6 +31,9 @@
   .preview h2{font-size:1.2rem;margin-bottom:16px}.preview-list{display:grid;gap:12px}.preview-item{display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-weight:750}.preview-item b{color:var(--action)}
   .history-strip{margin-top:18px;border:1px solid var(--border);border-radius:22px;background:rgba(255,249,240,.6);padding:16px;display:flex;gap:10px;align-items:center;justify-content:space-between;color:var(--muted)}
   .history-items{display:flex;gap:8px;flex-wrap:wrap}.history-pill{border:1px solid var(--border);border-radius:999px;padding:7px 10px;background:var(--surface);font-size:.86rem;font-weight:750;color:var(--muted)}
+  .auth-card{max-width:620px;margin:auto}.auth-fields{display:grid;gap:10px;margin-top:16px}.auth-tabs{display:flex;gap:8px;margin:16px 0 8px}.auth-tabs button{flex:1}
+  .dish-photo{width:72px;height:72px;border-radius:14px;object-fit:cover;background:var(--plum-soft);border:1px solid var(--border);flex:0 0 auto}
+  .dish-detail{display:flex;gap:12px;align-items:flex-start;margin-top:12px}
   .btn{border:0;background:var(--action);color:#fff;border-radius:999px;padding:15px 22px;font-weight:850;font-size:1rem}
   .btn.secondary{background:transparent;color:var(--action);border:1.5px solid var(--action)}
   .btn.soft{background:var(--plum-soft);color:var(--action)}
@@ -92,6 +95,7 @@ const $=id=>document.getElementById(id);
 const H={'Content-Type':'application/json'};
 const view=$('view');
 let step=0, currentDays=null, currentTarget=null, replaceCtx={}, tempMemory=[], permanentMemory=JSON.parse(localStorage.getItem('zhurka_memory')||'[]');
+let authToken=localStorage.getItem('zhurka_token')||'', authName=localStorage.getItem('zhurka_name')||'';
 const state={goal:'',sex:'female',age:'30',height:'165',weight:'60',activity:'moderate',restrictions:'',format:'ready'};
 const steps=[
   {title:'Какая сейчас цель?',key:'goal',type:'options',options:[['loss','Похудеть'],['maintain','Поддерживать'],['gain','Набрать'],['unknown','Пока не знаю']]},
@@ -102,9 +106,16 @@ const steps=[
 ];
 function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function renderHome(){
-  view.innerHTML=`<section class="home-grid"><div class="hero"><div class="kicker">Персональный план</div><h1>Соберём план питания на неделю за пару минут</h1><p class="lead">5 коротких шагов → готовый план → корзина.</p><div class="steps-note"><b>Как это работает</b><br/>Журка задаст несколько простых вопросов и соберёт недельный план с возможностью сразу перейти к корзине.</div><button class="btn" onclick="startPlan()">Собрать план</button></div><aside class="preview"><div class="kicker">Что вы получите</div><h2>Готовый результат без долгого выбора</h2><div class="preview-list"><div class="preview-item"><b>✓</b><span>7 дней персонального плана</span></div><div class="preview-item"><b>✓</b><span>21 приём пищи</span></div><div class="preview-item"><b>✓</b><span>Средние КБЖУ за день</span></div><div class="preview-item"><b>✓</b><span>Корзина на неделю</span></div></div></aside></section><section class="history-strip" id="historyStrip"><div><b>Сохранённые планы</b><br/><span>История не мешает собрать новый план, но остаётся под рукой.</span></div><div class="history-items"><span class="history-pill">Последний план</span><span class="history-pill">План от 24 июня</span><span class="history-pill">План от 18 июня</span></div></section>`;
+  view.innerHTML=`<section class="home-grid"><div class="hero"><div class="kicker">Персональный план</div><h1>Соберём план питания на неделю за пару минут</h1><p class="lead">5 коротких шагов → готовый план → корзина.</p><div class="steps-note"><b>Как это работает</b><br/>Журка задаст несколько простых вопросов и соберёт недельный план с возможностью сразу перейти к корзине.</div><button class="btn" onclick="startPlan()">Собрать план</button></div><aside class="preview"><div class="kicker">Что вы получите</div><h2>Готовый результат без долгого выбора</h2><div class="preview-list"><div class="preview-item"><b>✓</b><span>7 дней персонального плана</span></div><div class="preview-item"><b>✓</b><span>21 приём пищи</span></div><div class="preview-item"><b>✓</b><span>Средние КБЖУ за день</span></div><div class="preview-item"><b>✓</b><span>Корзина на неделю</span></div></div></aside></section>${historyHtml()}`;
 }
 function scrollToHistory(){const el=document.getElementById('historyStrip'); if(el) el.scrollIntoView({behavior:'smooth',block:'center'});}
+function savedPlans(){try{return JSON.parse(localStorage.getItem('zhurka_plans')||'[]')}catch(e){return []}}
+function historyHtml(){
+  const plans=savedPlans();
+  if(!plans.length) return `<section class="history-strip" id="historyStrip"><div><b>Сохранённые планы</b><br/><span>Здесь появятся планы, которые вы сохраните после сборки.</span></div><div class="history-items"><span class="history-pill">Пока пусто</span></div></section>`;
+  return `<section class="history-strip" id="historyStrip"><div><b>Сохранённые планы</b><br/><span>${authToken?'Синхронизируются в профиле':'Сохранены в этом браузере'}</span></div><div class="history-items">${plans.slice(0,4).map((p,i)=>`<button class="history-pill" onclick="openSavedPlan(${i})">${esc(p.title)}</button>`).join('')}</div></section>`;
+}
+function openSavedPlan(i){const p=savedPlans()[i]; if(!p)return; currentDays=p.days; currentTarget=p.target; renderPlan();}
 function startPlan(){step=0;renderStep();}
 function progress(){return `<div class="progress-label">Шаг ${step+1} из ${steps.length}</div><div class="dots">${steps.map((_,i)=>`<span class="dot ${i<=step?'on':''}"></span>`).join('')}</div>`;}
 function renderStep(){
@@ -125,7 +136,24 @@ function choose(k,v){state[k]=v; nextStep();}
 function saveFields(){steps[step].fields.forEach(f=>state[f[0]]=$(f[0]).value); nextStep();}
 function saveMixed(){state.activity=$('activity').value;state.restrictions=$('restrictions').value.trim();nextStep();}
 function prevStep(){if(step>0){step--;renderStep();}}
-function nextStep(){if(step<steps.length-1){step++;renderStep();}else buildPlan();}
+function nextStep(){if(step<steps.length-1){step++;renderStep();}else renderAuthChoice();}
+function renderAuthChoice(){
+  view.innerHTML=`<section class="card auth-card"><div class="kicker">Перед сборкой плана</div><h2 style="font-size:2rem;margin-bottom:10px">Сохранить историю?</h2><p class="lead" style="margin-bottom:0">Можно зарегистрироваться, чтобы планы сохранялись в профиле, или продолжить без регистрации. В этом случае история сохранится только в этом браузере.</p><div class="auth-tabs"><button class="btn" onclick="showAuthForm('register')">Зарегистрироваться</button><button class="btn secondary" onclick="buildPlan()">Продолжить без регистрации</button></div><button class="btn soft" onclick="showAuthForm('login')">Уже есть аккаунт</button><div id="authArea"></div></section>`;
+}
+function showAuthForm(kind){
+  $('authArea').innerHTML=`<div class="auth-fields">${kind==='register'?'<input id="authName" placeholder="Имя"/>':''}<input id="authEmail" type="email" placeholder="Почта"/><input id="authPass" type="password" placeholder="Пароль"/><button class="btn" onclick="emailAuth('${kind}')">${kind==='register'?'Создать аккаунт':'Войти'} и собрать план</button></div>`;
+}
+async function emailAuth(kind){
+  const email=$('authEmail').value.trim(), password=$('authPass').value, name=$('authName')?$('authName').value.trim():'';
+  if(!email||!password){alert('Введите почту и пароль');return;}
+  try{
+    const r=await fetch('api/self-serve/'+kind,{method:'POST',headers:H,body:JSON.stringify({email,password,name})});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.detail||'Не удалось войти');
+    authToken=d.token; authName=d.name||email; localStorage.setItem('zhurka_token',authToken); localStorage.setItem('zhurka_name',authName);
+    buildPlan();
+  }catch(e){alert(e.message||'Не удалось войти');}
+}
 function targetPayload(){return {sex:state.sex,weight:+state.weight,height:+state.height,age:+state.age,activity:state.activity,goal:state.goal==='unknown'?'maintain':state.goal};}
 async function buildPlan(){
   renderLoading();
@@ -138,8 +166,19 @@ async function buildPlan(){
     const b={kcal:+target.kcal,protein:+target.protein,fat:+target.fat,carbs:+target.carbs,meal_count:3,restrictions:state.restrictions||null,days_count:7};
     try{const r=await(await fetch('api/self-serve/week',{method:'POST',headers:H,body:JSON.stringify(b)})).json();currentDays=r.days||fallbackDays();}
     catch(e){currentDays=fallbackDays();}
-    await wait; renderResult();
-  }catch(e){await wait; currentTarget={kcal:1750,protein:120,fat:60,carbs:180}; currentDays=fallbackDays(); renderResult();}
+    await wait; saveCurrentPlan(); renderResult();
+  }catch(e){await wait; currentTarget={kcal:1750,protein:120,fat:60,carbs:180}; currentDays=fallbackDays(); saveCurrentPlan(); renderResult();}
+}
+async function saveCurrentPlan(){
+  if(!currentDays||!currentTarget) return;
+  const now=new Date();
+  const title='План от '+now.toLocaleDateString('ru-RU',{day:'2-digit',month:'long'});
+  const entry={id:Date.now(),title,created_at:now.toISOString(),target:currentTarget,days:currentDays};
+  const plans=savedPlans().filter(p=>String(p.id)!==String(entry.id));
+  plans.unshift(entry); localStorage.setItem('zhurka_plans',JSON.stringify(plans.slice(0,12)));
+  if(authToken){
+    try{await fetch('api/self-serve/plan/save',{method:'POST',headers:H,body:JSON.stringify({token:authToken,tg_user:{},plan:{target:currentTarget,days:currentDays}})});}catch(e){}
+  }
 }
 function renderLoading(){view.innerHTML=`<section class="card loading"><h2>Журка составляет ваш план...</h2><div class="check-list"><div class="check"><b>✓</b> учитывает цель</div><div class="check"><b>✓</b> подбирает блюда</div><div class="check"><b>✓</b> собирает корзину</div></div></section>`;}
 function avgTarget(){return {kcal:Math.round(currentTarget?.kcal||1750),protein:Math.round(currentTarget?.protein||120),fat:Math.round(currentTarget?.fat||60),carbs:Math.round(currentTarget?.carbs||180)};}
@@ -157,7 +196,12 @@ function openDrawer(html){$('drawer').innerHTML=html;$('backdrop').classList.add
 function closeDrawer(){$('backdrop').classList.remove('show');$('drawer').classList.remove('show');}
 function openDetails(i){
   const day=currentDays[i];
-  openDrawer(`<div class="drawer-head"><h2>${WD[i%7]}</h2><button class="x" onclick="closeDrawer()">×</button></div>${(day.meals||[]).map((m,mi)=>`<div class="day" style="box-shadow:none;margin-bottom:12px"><b>${esc(m.meal_label)}</b>${(m.dishes||[]).map(d=>{const n=d.nutrition||{};return `<div class="muted" style="margin-top:8px">${esc(d.name)}<br/>${Math.round(n.calories||0)} ккал</div>`}).join('')}<button class="btn soft" style="margin-top:10px;padding:10px 14px" onclick="openReplaceReason(${i},${mi})">Заменить</button></div>`).join('')}`);
+  openDrawer(`<div class="drawer-head"><h2>${WD[i%7]}</h2><button class="x" onclick="closeDrawer()">×</button></div>${(day.meals||[]).map((m,mi)=>`<div class="day" style="box-shadow:none;margin-bottom:12px"><b>${esc(m.meal_label)}</b>${(m.dishes||[]).map(d=>dishDetailHtml(d)).join('')}<button class="btn soft" style="margin-top:10px;padding:10px 14px" onclick="openReplaceReason(${i},${mi})">Заменить</button></div>`).join('')}`);
+}
+function dishDetailHtml(d){
+  const n=d.nutrition||{}, img=d.image_url?`<img class="dish-photo" src="${esc(d.image_url)}" alt="">`:`<div class="dish-photo"></div>`;
+  const price=d.price?` · ${d.price} ₽`:'';
+  return `<div class="dish-detail">${img}<div class="muted"><b style="color:var(--ink)">${esc(d.name)}</b><br/>${Math.round(n.calories||0)} ккал${price}</div></div>`;
 }
 function openReplaceMeal(i){
   replaceCtx={dayIdx:i};
