@@ -24,7 +24,7 @@
   .app-header{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:22px}
   .brand-line{display:flex;align-items:center;gap:10px;border:0;background:transparent;color:inherit;padding:0;text-align:left}
   .brand{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.7rem;font-weight:700;letter-spacing:.01em}
-  .bird-logo{width:42px;height:42px;border-radius:50%;background:var(--brand);display:inline-block;box-shadow:0 8px 22px rgba(63,95,107,.16);flex:0 0 auto}
+  .bird-logo{width:42px;height:42px;border-radius:50%;background:var(--brand-dark);display:inline-block;box-shadow:0 8px 22px rgba(63,95,107,.16);flex:0 0 auto}
   .header-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
   .header-link{border:1px solid var(--border);background:rgba(255,253,248,.62);color:var(--muted);border-radius:999px;padding:9px 13px;font-weight:700}
   .hero{padding:42px;border:1px solid var(--border);border-radius:30px;background:var(--surface);box-shadow:var(--shadow);position:relative;overflow:hidden}
@@ -113,15 +113,16 @@ const steps=[
 ];
 function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function renderHome(){
-  view.innerHTML=`<section class="hero"><div class="kicker">Персональный план</div><h1>Соберём план на неделю за пару минут</h1><p class="lead">5 коротких шагов → готовый план → корзина.</p><div class="steps-note"><b>Как это работает</b><br/>Журка задаст несколько простых вопросов и соберёт план на неделю с возможностью сразу перейти к корзине.</div><button class="btn" onclick="startPlan()">Собрать план</button></section>${historyHtml()}`;
+  view.innerHTML=`<section class="hero"><div class="kicker">Персональный план</div><h1>Соберём план на неделю за пару минут</h1><p class="lead">Ответьте на несколько вопросов — Журка подберёт рацион и подготовит корзину.</p><div class="steps-note"><b>Как это работает</b><br/>Журка задаст несколько простых вопросов и соберёт план на неделю с возможностью сразу перейти к корзине.</div><button class="btn" onclick="startPlan()">Подобрать рацион</button></section>${historyHtml()}`;
 }
 function scrollToHistory(){const el=document.getElementById('historyStrip'); if(el) el.scrollIntoView({behavior:'smooth',block:'center'});}
 function savedPlans(){try{return JSON.parse(localStorage.getItem('zhurka_plans')||'[]')}catch(e){return []}}
 function historyHtml(){
   const plans=savedPlans();
-  if(!plans.length) return `<section class="history-strip" id="historyStrip"><div><b>Сохранённые планы</b><br/><span>Здесь появятся планы, которые вы сохраните после сборки.</span></div><div class="history-items"><span class="history-pill">Пока пусто</span></div></section>`;
-  return `<section class="history-strip" id="historyStrip"><div><b>Сохранённые планы</b><br/><span>${authToken?'Синхронизируются в профиле':'Сохранены в этом браузере'}</span></div><div class="history-items">${plans.slice(0,4).map((p,i)=>`<button class="history-pill" onclick="openSavedPlan(${i})">${esc(p.title)}</button>`).join('')}</div></section>`;
+  if(!plans.length) return `<section class="history-strip" id="historyStrip"><div><b>История</b><br/><span>Здесь появятся планы, которые вы сохраните после сборки.</span></div><div class="history-items"><span class="history-pill">Пока пусто</span></div></section>`;
+  return `<section class="history-strip" id="historyStrip"><div><b>История</b><br/><span>${authToken?'Синхронизируются в профиле':'Сохранены в этом браузере'}</span></div><div class="history-items">${plans.slice(0,4).map((p,i)=>`<button class="history-pill" onclick="openSavedPlan(${i})">${esc(historyTitle(p))}</button>`).join('')}</div></section>`;
 }
+function historyTitle(p){return String(p?.title||'').replace(/^План от\s+/,'')||'Без даты';}
 function openSavedPlan(i){const p=savedPlans()[i]; if(!p)return; currentDays=p.days; currentTarget=p.target; renderPlan();}
 function startPlan(){step=0;renderStep();}
 function progress(){return `<div class="progress-label">Шаг ${step+1} из ${steps.length}</div><div class="dots">${steps.map((_,i)=>`<span class="dot ${i<=step?'on':''}"></span>`).join('')}</div>`;}
@@ -179,7 +180,7 @@ async function buildPlan(){
 async function saveCurrentPlan(){
   if(!currentDays||!currentTarget) return;
   const now=new Date();
-  const title='План от '+now.toLocaleDateString('ru-RU',{day:'2-digit',month:'long'});
+  const title=now.toLocaleDateString('ru-RU',{day:'2-digit',month:'long'});
   const entry={id:Date.now(),title,created_at:now.toISOString(),target:currentTarget,days:currentDays};
   const plans=savedPlans().filter(p=>String(p.id)!==String(entry.id));
   plans.unshift(entry); localStorage.setItem('zhurka_plans',JSON.stringify(plans.slice(0,12)));
@@ -189,7 +190,7 @@ async function saveCurrentPlan(){
 }
 function renderLoading(){view.innerHTML=`<section class="card loading"><h2>Журка составляет ваш план...</h2><div class="check-list"><div class="check"><b>✓</b> учитывает цель</div><div class="check"><b>✓</b> подбирает блюда</div><div class="check"><b>✓</b> собирает корзину</div></div></section>`;}
 function avgTarget(){return {kcal:Math.round(currentTarget?.kcal||1750),protein:Math.round(currentTarget?.protein||120),fat:Math.round(currentTarget?.fat||60),carbs:Math.round(currentTarget?.carbs||180)};}
-function renderResult(){const t=avgTarget();view.innerHTML=`<section class="card result"><button class="back-mini" onclick="renderAuthChoice()">← Назад</button><h2>План готов</h2><div class="result-grid"><div class="metric"><b>✓ 7 дней</b><span>план на неделю</span></div><div class="metric"><b>✓ 21 приём пищи</b><span>завтраки, обеды и ужины</span></div><div class="metric"><span>В среднем за день</span><b>${t.kcal} ккал</b><span>Б ${t.protein} • Ж ${t.fat} • У ${t.carbs}</span></div></div><div class="step-actions"><button class="btn" onclick="makeWeekCart()">Собрать корзину на неделю</button><button class="btn secondary" onclick="renderPlan()">Посмотреть план</button><button class="btn soft" onclick="openWhy()">Почему так?</button></div></section>`;}
+function renderResult(){const t=avgTarget();view.innerHTML=`<section class="card result"><button class="back-mini" onclick="renderAuthChoice()">← Назад</button><h2>План готов</h2><div class="result-grid"><div class="metric"><b>✓ 7 дней</b><span>план на неделю</span></div><div class="metric"><b>✓ 21 приём пищи</b><span>завтраки, обеды и ужины</span></div><div class="metric"><span>В среднем за день</span><b>${t.kcal} ккал</b><span>Б ${t.protein} • Ж ${t.fat} • У ${t.carbs}</span></div></div><div class="step-actions"><button class="btn" onclick="makeWeekCart()">Собрать корзину на неделю</button><button class="btn secondary" onclick="renderPlan()">Посмотреть план</button></div></section>`;}
 function shortDishName(name){return String(name||'Блюдо').replace(/^Комбо-набор:\s*/i,'').replace(/\s+\d+\s*г\b/ig,'').split(',')[0].trim();}
 const WD=['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
 function renderPlan(){
@@ -207,9 +208,23 @@ function openCabinet(){
     openDrawer(`<div class="drawer-head"><h2>Личный кабинет</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Профиль: <b style="color:var(--ink)">${esc(authName||'пользователь')}</b></p><div class="memory-note">Сохранённых планов: ${plans.length}</div><div class="step-actions"><button class="btn secondary" onclick="logout()">Выйти</button></div>`);
     return;
   }
-  openDrawer(`<div class="drawer-head"><h2>Личный кабинет</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Создайте профиль, чтобы планы сохранялись не только в этом браузере.</p><div class="step-actions"><button class="btn" onclick="closeDrawer();renderAuthChoice()">Создать профиль</button><button class="btn secondary" onclick="closeDrawer()">Продолжить как гость</button></div>`);
+  openDrawer(`<div class="drawer-head"><h2>Личный кабинет</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Создайте профиль, чтобы планы сохранялись не только в этом браузере.</p><div class="step-actions"><button class="btn" onclick="showCabinetAuthForm('register')">Создать профиль</button><button class="btn secondary" onclick="closeDrawer()">Продолжить как гость</button></div><button class="btn soft" style="margin-top:10px" onclick="showCabinetAuthForm('login')">Уже есть аккаунт</button>`);
 }
 function logout(){authToken='';authName='';localStorage.removeItem('zhurka_token');localStorage.removeItem('zhurka_name');closeDrawer();renderHome();}
+function showCabinetAuthForm(kind){
+  openDrawer(`<div class="drawer-head"><h2>${kind==='register'?'Создать профиль':'Войти'}</h2><button class="x" onclick="closeDrawer()">×</button></div><div class="auth-fields">${kind==='register'?'<input id="authName" placeholder="Имя"/>':''}<input id="authEmail" type="email" placeholder="Почта"/><input id="authPass" type="password" placeholder="Пароль"/><button class="btn" onclick="profileAuth('${kind}')">${kind==='register'?'Создать профиль':'Войти'}</button></div><button class="back-mini" style="margin-top:16px" onclick="openCabinet()">← Назад</button>`);
+}
+async function profileAuth(kind){
+  const email=$('authEmail').value.trim(), password=$('authPass').value, name=$('authName')?$('authName').value.trim():'';
+  if(!email||!password){alert('Введите почту и пароль');return;}
+  try{
+    const r=await fetch('api/self-serve/'+kind,{method:'POST',headers:H,body:JSON.stringify({email,password,name})});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.detail||'Не удалось войти');
+    authToken=d.token; authName=d.name||email; localStorage.setItem('zhurka_token',authToken); localStorage.setItem('zhurka_name',authName);
+    openCabinet(); renderHome();
+  }catch(e){alert(e.message||'Не удалось войти');}
+}
 function openDetails(i){
   const day=currentDays[i];
   openDrawer(`<div class="drawer-head"><h2>${WD[i%7]}</h2><button class="x" onclick="closeDrawer()">×</button></div>${(day.meals||[]).map((m,mi)=>`<div class="day" style="box-shadow:none;margin-bottom:12px"><b>${esc(m.meal_label)}</b>${(m.dishes||[]).map(d=>dishDetailHtml(d)).join('')}<button class="btn soft" style="margin-top:10px;padding:10px 14px" onclick="openReplaceReason(${i},${mi})">Заменить</button></div>`).join('')}`);
@@ -240,7 +255,6 @@ async function replaceDish(reason){
   openDrawer(`<div class="drawer-head"><h2>Заменили ${meal.meal_label.toLowerCase()}</h2><button class="x" onclick="closeDrawer()">×</button></div><p>Новый вариант: <b>${esc(newName)}</b>.</p><div class="memory-note">Запомнить это для следующих планов?<div class="step-actions"><button class="btn" onclick="saveMemory('${esc(reason)}')">Да, запомнить</button><button class="btn secondary" onclick="closeDrawer();renderPlan()">Только сейчас</button></div></div>`);
 }
 function saveMemory(reason){permanentMemory.push(reason);localStorage.setItem('zhurka_memory',JSON.stringify(permanentMemory));closeDrawer();renderPlan();}
-function openWhy(){openDrawer(`<div class="drawer-head"><h2>Почему так?</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">План собран под вашу цель, распределён на 7 дней и учитывает ограничения${state.restrictions?': '+esc(state.restrictions):'.'}</p>`);}
 async function makeWeekCart(){
   if(!currentDays) return;
   openDrawer(`<div class="drawer-head"><h2>Собираю корзину...</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Журка собирает продукты и готовые блюда на неделю.</p>`);
