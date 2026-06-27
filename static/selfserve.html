@@ -32,6 +32,7 @@
   .kicker{font-size:.76rem;text-transform:uppercase;letter-spacing:.12em;color:var(--brand-dark);font-weight:800;margin-bottom:12px}
   h1{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(2.45rem,5vw,4.2rem);line-height:.98;letter-spacing:0;font-weight:700;max-width:680px;margin-bottom:14px}
   .lead{font-size:1.05rem;line-height:1.55;color:var(--muted);max-width:620px;margin-bottom:26px}
+  .steps-note{border:1px solid var(--border);border-radius:18px;background:rgba(232,238,240,.36);padding:16px 18px;color:var(--muted);line-height:1.45;margin:0 0 22px}.steps-note b{display:block;color:var(--muted);margin-bottom:4px}
   .history-strip{margin-top:18px;border:1px solid var(--border);border-radius:22px;background:rgba(255,253,248,.58);padding:16px;display:flex;gap:10px;align-items:center;justify-content:space-between;color:var(--muted)}
   .history-items{display:flex;gap:8px;flex-wrap:wrap}.history-pill{border:1px solid var(--border);border-radius:999px;padding:7px 10px;background:var(--surface);font-size:.86rem;font-weight:750;color:var(--muted)}
   .auth-card{max-width:620px;margin:auto}.auth-fields{display:grid;gap:10px;margin-top:16px}.auth-tabs{display:flex;gap:8px;margin:16px 0 8px}.auth-tabs button{flex:1}.auth-login{display:block;margin:10px auto 0}
@@ -122,7 +123,7 @@ const steps=[
 ];
 function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function renderHome(){
-  view.innerHTML=`<section class="hero"><div class="kicker">Персональный план</div><h1>Соберём питание на неделю за пару минут</h1><p class="lead">Ответьте на несколько вопросов — Журка подберёт питание и подготовит корзину</p><button class="btn" onclick="startPlan()">Подобрать питание</button></section>${historyHtml()}`;
+  view.innerHTML=`<section class="hero"><div class="kicker">Персональный план</div><h1>Соберём питание на неделю за пару минут</h1><p class="lead">Ответьте на несколько вопросов — Журка подберёт питание и подготовит корзину</p><div class="steps-note"><b>Как это работает</b>Журка задаст несколько простых вопросов и соберёт план на неделю с возможностью сразу сделать заказ</div><button class="btn" onclick="startPlan()">Подобрать питание</button></section>`;
 }
 function savedPlans(){try{return JSON.parse(localStorage.getItem('zhurka_plans')||'[]')}catch(e){return []}}
 function historyHtml(){
