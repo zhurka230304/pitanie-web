@@ -63,7 +63,9 @@
   .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:20px 0}
   .metric{background:rgba(255,255,255,.52);border:1px solid rgba(93,67,38,.12);border-radius:18px;padding:16px}
   .metric b{display:block;font-size:1.45rem;margin-bottom:4px}.metric span{color:var(--muted);font-size:.9rem;font-weight:700}
-  .micro-card{grid-column:1/-1}.micro-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.micro-tag{border:1px solid var(--border);border-radius:999px;padding:7px 10px;background:#fffdf8;color:var(--ink);font-size:.84rem;font-weight:800}
+  .cabinet-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.75fr);gap:18px;align-items:start}
+  .cabinet-main{display:grid;gap:18px}.cabinet-side{display:grid;gap:10px}.cabinet-week{grid-column:1/-1}
+  .cabinet-title{font-family:"Cormorant Garamond",Georgia,serif;font-size:2.4rem;line-height:1;margin-bottom:8px}.mini-plan{display:grid;gap:10px;margin-top:14px}
   .day-list{display:grid;gap:14px}.day{border:1px solid var(--border);border-radius:20px;background:var(--surface);padding:18px}
   .day-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}.day-title{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.55rem;font-weight:700}.day-kbju{display:block;font-family:"Manrope",system-ui,sans-serif;font-size:.84rem;line-height:1.35;color:var(--muted);font-weight:800;margin-top:3px}
   .meal-lines{line-height:1.8;color:var(--ink)}.meal-lines b{color:var(--action)}
@@ -77,7 +79,7 @@
   .bottom-nav{display:none}.bottom-nav button{border:0;background:transparent;color:var(--muted);font-weight:800}
   .muted{color:var(--muted)}
   @media(max-width:780px){
-    .main{padding:12px 12px 84px}.shell{width:100%}.app-header{padding:8px 4px 4px;margin-bottom:12px}.brand{font-size:1.22rem}.brand-subtitle{font-size:.68rem;max-width:190px}.bird-logo{width:36px;height:36px}.header-link{display:none}.hero{padding:24px 20px;border-radius:24px;box-shadow:none}h1{font-size:2.35rem}.lead{font-size:.98rem}.history-strip{display:none}.card{padding:22px;border-radius:22px;box-shadow:none}.options,.fields,.result-grid{grid-template-columns:1fr}.question{font-size:1.45rem}.step-actions{flex-direction:column}.step-actions .btn{width:100%}.drawer{top:auto;bottom:0;height:min(82vh,680px);width:100%;border-left:0;border-top:1px solid var(--border);border-radius:24px 24px 0 0;transform:translateY(105%)}.drawer.show{transform:translateY(0)}.bottom-nav{display:flex;position:fixed;left:0;right:0;bottom:0;background:rgba(255,253,248,.94);border-top:1px solid var(--border);padding:9px 16px calc(9px + env(safe-area-inset-bottom));justify-content:space-around;z-index:10}.bottom-nav button{font-size:.78rem;padding:8px 14px}.bottom-nav button.active{color:var(--action)}
+    .main{padding:12px 12px 84px}.shell{width:100%}.app-header{padding:8px 4px 4px;margin-bottom:12px}.brand{font-size:1.22rem}.brand-subtitle{font-size:.68rem;max-width:190px}.bird-logo{width:36px;height:36px}.header-link{display:none}.hero{padding:24px 20px;border-radius:24px;box-shadow:none}h1{font-size:2.35rem}.lead{font-size:.98rem}.history-strip{display:none}.card{padding:22px;border-radius:22px;box-shadow:none}.options,.fields,.result-grid,.cabinet-grid{grid-template-columns:1fr}.question{font-size:1.45rem}.step-actions{flex-direction:column}.step-actions .btn{width:100%}.drawer{top:auto;bottom:0;height:min(82vh,680px);width:100%;border-left:0;border-top:1px solid var(--border);border-radius:24px 24px 0 0;transform:translateY(105%)}.drawer.show{transform:translateY(0)}.bottom-nav{display:flex;position:fixed;left:0;right:0;bottom:0;background:rgba(255,253,248,.94);border-top:1px solid var(--border);padding:9px 16px calc(9px + env(safe-area-inset-bottom));justify-content:space-around;z-index:10}.bottom-nav button{font-size:.78rem;padding:8px 14px}.bottom-nav button.active{color:var(--action)}
   }
 </style>
 </head>
@@ -154,7 +156,7 @@ function fieldHtml(f){
   if(type==='select') return `<div class="field"><label>${label}</label><select id="${key}">${opts.map(([v,l])=>`<option value="${v}" ${state[key]===v?'selected':''}>${l}</option>`).join('')}</select></div>`;
   return `<div class="field"><label>${label}</label><input id="${key}" type="${type}" value="${esc(state[key])}"/></div>`;
 }
-function backBtn(){return `<button class="btn secondary" onclick="${step>0?'prevStep()':'renderHome()'}">← Назад</button>`;}
+function backBtn(){return `<button class="btn secondary" onclick="${step>0?'prevStep()':'renderHome()'}">Назад</button>`;}
 function choose(k,v){state[k]=v; nextStep();}
 function chooseActivity(v){state.activity=v;renderStep();}
 function saveFields(){steps[step].fields.forEach(f=>state[f[0]]=$(f[0]).value); nextStep();}
@@ -162,7 +164,7 @@ function saveMixed(){if(!state.activity){alert('Выберите активно�
 function prevStep(){if(step>0){step--;renderStep();}}
 function nextStep(){if(step<steps.length-1){step++;renderStep();}else authToken?buildPlan():renderAuthChoice();}
 function renderAuthChoice(){
-  view.innerHTML=`<section class="card auth-card"><button class="back-mini" onclick="step=steps.length-1;renderStep()">← Назад</button><h2 style="font-size:2rem;margin-bottom:10px">Продолжить как гость или создать профиль?</h2><p class="lead" style="margin-bottom:0">Можно создать профиль, чтобы планы сохранялись в личном кабинете, или продолжить без регистрации, в этом случае история сохранится только в этом браузере</p><div class="auth-tabs"><button class="btn" onclick="showAuthForm('register')">Создать профиль</button><button class="btn secondary" onclick="buildPlan()">Продолжить как гость</button></div><button class="btn soft auth-login" onclick="showAuthForm('login')">Уже есть аккаунт</button><div id="authArea"></div></section>`;
+  view.innerHTML=`<section class="card auth-card"><button class="back-mini" onclick="step=steps.length-1;renderStep()">Назад</button><h2 style="font-size:2rem;margin-bottom:10px">Продолжить как гость или создать профиль?</h2><p class="lead" style="margin-bottom:0">Можно создать профиль, чтобы планы сохранялись в личном кабинете, или продолжить без регистрации, в этом случае история сохранится только в этом браузере</p><div class="auth-tabs"><button class="btn" onclick="showAuthForm('register')">Создать профиль</button><button class="btn secondary" onclick="buildPlan()">Продолжить как гость</button></div><button class="btn soft auth-login" onclick="showAuthForm('login')">Уже есть аккаунт</button><div id="authArea"></div></section>`;
 }
 function showAuthForm(kind){
   $('authArea').innerHTML=`<div class="auth-fields">${kind==='register'?'<input id="authName" placeholder="Имя"/>':''}<input id="authEmail" type="email" placeholder="Почта"/><input id="authPass" type="password" placeholder="Пароль"/><button class="btn" onclick="emailAuth('${kind}')">${kind==='register'?'Создать аккаунт':'Войти'} и получить питание</button></div>`;
@@ -213,9 +215,9 @@ function avgActual(){
   if(!total.kcal) return avgTarget();
   return {kcal:Math.round(total.kcal/days.length),protein:Math.round(total.protein/days.length),fat:Math.round(total.fat/days.length),carbs:Math.round(total.carbs/days.length)};
 }
-function renderResult(){const t=avgActual(), micros=weeklyMicros();view.innerHTML=`<section class="card result"><button class="back-mini" onclick="${authToken?'step=steps.length-1;renderStep()':'renderAuthChoice()'}">← Назад</button><h2>Готово</h2><div class="result-grid"><div class="metric"><b>✓ 7 дней</b><span>план на неделю</span></div><div class="metric"><b>✓ 21 приём пищи</b><span>завтраки, обеды и ужины</span></div><div class="metric"><span>В среднем за день</span><b>${t.kcal} ккал</b><span>Б ${t.protein} • Ж ${t.fat} • У ${t.carbs}</span></div><div class="metric micro-card"><span>Микронутриенты за неделю</span><div class="micro-tags">${micros.map(x=>`<span class="micro-tag">${esc(x)}</span>`).join('')}</div><span>Оценка по блюдам в плане</span></div></div><div class="step-actions"><button class="btn" onclick="makeWeekCart()">Собрать корзину на неделю</button><button class="btn secondary" onclick="renderPlan()">Посмотреть план</button><button class="btn soft" onclick="openInBody()">Уточнить калории с помощью отчёта InBody</button></div></section>`;}
+function renderResult(){const t=avgActual();view.innerHTML=`<section class="card result"><button class="back-mini" onclick="${authToken?'step=steps.length-1;renderStep()':'renderAuthChoice()'}">Назад</button><h2>Готово</h2><div class="result-grid"><div class="metric"><b>✓ 7 дней</b><span>план на неделю</span></div><div class="metric"><b>✓ 21 приём пищи</b><span>завтраки, обеды и ужины</span></div><div class="metric"><span>В среднем за день</span><b>${t.kcal} ккал</b><span>Б ${t.protein} • Ж ${t.fat} • У ${t.carbs}</span></div></div><div class="step-actions"><button class="btn" onclick="makeWeekCart()">Собрать корзину на неделю</button><button class="btn secondary" onclick="renderPlan()">Посмотреть план</button><button class="btn soft" onclick="openInBody()">Уточнить калории с помощью отчёта InBody</button></div></section>`;}
 function shortDishName(name){return String(name||'Блюдо').replace(/^Комбо-набор:\s*/i,'').replace(/\s+\d+\s*г\b/ig,'').split(',')[0].trim();}
-const WD=['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
+function dayLabel(i){return `${i+1} день`;}
 function nutritionOf(d){
   const n=d?.nutrition||d||{};
   return {
@@ -228,72 +230,93 @@ function nutritionOf(d){
 function dayTotals(day){
   return (day?.meals||[]).flatMap(m=>m.dishes||[]).reduce((a,d)=>{const n=nutritionOf(d);a.kcal+=n.kcal;a.protein+=n.protein;a.fat+=n.fat;a.carbs+=n.carbs;return a;},{kcal:0,protein:0,fat:0,carbs:0});
 }
-const MICRO_FIELDS=[
-  ['Кальций',['calcium','calcium_mg']],
-  ['Железо',['iron','iron_mg']],
-  ['Магний',['magnesium','magnesium_mg']],
-  ['Калий',['potassium','potassium_mg']],
-  ['Омега-3',['omega3','omega_3','omega3_g']],
-  ['Витамин C',['vitamin_c','vitaminC','vitamin_c_mg']],
-  ['Витамин D',['vitamin_d','vitaminD','vitamin_d_mcg']],
-  ['Фолаты',['folate','folates','folate_mcg']]
-];
-const MICRO_RULES=[
-  ['Клетчатка',/(овощ|салат|фасол|нут|чечев|греч|булгур|киноа|ягод|фрукт|капуст|брокк|зелень|рис|паста)/i],
-  ['Кальций',/(творог|йогурт|сыр|моцарел|молок|кефир|сливк|омлет)/i],
-  ['Железо',/(говядин|индейк|куриц|греч|фасол|нут|чечев|печен)/i],
-  ['Магний',/(греч|булгур|киноа|нут|фасол|орех|семеч|рис)/i],
-  ['Калий',/(картоф|томат|помид|банан|фасол|лосос|овощ|зелень)/i],
-  ['Витамин C',/(ягод|томат|помид|перец|капуст|зелень|цитрус|брокк|овощ)/i],
-  ['Омега-3',/(лосос|семг|тунец|рыб|скумбр|сардин|кревет)/i],
-  ['Витамин D',/(лосос|семг|тунец|рыб|яйц|омлет)/i],
-  ['Фолаты',/(зелень|шпинат|фасол|нут|чечев|капуст|брокк|салат)/i]
-];
-function weeklyMicros(){
-  const dishes=(currentDays||[]).flatMap(d=>(d.meals||[]).flatMap(m=>m.dishes||[]));
-  const found=new Set();
-  dishes.forEach(d=>{
-    const n=d?.nutrition||d?.nutrients||d?.micronutrients||d?.micro||{};
-    MICRO_FIELDS.forEach(([label,fields])=>{if(fields.some(f=>+n[f]>0)) found.add(label);});
-    const text=[d?.name,d?.description,d?.ingredients].filter(Boolean).join(' ');
-    MICRO_RULES.forEach(([label,re])=>{if(re.test(text)) found.add(label);});
-  });
-  const preferred=['Клетчатка','Кальций','Железо','Магний','Калий','Витамин C','Омега-3','Витамин D','Фолаты'];
-  const result=preferred.filter(x=>found.has(x));
-  return result.length?result.slice(0,8):['Клетчатка','Кальций','Железо','Магний'];
-}
 function kbjuText(n){return `${Math.round(n.kcal)} ккал · Б ${Math.round(n.protein)} · Ж ${Math.round(n.fat)} · У ${Math.round(n.carbs)}`;}
+function humanPortion(raw){
+  if(raw===undefined||raw===null||raw==='') return '';
+  const text=String(raw).trim();
+  if(/[а-яa-z%]/i.test(text)&&!/^(\d+[.,]?\d*)$/.test(text)) return `Съесть: ${esc(text)}`;
+  const num=Number(text.replace(',','.'));
+  if(!Number.isFinite(num)) return `Съесть: ${esc(text)}`;
+  if(num>10) return `Съесть: ${Math.round(num)} г`;
+  if(Math.abs(num-1)<.03) return 'Съесть всю порцию';
+  const variants=[[.25,'1/4 порции'],[.33,'1/3 порции'],[.5,'1/2 порции'],[.67,'2/3 порции'],[.75,'3/4 порции'],[1.25,'1 1/4 порции'],[1.5,'1 1/2 порции']];
+  const found=variants.find(([v])=>Math.abs(num-v)<.04);
+  if(found) return `Съесть ${found[1]}`;
+  return `Съесть ${String(Math.round(num*100)/100).replace('.',',')} порции`;
+}
 function portionText(d){
-  const raw=d?.portion||d?.serving||d?.portion_text||d?.amount||d?.quantity||d?.weight||d?.grams;
-  if(raw) return `Съесть: ${esc(raw)}`;
+  const raw=d?.portion??d?.serving??d?.portion_text??d?.amount??d?.quantity;
+  const portion=humanPortion(raw);
+  if(portion) return portion;
+  const weight=d?.weight||d?.grams;
+  if(weight) return `Съесть всю порцию: ${esc(weight)} г`;
   const grams=String(d?.name||'').match(/(\d+)\s*г\b/i);
   return grams?`Съесть всю порцию: ${grams[1]} г`:'Съесть всю порцию';
 }
 function renderPlan(){
   if(!currentDays) currentDays=fallbackDays();
-  view.innerHTML=`<section><button class="back-mini" onclick="renderResult()">← Назад</button><div class="day-head" style="margin-bottom:18px"><div><h1 style="font-size:2rem;margin:0">План на неделю</h1></div><button class="btn" onclick="makeWeekCart()">Собрать корзину на неделю</button></div><div class="day-list">${currentDays.map(dayCard).join('')}</div></section>`;
+  view.innerHTML=`<section><button class="back-mini" onclick="renderResult()">Назад</button><div class="day-head" style="margin-bottom:18px"><div><h1 style="font-size:2rem;margin:0">План на неделю</h1></div><button class="btn" onclick="makeWeekCart()">Собрать корзину на неделю</button></div><div class="day-list">${currentDays.map(dayCard).join('')}</div></section>`;
 }
 function dayCard(day,i){
   const total=dayTotals(day);
-  return `<article class="day"><div class="day-head"><div class="day-title">${WD[i%7]}<span class="day-kbju">${kbjuText(total)}</span></div></div><div class="meal-lines">${(day.meals||[]).map(m=>`<div><b>${esc(m.meal_label)}:</b> ${esc((m.dishes||[]).slice(0,2).map(d=>shortDishName(d.name)).join(' + ')||'подбор блюда')}</div>`).join('')}</div><div class="day-actions"><button class="btn secondary" onclick="openDetails(${i})">Детали</button><button class="btn soft" onclick="openReplaceMeal(${i})">Заменить</button></div></article>`;
+  return `<article class="day"><div class="day-head"><div class="day-title">${dayLabel(i)}<span class="day-kbju">${kbjuText(total)}</span></div></div><div class="meal-lines">${(day.meals||[]).map(m=>`<div><b>${esc(m.meal_label)}:</b> ${esc((m.dishes||[]).slice(0,2).map(d=>shortDishName(d.name)).join(' + ')||'подбор блюда')}</div>`).join('')}</div><div class="day-actions"><button class="btn secondary" onclick="openDetails(${i})">Детали</button><button class="btn soft" onclick="openReplaceMeal(${i})">Заменить</button></div></article>`;
 }
 function openDrawer(html){$('drawer').innerHTML=html;$('backdrop').classList.add('show');$('drawer').classList.add('show');}
 function closeDrawer(){$('backdrop').classList.remove('show');$('drawer').classList.remove('show');}
 function openCabinet(){
   const plans=savedPlans();
   if(authToken){
-    openDrawer(`<div class="drawer-head"><h2>Личный кабинет</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Профиль: <b style="color:var(--ink)">${esc(authName||'пользователь')}</b></p><button class="memory-note memory-button" onclick="openCabinetPlans()">Сохранённых планов: ${plans.length}</button><div class="step-actions"><button class="btn secondary" onclick="logout()">Выйти</button></div>`);
+    closeDrawer();
+    renderCabinetPage();
     return;
   }
   openDrawer(`<div class="drawer-head"><h2>Личный кабинет</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Создайте профиль, чтобы планы сохранялись не только в этом браузере</p><div class="step-actions"><button class="btn" onclick="showCabinetAuthForm('register')">Создать профиль</button><button class="btn secondary" onclick="closeDrawer()">Продолжить как гость</button></div><button class="btn soft auth-login" onclick="showCabinetAuthForm('login')">Уже есть аккаунт</button>`);
 }
 function logout(){authToken='';authName='';localStorage.removeItem('zhurka_token');localStorage.removeItem('zhurka_name');closeDrawer();renderHome();}
+function cabinetHistoryList(plans){
+  if(!plans.length) return `<p class="muted">История появится после первого плана</p>`;
+  return `<div class="radio-list">${plans.slice(0,5).map((p,i)=>`<button class="radio" onclick="openSavedPlan(${i})">${esc(historyTitle(p))}<span style="display:block;color:var(--muted);font-size:.84rem;margin-top:4px">${esc(historyMeta(p))}</span></button>`).join('')}</div>`;
+}
+function avgForDays(days,target){
+  const list=(days||[]).filter(Boolean);
+  if(!list.length) return target||avgTarget();
+  const total=list.reduce((a,day)=>{const n=dayTotals(day);a.kcal+=n.kcal;a.protein+=n.protein;a.fat+=n.fat;a.carbs+=n.carbs;return a;},{kcal:0,protein:0,fat:0,carbs:0});
+  if(!total.kcal) return target||avgTarget();
+  return {kcal:Math.round(total.kcal/list.length),protein:Math.round(total.protein/list.length),fat:Math.round(total.fat/list.length),carbs:Math.round(total.carbs/list.length)};
+}
+function currentWeekBlock(plans){
+  const plan=currentDays?{days:currentDays,target:currentTarget,title:'Текущий план'}:plans[0];
+  if(!plan) return `<section class="card cabinet-week"><div class="cabinet-title">Питание на текущую неделю</div><p class="muted">Пока нет готового плана</p><div class="step-actions"><button class="btn" onclick="startPlan()">Подобрать питание</button></div></section>`;
+  const t=avgForDays(plan.days,plan.target);
+  return `<section class="card cabinet-week"><div class="cabinet-title">Питание на текущую неделю</div><div class="result-grid"><div class="metric"><b>✓ 7 дней</b><span>план на неделю</span></div><div class="metric"><b>✓ 21 приём пищи</b><span>завтраки, обеды и ужины</span></div><div class="metric"><span>В среднем за день</span><b>${t.kcal} ккал</b><span>Б ${t.protein} • Ж ${t.fat} • У ${t.carbs}</span></div></div><div class="step-actions"><button class="btn secondary" onclick="${currentDays?'renderPlan()':'openSavedPlan(0)'}">Посмотреть питание</button><button class="btn" onclick="${currentDays?'makeWeekCart()':'makeSavedWeekCart(0)'}">Собрать корзину на неделю</button></div></section>`;
+}
+function renderCabinetPage(){
+  const plans=savedPlans();
+  view.innerHTML=`<section class="cabinet-grid"><div class="cabinet-main"><section class="card"><div class="kicker">Личный кабинет</div><div class="cabinet-title">${esc(authName||'Профиль')}</div><p class="lead">Можно посмотреть питание на следующую неделю без повторного заполнения анкеты</p><div class="step-actions"><button class="btn" onclick="buildNextWeekPlan()">Посмотреть питание на следующую неделю</button><button class="btn secondary" onclick="logout()">Выйти</button></div></section></div><aside class="card cabinet-side"><h2 style="font-size:1.4rem;margin-bottom:4px">История</h2>${cabinetHistoryList(plans)}</aside>${currentWeekBlock(plans)}</section>`;
+}
+function profileTarget(){
+  const p=savedPlans()[0], t=currentTarget||p?.target||{};
+  return {kcal:Math.round(t.kcal||t.calories||1750),protein:Math.round(t.protein||120),fat:Math.round(t.fat||60),carbs:Math.round(t.carbs||t.carbohydrates||180)};
+}
+async function buildNextWeekPlan(){
+  renderLoading();
+  const wait=new Promise(r=>setTimeout(r,2600));
+  const target=profileTarget();
+  currentTarget=target;
+  const b={kcal:+target.kcal,protein:+target.protein,fat:+target.fat,carbs:+target.carbs,meal_count:3,restrictions:state.restrictions||null,days_count:7};
+  try{const r=await(await fetch('api/self-serve/week',{method:'POST',headers:H,body:JSON.stringify(b)})).json();currentDays=r.days||fallbackDays();}
+  catch(e){currentDays=fallbackDays();}
+  await wait;
+  saveCurrentPlan();
+  renderPlan();
+}
+function makeSavedWeekCart(i){const p=savedPlans()[i]; if(!p)return; currentDays=p.days; currentTarget=p.target; makeWeekCart();}
 function openCabinetPlans(){
   const plans=savedPlans();
-  openDrawer(`<div class="drawer-head"><h2>История</h2><button class="x" onclick="closeDrawer()">×</button></div>${plans.length?`<div class="radio-list">${plans.map((p,i)=>`<button class="radio" onclick="closeDrawer();openSavedPlan(${i})">${esc(historyTitle(p))}<span style="display:block;color:var(--muted);font-size:.84rem;margin-top:4px">${esc(historyMeta(p))}</span></button>`).join('')}</div>`:'<p class="muted">Пока нет сохранённых планов.</p>'}<button class="back-mini" style="margin-top:16px" onclick="openCabinet()">← Назад</button>`);
+  openDrawer(`<div class="drawer-head"><h2>История</h2><button class="x" onclick="closeDrawer()">×</button></div>${plans.length?`<div class="radio-list">${plans.map((p,i)=>`<button class="radio" onclick="closeDrawer();openSavedPlan(${i})">${esc(historyTitle(p))}<span style="display:block;color:var(--muted);font-size:.84rem;margin-top:4px">${esc(historyMeta(p))}</span></button>`).join('')}</div>`:'<p class="muted">Пока нет сохранённых планов</p>'}<button class="back-mini" style="margin-top:16px" onclick="openCabinet()">Назад</button>`);
 }
 function showCabinetAuthForm(kind){
-  openDrawer(`<div class="drawer-head"><h2>${kind==='register'?'Создать профиль':'Войти'}</h2><button class="x" onclick="closeDrawer()">×</button></div><div class="auth-fields">${kind==='register'?'<input id="authName" placeholder="Имя"/>':''}<input id="authEmail" type="email" placeholder="Почта"/><input id="authPass" type="password" placeholder="Пароль"/><button class="btn" onclick="profileAuth('${kind}')">${kind==='register'?'Создать профиль':'Войти'}</button></div><button class="back-mini" style="margin-top:16px" onclick="openCabinet()">← Назад</button>`);
+  openDrawer(`<div class="drawer-head"><h2>${kind==='register'?'Создать профиль':'Войти'}</h2><button class="x" onclick="closeDrawer()">×</button></div><div class="auth-fields">${kind==='register'?'<input id="authName" placeholder="Имя"/>':''}<input id="authEmail" type="email" placeholder="Почта"/><input id="authPass" type="password" placeholder="Пароль"/><button class="btn" onclick="profileAuth('${kind}')">${kind==='register'?'Создать профиль':'Войти'}</button></div><button class="back-mini" style="margin-top:16px" onclick="openCabinet()">Назад</button>`);
 }
 async function profileAuth(kind){
   const email=$('authEmail').value.trim(), password=$('authPass').value, name=$('authName')?$('authName').value.trim():'';
@@ -303,13 +326,13 @@ async function profileAuth(kind){
     const d=await r.json();
     if(!r.ok) throw new Error(d.detail||'Не удалось войти');
     authToken=d.token; authName=d.name||email; localStorage.setItem('zhurka_token',authToken); localStorage.setItem('zhurka_name',authName);
-    openCabinet(); renderHome();
+    closeDrawer(); renderCabinetPage();
   }catch(e){alert(e.message||'Не удалось войти');}
 }
 function openDetails(i){
   const day=currentDays[i];
   const total=dayTotals(day);
-  openDrawer(`<div class="drawer-head"><div><h2>${WD[i%7]}</h2><span class="day-kbju">${kbjuText(total)}</span></div><button class="x" onclick="closeDrawer()">×</button></div>${(day.meals||[]).map((m,mi)=>`<div class="day" style="box-shadow:none;margin-bottom:12px"><b>${esc(m.meal_label)}</b>${(m.dishes||[]).map(d=>dishDetailHtml(d)).join('')}<button class="btn soft" style="margin-top:10px;padding:10px 14px" onclick="openReplaceReason(${i},${mi})">Заменить</button></div>`).join('')}`);
+  openDrawer(`<div class="drawer-head"><div><h2>${dayLabel(i)}</h2><span class="day-kbju">${kbjuText(total)}</span></div><button class="x" onclick="closeDrawer()">×</button></div>${(day.meals||[]).map((m,mi)=>`<div class="day" style="box-shadow:none;margin-bottom:12px"><b>${esc(m.meal_label)}</b>${(m.dishes||[]).map(d=>dishDetailHtml(d)).join('')}<button class="btn soft" style="margin-top:10px;padding:10px 14px" onclick="openReplaceReason(${i},${mi})">Заменить</button></div>`).join('')}`);
 }
 function openInBody(){
   openDrawer(`<div class="drawer-head"><h2>Отчёт InBody</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Загрузите отчёт InBody, чтобы Журка точнее оценила состав тела и уточнила дневные калории</p><div class="auth-fields"><input type="file" accept=".pdf,image/*"/><button class="btn" onclick="showInBodySuccess()">Загрузить отчёт</button></div><p class="muted" style="margin-top:14px">Пока это заготовка сценария: после подключения обработки отчёта калории будут пересчитаны автоматически</p>`);
@@ -346,7 +369,7 @@ function memoryText(reason, mealLabel, oldName){
 }
 async function replaceDish(reason){
   const {dayIdx,mealIdx}=replaceCtx, day=currentDays[dayIdx], meal=day.meals[mealIdx], old=(meal.dishes||[])[0], n=(old&&old.nutrition)||{};
-  tempMemory.push({day:WD[dayIdx%7],meal:meal.meal_label,reason});
+  tempMemory.push({day:dayLabel(dayIdx),meal:meal.meal_label,reason});
   openDrawer(`<div class="drawer-head"><h2>Заменяю</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Журка подбирает другой вариант</p>`);
   try{
     const res=await fetch('api/self-serve/replace-dish',{method:'POST',headers:H,body:JSON.stringify({meal_label:meal.meal_label,meal_type:meal.meal_type||meal.meal_label,kbju:{kcal:n.calories||500,protein:n.protein||30,fat:n.fat||15,carbs:n.carbohydrates||50},restrictions:state.restrictions||null,exclude_xml_ids:(meal.dishes||[]).map(x=>x.xml_id).filter(Boolean)})});
