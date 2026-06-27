@@ -64,7 +64,7 @@
   .metric{background:rgba(255,255,255,.52);border:1px solid rgba(93,67,38,.12);border-radius:18px;padding:16px}
   .metric b{display:block;font-size:1.45rem;margin-bottom:4px}.metric span{color:var(--muted);font-size:.9rem;font-weight:700}
   .day-list{display:grid;gap:14px}.day{border:1px solid var(--border);border-radius:20px;background:var(--surface);padding:18px}
-  .day-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}.day-title{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.55rem;font-weight:700}
+  .day-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}.day-title{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.55rem;font-weight:700}.day-kbju{display:block;font-family:"Manrope",system-ui,sans-serif;font-size:.84rem;line-height:1.35;color:var(--muted);font-weight:800;margin-top:3px}
   .meal-lines{line-height:1.8;color:var(--ink)}.meal-lines b{color:var(--action)}
   .day-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.day-actions .btn{padding:10px 14px;font-size:.9rem}
   .sheet-backdrop{position:fixed;inset:0;background:rgba(31,30,28,.32);display:none;z-index:20}.sheet-backdrop.show{display:block}
@@ -87,7 +87,7 @@
       <header class="app-header">
         <button class="brand-line" onclick="renderHome()" aria-label="На главную"><span class="bird-logo" aria-hidden="true"></span><div><div class="brand">Журка</div><div class="brand-subtitle">Перестаньте думать, что съесть</div></div></button>
         <div class="header-actions">
-          <button class="header-link" onclick="scrollToHistory()">История планов</button>
+          <button class="header-link" onclick="openCabinetPlans()">История планов</button>
           <button class="header-link" onclick="openCabinet()">Личный кабинет</button>
         </div>
       </header>
@@ -124,7 +124,6 @@ function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&l
 function renderHome(){
   view.innerHTML=`<section class="hero"><div class="kicker">Персональный план</div><h1>Соберём питание на неделю за пару минут</h1><p class="lead">Ответьте на несколько вопросов — Журка подберёт рацион и подготовит корзину.</p><div class="steps-note"><b>Как это работает</b><br/>Журка задаст несколько простых вопросов и соберёт план на неделю с возможностью сразу сделать заказ.</div><button class="btn" onclick="startPlan()">Подобрать рацион</button></section>${historyHtml()}`;
 }
-function scrollToHistory(){const el=document.getElementById('historyStrip'); if(el) el.scrollIntoView({behavior:'smooth',block:'center'});}
 function savedPlans(){try{return JSON.parse(localStorage.getItem('zhurka_plans')||'[]')}catch(e){return []}}
 function historyHtml(){
   const plans=savedPlans();
@@ -209,12 +208,27 @@ function avgTarget(){return {kcal:Math.round(currentTarget?.kcal||1750),protein:
 function renderResult(){const t=avgTarget();view.innerHTML=`<section class="card result"><button class="back-mini" onclick="${authToken?'step=steps.length-1;renderStep()':'renderAuthChoice()'}">← Назад</button><h2>Готово</h2><div class="result-grid"><div class="metric"><b>✓ 7 дней</b><span>план на неделю</span></div><div class="metric"><b>✓ 21 приём пищи</b><span>завтраки, обеды и ужины</span></div><div class="metric"><span>В среднем за день</span><b>${t.kcal} ккал</b><span>Б ${t.protein} • Ж ${t.fat} • У ${t.carbs}</span></div></div><div class="step-actions"><button class="btn" onclick="makeWeekCart()">Собрать корзину на неделю</button><button class="btn secondary" onclick="renderPlan()">Посмотреть план</button><button class="btn soft" onclick="openInBody()">Уточнить калории с помощью отчёта InBody</button></div></section>`;}
 function shortDishName(name){return String(name||'Блюдо').replace(/^Комбо-набор:\s*/i,'').replace(/\s+\d+\s*г\b/ig,'').split(',')[0].trim();}
 const WD=['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
+function nutritionOf(d){
+  const n=d?.nutrition||{};
+  return {kcal:+(n.calories||n.kcal||0),protein:+(n.protein||0),fat:+(n.fat||0),carbs:+(n.carbohydrates||n.carbs||0)};
+}
+function dayTotals(day){
+  return (day?.meals||[]).flatMap(m=>m.dishes||[]).reduce((a,d)=>{const n=nutritionOf(d);a.kcal+=n.kcal;a.protein+=n.protein;a.fat+=n.fat;a.carbs+=n.carbs;return a;},{kcal:0,protein:0,fat:0,carbs:0});
+}
+function kbjuText(n){return `${Math.round(n.kcal)} ккал · Б ${Math.round(n.protein)} · Ж ${Math.round(n.fat)} · У ${Math.round(n.carbs)}`;}
+function portionText(d){
+  const raw=d?.portion||d?.serving||d?.portion_text||d?.amount||d?.quantity||d?.weight||d?.grams;
+  if(raw) return `Съесть: ${esc(raw)}`;
+  const grams=String(d?.name||'').match(/(\d+)\s*г\b/i);
+  return grams?`Съесть всю порцию: ${grams[1]} г`:'Съесть всю порцию';
+}
 function renderPlan(){
   if(!currentDays) currentDays=fallbackDays();
   view.innerHTML=`<section><button class="back-mini" onclick="renderResult()">← Назад</button><div class="day-head" style="margin-bottom:18px"><div><h1 style="font-size:2rem;margin:0">План на неделю</h1></div><button class="btn" onclick="makeWeekCart()">Собрать корзину на неделю</button></div><div class="day-list">${currentDays.map(dayCard).join('')}</div></section>`;
 }
 function dayCard(day,i){
-  return `<article class="day"><div class="day-head"><div class="day-title">${WD[i%7]}</div></div><div class="meal-lines">${(day.meals||[]).map(m=>`<div><b>${esc(m.meal_label)}:</b> ${esc((m.dishes||[]).slice(0,2).map(d=>shortDishName(d.name)).join(' + ')||'подбор блюда')}</div>`).join('')}</div><div class="day-actions"><button class="btn secondary" onclick="openDetails(${i})">Детали</button><button class="btn soft" onclick="openReplaceMeal(${i})">Заменить</button></div></article>`;
+  const total=dayTotals(day);
+  return `<article class="day"><div class="day-head"><div class="day-title">${WD[i%7]}<span class="day-kbju">${kbjuText(total)}</span></div></div><div class="meal-lines">${(day.meals||[]).map(m=>`<div><b>${esc(m.meal_label)}:</b> ${esc((m.dishes||[]).slice(0,2).map(d=>shortDishName(d.name)).join(' + ')||'подбор блюда')}</div>`).join('')}</div><div class="day-actions"><button class="btn secondary" onclick="openDetails(${i})">Детали</button><button class="btn soft" onclick="openReplaceMeal(${i})">Заменить</button></div></article>`;
 }
 function openDrawer(html){$('drawer').innerHTML=html;$('backdrop').classList.add('show');$('drawer').classList.add('show');}
 function closeDrawer(){$('backdrop').classList.remove('show');$('drawer').classList.remove('show');}
@@ -247,15 +261,19 @@ async function profileAuth(kind){
 }
 function openDetails(i){
   const day=currentDays[i];
-  openDrawer(`<div class="drawer-head"><h2>${WD[i%7]}</h2><button class="x" onclick="closeDrawer()">×</button></div>${(day.meals||[]).map((m,mi)=>`<div class="day" style="box-shadow:none;margin-bottom:12px"><b>${esc(m.meal_label)}</b>${(m.dishes||[]).map(d=>dishDetailHtml(d)).join('')}<button class="btn soft" style="margin-top:10px;padding:10px 14px" onclick="openReplaceReason(${i},${mi})">Заменить</button></div>`).join('')}`);
+  const total=dayTotals(day);
+  openDrawer(`<div class="drawer-head"><div><h2>${WD[i%7]}</h2><span class="day-kbju">${kbjuText(total)}</span></div><button class="x" onclick="closeDrawer()">×</button></div>${(day.meals||[]).map((m,mi)=>`<div class="day" style="box-shadow:none;margin-bottom:12px"><b>${esc(m.meal_label)}</b>${(m.dishes||[]).map(d=>dishDetailHtml(d)).join('')}<button class="btn soft" style="margin-top:10px;padding:10px 14px" onclick="openReplaceReason(${i},${mi})">Заменить</button></div>`).join('')}`);
 }
 function openInBody(){
-  openDrawer(`<div class="drawer-head"><h2>Отчёт InBody</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Загрузите отчёт InBody, чтобы Журка точнее оценила состав тела и уточнила дневные калории.</p><div class="auth-fields"><input type="file" accept=".pdf,image/*"/><button class="btn" onclick="closeDrawer()">Загрузить отчёт</button></div><p class="muted" style="margin-top:14px">Пока это заготовка сценария: после подключения обработки отчёта калории будут пересчитаны автоматически.</p>`);
+  openDrawer(`<div class="drawer-head"><h2>Отчёт InBody</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Загрузите отчёт InBody, чтобы Журка точнее оценила состав тела и уточнила дневные калории.</p><div class="auth-fields"><input type="file" accept=".pdf,image/*"/><button class="btn" onclick="showInBodySuccess()">Загрузить отчёт</button></div><p class="muted" style="margin-top:14px">Пока это заготовка сценария: после подключения обработки отчёта калории будут пересчитаны автоматически.</p>`);
+}
+function showInBodySuccess(){
+  openDrawer(`<div class="drawer-head"><h2>Отчёт загружен</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Журка учтёт данные InBody при следующем расчёте калорий.</p><div class="memory-note">Можно сразу подобрать новый рацион с уточнёнными параметрами.</div><div class="step-actions"><button class="btn" onclick="closeDrawer();startPlan()">Подобрать новый рацион</button><button class="btn secondary" onclick="closeDrawer()">Остаться здесь</button></div>`);
 }
 function dishDetailHtml(d){
-  const n=d.nutrition||{}, img=d.image_url?`<img class="dish-photo" src="${esc(d.image_url)}" alt="">`:`<div class="dish-photo"></div>`;
+  const n=nutritionOf(d), img=d.image_url?`<img class="dish-photo" src="${esc(d.image_url)}" alt="">`:`<div class="dish-photo"></div>`;
   const price=d.price?` · ${d.price} ₽`:'';
-  return `<div class="dish-detail">${img}<div class="muted"><b style="color:var(--ink)">${esc(d.name)}</b><br/>${Math.round(n.calories||0)} ккал${price}</div></div>`;
+  return `<div class="dish-detail">${img}<div class="muted"><b style="color:var(--ink)">${esc(d.name)}</b><br/>${Math.round(n.kcal)} ккал${price}<br/>Б ${Math.round(n.protein)} · Ж ${Math.round(n.fat)} · У ${Math.round(n.carbs)}<br/>${portionText(d)}</div></div>`;
 }
 function openReplaceMeal(i){
   replaceCtx={dayIdx:i};
@@ -266,6 +284,19 @@ function openReplaceReason(dayIdx,mealIdx){
   const reasons=['Не люблю','Аллергия','Слишком дорого','Нет в доставке','Уже готовил недавно','Другое...'];
   openDrawer(`<div class="drawer-head"><h2>Почему?</h2><button class="x" onclick="closeDrawer()">×</button></div><div class="radio-list">${reasons.map(r=>`<button class="radio" onclick="replaceDish('${esc(r)}')">${esc(r)}</button>`).join('')}</div>`);
 }
+function memoryText(reason, mealLabel, oldName){
+  const meal=String(mealLabel||'это блюдо').toLowerCase();
+  const dish=shortDishName(oldName||meal);
+  const map={
+    'Не люблю':`Не предлагать похожий ${meal}: ${dish}.`,
+    'Аллергия':`Исключать похожие блюда из-за аллергии: ${dish}.`,
+    'Слишком дорого':`Подбирать ${meal} дешевле, чем ${dish}.`,
+    'Нет в доставке':`Не опираться на блюда, которых нет в доставке: ${dish}.`,
+    'Уже готовил недавно':`Реже повторять похожий ${meal}: ${dish}.`,
+    'Другое...':`Учитывать, что этот ${meal} не подошёл: ${dish}.`
+  };
+  return map[reason]||map['Другое...'];
+}
 async function replaceDish(reason){
   const {dayIdx,mealIdx}=replaceCtx, day=currentDays[dayIdx], meal=day.meals[mealIdx], old=(meal.dishes||[])[0], n=(old&&old.nutrition)||{};
   tempMemory.push({day:WD[dayIdx%7],meal:meal.meal_label,reason});
@@ -275,7 +306,8 @@ async function replaceDish(reason){
     const data=await res.json(); if(data.dish) meal.dishes[0]=data.dish;
   }catch(e){ meal.dishes[0]={name:'Индейка с булгуром',nutrition:{calories:520,protein:38,fat:16,carbohydrates:54},in_cart:true}; }
   const newName=shortDishName(meal.dishes[0].name);
-  openDrawer(`<div class="drawer-head"><h2>Заменили ${meal.meal_label.toLowerCase()}</h2><button class="x" onclick="closeDrawer()">×</button></div><p>Новый вариант: <b>${esc(newName)}</b>.</p><div class="memory-note">Запомнить это для следующих планов?<div class="step-actions"><button class="btn" onclick="saveMemory('${esc(reason)}')">Да, запомнить</button><button class="btn secondary" onclick="closeDrawer();renderPlan()">Только сейчас</button></div></div>`);
+  const memory=memoryText(reason,meal.meal_label,old?.name);
+  openDrawer(`<div class="drawer-head"><h2>Заменили ${meal.meal_label.toLowerCase()}</h2><button class="x" onclick="closeDrawer()">×</button></div><p>Новый вариант: <b>${esc(newName)}</b>.</p><div class="memory-note"><b style="color:var(--ink)">Что запомнить?</b><br/>${esc(memory)}<div class="step-actions"><button class="btn" onclick="saveMemory('${esc(memory)}')">Да, запомнить</button><button class="btn secondary" onclick="closeDrawer();renderPlan()">Только сейчас</button></div></div>`);
 }
 function saveMemory(reason){permanentMemory.push(reason);localStorage.setItem('zhurka_memory',JSON.stringify(permanentMemory));closeDrawer();renderPlan();}
 async function makeWeekCart(){
