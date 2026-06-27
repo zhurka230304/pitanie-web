@@ -49,6 +49,7 @@
   .options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
   .option{border:1.5px solid var(--border);background:#fffdf8;border-radius:16px;padding:16px;text-align:left;font-weight:800;color:var(--ink)}
   .option.selected{border-color:var(--plum);background:var(--plum-soft);color:var(--action)}
+  .option span{display:block;color:var(--muted);font-size:.84rem;line-height:1.35;font-weight:650;margin-top:6px}
   .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
   .field{display:flex;flex-direction:column;gap:7px}.field label{font-size:.86rem;color:var(--muted);font-weight:750}
   input,select,textarea{width:100%;border:1.5px solid var(--border);border-radius:14px;background:#fffdf8;color:var(--ink);padding:13px 14px;outline:0}
@@ -70,6 +71,7 @@
   .drawer.show{transform:translateX(0)}.drawer-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}.x{border:0;background:transparent;font-size:1.6rem;color:var(--muted)}
   .radio-list{display:grid;gap:10px}.radio{border:1.5px solid var(--border);border-radius:14px;padding:14px;background:#fffdf8;font-weight:800;text-align:left}.radio.selected{background:var(--plum-soft);border-color:var(--plum)}
   .memory-note{border:1px solid var(--border);border-radius:16px;background:#fffdf8;padding:14px;margin-top:16px;color:var(--muted);line-height:1.45}
+  .memory-button{width:100%;text-align:left;cursor:pointer}
   .bottom-nav{display:none}
   .muted{color:var(--muted)}
   @media(max-width:780px){
@@ -104,6 +106,12 @@ const view=$('view');
 let step=0, currentDays=null, currentTarget=null, replaceCtx={}, tempMemory=[], permanentMemory=JSON.parse(localStorage.getItem('zhurka_memory')||'[]');
 let authToken=localStorage.getItem('zhurka_token')||'', authName=localStorage.getItem('zhurka_name')||'';
 const state={goal:'',sex:'female',age:'30',height:'165',weight:'60',activity:'moderate',restrictions:'',format:''};
+const ACTIVITY=[
+  ['sedentary','Сидячая','Работа за компьютером, мало ходьбы, без регулярных тренировок.'],
+  ['light','Низкая','Много бытовой ходьбы или лёгкие тренировки 1–2 раза в неделю.'],
+  ['moderate','Умеренная','Тренировки 3–4 раза в неделю или активный день на ногах.'],
+  ['high','Высокая','Интенсивные тренировки 5+ раз в неделю или физическая работа.']
+];
 const steps=[
   {title:'Какая сейчас цель?',key:'goal',type:'options',options:[['loss','Похудеть'],['maintain','Поддерживать'],['gain','Набрать'],['unknown','Пока не знаю']]},
   {title:'Базовые данные',type:'fields',fields:[['sex','Пол','select',[['female','Женский'],['male','Мужской']]],['age','Возраст','number']]},
@@ -130,9 +138,8 @@ function renderStep(){
   const s=steps[step]; let body='';
   if(s.type==='options') body=`<div class="options">${s.options.map(([v,l])=>`<button class="option ${state[s.key]===v?'selected':''}" onclick="choose('${s.key}','${v}')">${l}</button>`).join('')}</div>`;
   if(s.type==='fields') body=`<div class="fields">${s.fields.map(f=>fieldHtml(f)).join('')}</div><div class="step-actions"><button class="btn" onclick="saveFields()">Продолжить</button>${backBtn()}</div>`;
-  if(s.type==='mixed') body=`<div class="fields"><div class="field"><label>Активность</label><select id="activity"><option value="sedentary">Сидячая</option><option value="light">Низкая</option><option value="moderate" selected>Умеренная</option><option value="high">Высокая</option></select></div><div class="field"><label>Что исключить</label><textarea id="restrictions" placeholder="например: свинину, грибы, острое">${esc(state.restrictions)}</textarea></div></div><div class="step-actions"><button class="btn" onclick="saveMixed()">Продолжить</button>${backBtn()}</div>`;
+  if(s.type==='mixed') body=`<div class="fields"><div class="field"><label>Активность</label><div class="options" style="grid-template-columns:1fr">${ACTIVITY.map(([v,l,d])=>`<button class="option ${state.activity===v?'selected':''}" onclick="chooseActivity('${v}')">${l}<span>${d}</span></button>`).join('')}</div></div><div class="field"><label>Что исключить</label><textarea id="restrictions" placeholder="например: свинину, грибы, острое">${esc(state.restrictions)}</textarea></div></div><div class="step-actions"><button class="btn" onclick="saveMixed()">Продолжить</button>${backBtn()}</div>`;
   view.innerHTML=`<section class="card">${progress()}<div class="question">${s.title}</div>${body}${s.type==='options'?`<div class="step-actions">${backBtn()}</div>`:''}</section>`;
-  if(s.type==='mixed') $('activity').value=state.activity;
 }
 function fieldHtml(f){
   const [key,label,type,opts]=f;
@@ -141,8 +148,9 @@ function fieldHtml(f){
 }
 function backBtn(){return `<button class="btn secondary" onclick="${step>0?'prevStep()':'renderHome()'}">← Назад</button>`;}
 function choose(k,v){state[k]=v; nextStep();}
+function chooseActivity(v){state.activity=v;renderStep();}
 function saveFields(){steps[step].fields.forEach(f=>state[f[0]]=$(f[0]).value); nextStep();}
-function saveMixed(){state.activity=$('activity').value;state.restrictions=$('restrictions').value.trim();nextStep();}
+function saveMixed(){state.restrictions=$('restrictions').value.trim();nextStep();}
 function prevStep(){if(step>0){step--;renderStep();}}
 function nextStep(){if(step<steps.length-1){step++;renderStep();}else authToken?buildPlan():renderAuthChoice();}
 function renderAuthChoice(){
@@ -190,7 +198,7 @@ async function saveCurrentPlan(){
 }
 function renderLoading(){view.innerHTML=`<section class="card loading"><h2>Журка составляет ваш план...</h2><div class="check-list"><div class="check"><b>✓</b> учитывает цель</div><div class="check"><b>✓</b> подбирает блюда</div><div class="check"><b>✓</b> собирает корзину</div></div></section>`;}
 function avgTarget(){return {kcal:Math.round(currentTarget?.kcal||1750),protein:Math.round(currentTarget?.protein||120),fat:Math.round(currentTarget?.fat||60),carbs:Math.round(currentTarget?.carbs||180)};}
-function renderResult(){const t=avgTarget();view.innerHTML=`<section class="card result"><button class="back-mini" onclick="${authToken?'step=steps.length-1;renderStep()':'renderAuthChoice()'}">← Назад</button><h2>Готово</h2><div class="result-grid"><div class="metric"><b>✓ 7 дней</b><span>план на неделю</span></div><div class="metric"><b>✓ 21 приём пищи</b><span>завтраки, обеды и ужины</span></div><div class="metric"><span>В среднем за день</span><b>${t.kcal} ккал</b><span>Б ${t.protein} • Ж ${t.fat} • У ${t.carbs}</span></div></div><div class="step-actions"><button class="btn" onclick="makeWeekCart()">Собрать корзину на неделю</button><button class="btn secondary" onclick="renderPlan()">Посмотреть план</button></div></section>`;}
+function renderResult(){const t=avgTarget();view.innerHTML=`<section class="card result"><button class="back-mini" onclick="${authToken?'step=steps.length-1;renderStep()':'renderAuthChoice()'}">← Назад</button><h2>Готово</h2><div class="result-grid"><div class="metric"><b>✓ 7 дней</b><span>план на неделю</span></div><div class="metric"><b>✓ 21 приём пищи</b><span>завтраки, обеды и ужины</span></div><div class="metric"><span>В среднем за день</span><b>${t.kcal} ккал</b><span>Б ${t.protein} • Ж ${t.fat} • У ${t.carbs}</span></div></div><div class="step-actions"><button class="btn" onclick="makeWeekCart()">Собрать корзину на неделю</button><button class="btn secondary" onclick="renderPlan()">Посмотреть план</button><button class="btn soft" onclick="openInBody()">Уточнить калории с помощью отчёта InBody</button></div></section>`;}
 function shortDishName(name){return String(name||'Блюдо').replace(/^Комбо-набор:\s*/i,'').replace(/\s+\d+\s*г\b/ig,'').split(',')[0].trim();}
 const WD=['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
 function renderPlan(){
@@ -205,12 +213,16 @@ function closeDrawer(){$('backdrop').classList.remove('show');$('drawer').classL
 function openCabinet(){
   const plans=savedPlans();
   if(authToken){
-    openDrawer(`<div class="drawer-head"><h2>Личный кабинет</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Профиль: <b style="color:var(--ink)">${esc(authName||'пользователь')}</b></p><div class="memory-note">Сохранённых планов: ${plans.length}</div><div class="step-actions"><button class="btn secondary" onclick="logout()">Выйти</button></div>`);
+    openDrawer(`<div class="drawer-head"><h2>Личный кабинет</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Профиль: <b style="color:var(--ink)">${esc(authName||'пользователь')}</b></p><button class="memory-note memory-button" onclick="openCabinetPlans()">Сохранённых планов: ${plans.length}</button><div class="step-actions"><button class="btn secondary" onclick="logout()">Выйти</button></div>`);
     return;
   }
   openDrawer(`<div class="drawer-head"><h2>Личный кабинет</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Создайте профиль, чтобы планы сохранялись не только в этом браузере.</p><div class="step-actions"><button class="btn" onclick="showCabinetAuthForm('register')">Создать профиль</button><button class="btn secondary" onclick="closeDrawer()">Продолжить как гость</button></div><button class="btn soft" style="margin-top:10px" onclick="showCabinetAuthForm('login')">Уже есть аккаунт</button>`);
 }
 function logout(){authToken='';authName='';localStorage.removeItem('zhurka_token');localStorage.removeItem('zhurka_name');closeDrawer();renderHome();}
+function openCabinetPlans(){
+  const plans=savedPlans();
+  openDrawer(`<div class="drawer-head"><h2>История</h2><button class="x" onclick="closeDrawer()">×</button></div>${plans.length?`<div class="radio-list">${plans.map((p,i)=>`<button class="radio" onclick="closeDrawer();openSavedPlan(${i})">${esc(historyTitle(p))}<span style="display:block;color:var(--muted);font-size:.84rem;margin-top:4px">${esc((p.days||[]).length||7)} дней</span></button>`).join('')}</div>`:'<p class="muted">Пока нет сохранённых планов.</p>'}<button class="back-mini" style="margin-top:16px" onclick="openCabinet()">← Назад</button>`);
+}
 function showCabinetAuthForm(kind){
   openDrawer(`<div class="drawer-head"><h2>${kind==='register'?'Создать профиль':'Войти'}</h2><button class="x" onclick="closeDrawer()">×</button></div><div class="auth-fields">${kind==='register'?'<input id="authName" placeholder="Имя"/>':''}<input id="authEmail" type="email" placeholder="Почта"/><input id="authPass" type="password" placeholder="Пароль"/><button class="btn" onclick="profileAuth('${kind}')">${kind==='register'?'Создать профиль':'Войти'}</button></div><button class="back-mini" style="margin-top:16px" onclick="openCabinet()">← Назад</button>`);
 }
@@ -228,6 +240,9 @@ async function profileAuth(kind){
 function openDetails(i){
   const day=currentDays[i];
   openDrawer(`<div class="drawer-head"><h2>${WD[i%7]}</h2><button class="x" onclick="closeDrawer()">×</button></div>${(day.meals||[]).map((m,mi)=>`<div class="day" style="box-shadow:none;margin-bottom:12px"><b>${esc(m.meal_label)}</b>${(m.dishes||[]).map(d=>dishDetailHtml(d)).join('')}<button class="btn soft" style="margin-top:10px;padding:10px 14px" onclick="openReplaceReason(${i},${mi})">Заменить</button></div>`).join('')}`);
+}
+function openInBody(){
+  openDrawer(`<div class="drawer-head"><h2>Отчёт InBody</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Загрузите отчёт InBody, чтобы Журка точнее оценила состав тела и уточнила дневные калории.</p><div class="auth-fields"><input type="file" accept=".pdf,image/*"/><button class="btn" onclick="closeDrawer()">Загрузить отчёт</button></div><p class="muted" style="margin-top:14px">Пока это заготовка сценария: после подключения обработки отчёта калории будут пересчитаны автоматически.</p>`);
 }
 function dishDetailHtml(d){
   const n=d.nutrition||{}, img=d.image_url?`<img class="dish-photo" src="${esc(d.image_url)}" alt="">`:`<div class="dish-photo"></div>`;
