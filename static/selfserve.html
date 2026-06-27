@@ -113,7 +113,7 @@ const steps=[
 ];
 function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function renderHome(){
-  view.innerHTML=`<section class="hero"><div class="kicker">Персональный план</div><h1>Соберём план на неделю за пару минут</h1><p class="lead">Ответьте на несколько вопросов — Журка подберёт рацион и подготовит корзину.</p><div class="steps-note"><b>Как это работает</b><br/>Журка задаст несколько простых вопросов и соберёт план на неделю с возможностью сразу перейти к корзине.</div><button class="btn" onclick="startPlan()">Подобрать рацион</button></section>${historyHtml()}`;
+  view.innerHTML=`<section class="hero"><div class="kicker">Персональный план</div><h1>Соберём питание на неделю за пару минут</h1><p class="lead">Ответьте на несколько вопросов — Журка подберёт рацион и подготовит корзину.</p><div class="steps-note"><b>Как это работает</b><br/>Журка задаст несколько простых вопросов и соберёт план на неделю с возможностью сразу сделать заказ.</div><button class="btn" onclick="startPlan()">Подобрать рацион</button></section>${historyHtml()}`;
 }
 function scrollToHistory(){const el=document.getElementById('historyStrip'); if(el) el.scrollIntoView({behavior:'smooth',block:'center'});}
 function savedPlans(){try{return JSON.parse(localStorage.getItem('zhurka_plans')||'[]')}catch(e){return []}}
@@ -144,12 +144,12 @@ function choose(k,v){state[k]=v; nextStep();}
 function saveFields(){steps[step].fields.forEach(f=>state[f[0]]=$(f[0]).value); nextStep();}
 function saveMixed(){state.activity=$('activity').value;state.restrictions=$('restrictions').value.trim();nextStep();}
 function prevStep(){if(step>0){step--;renderStep();}}
-function nextStep(){if(step<steps.length-1){step++;renderStep();}else renderAuthChoice();}
+function nextStep(){if(step<steps.length-1){step++;renderStep();}else authToken?buildPlan():renderAuthChoice();}
 function renderAuthChoice(){
   view.innerHTML=`<section class="card auth-card"><button class="back-mini" onclick="step=steps.length-1;renderStep()">← Назад</button><h2 style="font-size:2rem;margin-bottom:10px">Продолжить как гость или создать профиль?</h2><p class="lead" style="margin-bottom:0">Можно создать профиль, чтобы планы сохранялись в личном кабинете, или продолжить без регистрации. В этом случае история сохранится только в этом браузере.</p><div class="auth-tabs"><button class="btn" onclick="showAuthForm('register')">Создать профиль</button><button class="btn secondary" onclick="buildPlan()">Продолжить как гость</button></div><button class="btn soft" onclick="showAuthForm('login')">Уже есть аккаунт</button><div id="authArea"></div></section>`;
 }
 function showAuthForm(kind){
-  $('authArea').innerHTML=`<div class="auth-fields">${kind==='register'?'<input id="authName" placeholder="Имя"/>':''}<input id="authEmail" type="email" placeholder="Почта"/><input id="authPass" type="password" placeholder="Пароль"/><button class="btn" onclick="emailAuth('${kind}')">${kind==='register'?'Создать аккаунт':'Войти'} и собрать план</button></div>`;
+  $('authArea').innerHTML=`<div class="auth-fields">${kind==='register'?'<input id="authName" placeholder="Имя"/>':''}<input id="authEmail" type="email" placeholder="Почта"/><input id="authPass" type="password" placeholder="Пароль"/><button class="btn" onclick="emailAuth('${kind}')">${kind==='register'?'Создать аккаунт':'Войти'} и получить рацион</button></div>`;
 }
 async function emailAuth(kind){
   const email=$('authEmail').value.trim(), password=$('authPass').value, name=$('authName')?$('authName').value.trim():'';
@@ -190,7 +190,7 @@ async function saveCurrentPlan(){
 }
 function renderLoading(){view.innerHTML=`<section class="card loading"><h2>Журка составляет ваш план...</h2><div class="check-list"><div class="check"><b>✓</b> учитывает цель</div><div class="check"><b>✓</b> подбирает блюда</div><div class="check"><b>✓</b> собирает корзину</div></div></section>`;}
 function avgTarget(){return {kcal:Math.round(currentTarget?.kcal||1750),protein:Math.round(currentTarget?.protein||120),fat:Math.round(currentTarget?.fat||60),carbs:Math.round(currentTarget?.carbs||180)};}
-function renderResult(){const t=avgTarget();view.innerHTML=`<section class="card result"><button class="back-mini" onclick="renderAuthChoice()">← Назад</button><h2>План готов</h2><div class="result-grid"><div class="metric"><b>✓ 7 дней</b><span>план на неделю</span></div><div class="metric"><b>✓ 21 приём пищи</b><span>завтраки, обеды и ужины</span></div><div class="metric"><span>В среднем за день</span><b>${t.kcal} ккал</b><span>Б ${t.protein} • Ж ${t.fat} • У ${t.carbs}</span></div></div><div class="step-actions"><button class="btn" onclick="makeWeekCart()">Собрать корзину на неделю</button><button class="btn secondary" onclick="renderPlan()">Посмотреть план</button></div></section>`;}
+function renderResult(){const t=avgTarget();view.innerHTML=`<section class="card result"><button class="back-mini" onclick="${authToken?'step=steps.length-1;renderStep()':'renderAuthChoice()'}">← Назад</button><h2>Готово</h2><div class="result-grid"><div class="metric"><b>✓ 7 дней</b><span>план на неделю</span></div><div class="metric"><b>✓ 21 приём пищи</b><span>завтраки, обеды и ужины</span></div><div class="metric"><span>В среднем за день</span><b>${t.kcal} ккал</b><span>Б ${t.protein} • Ж ${t.fat} • У ${t.carbs}</span></div></div><div class="step-actions"><button class="btn" onclick="makeWeekCart()">Собрать корзину на неделю</button><button class="btn secondary" onclick="renderPlan()">Посмотреть план</button></div></section>`;}
 function shortDishName(name){return String(name||'Блюдо').replace(/^Комбо-набор:\s*/i,'').replace(/\s+\d+\s*г\b/ig,'').split(',')[0].trim();}
 const WD=['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
 function renderPlan(){
