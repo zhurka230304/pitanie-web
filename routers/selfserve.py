@@ -493,7 +493,7 @@ async def selfserve_register(b: RegisterBody, db: AsyncSession = Depends(get_db)
     db.add(user)
     await db.commit()
     await db.refresh(user)
-    return {"token": create_token(user.id), "name": user.name}
+    return {"token": create_token(user.id), "name": user.name, "email": user.email}
 
 
 @router.post("/login")
@@ -502,7 +502,7 @@ async def selfserve_login(b: LoginBody, db: AsyncSession = Depends(get_db)):
     user = (await db.execute(select(User).where(User.email == email))).scalar_one_or_none()
     if not user or not user.hashed_password or not verify_password(b.password, user.hashed_password):
         raise HTTPException(401, "Неверная почта или пароль")
-    return {"token": create_token(user.id), "name": user.name}
+    return {"token": create_token(user.id), "name": user.name, "email": user.email}
 
 
 @router.post("/forgot-password")
@@ -583,8 +583,14 @@ async def profile_get(b: AuthBody, db: AsyncSession = Depends(get_db)):
     key = _user_key(b.token, b.tg_user)
     if not key:
         return {"authorized": False, "profile": None}
+    user = None
+    uid = _uid_from_token(b.token)
+    if uid:
+        user = (await db.execute(select(User).where(User.id == uid))).scalar_one_or_none()
     s = await _get_store(db, key)
-    return {"authorized": True, "name": (s.name if s else _disp_name(b)),
+    return {"authorized": True,
+            "name": (user.name if user else (s.name if s else _disp_name(b))),
+            "email": (user.email if user else None),
             "profile": (s.profile if s else None)}
 
 

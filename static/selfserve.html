@@ -93,7 +93,7 @@
         <button class="brand-line" onclick="renderHome()" aria-label="На главную"><span class="bird-logo" aria-hidden="true"></span><div><div class="brand">Журка</div><div class="brand-subtitle">Перестаньте думать, что съесть</div></div></button>
         <div class="header-actions">
           <button class="header-link" onclick="openCabinetPlans()">История планов</button>
-          <button class="header-link" onclick="openCabinet()">Профиль</button>
+          <button class="header-link" onclick="openCabinet()">Личный кабинет</button>
         </div>
       </header>
       <div id="view"></div>
@@ -102,7 +102,7 @@
 </div>
 <div class="sheet-backdrop" id="backdrop" onclick="closeDrawer()"></div>
 <aside class="drawer" id="drawer"></aside>
-<nav class="bottom-nav"><button class="active" onclick="renderHome()">Питание</button><button onclick="openCabinetPlans()">История</button><button onclick="openCabinet()">Профиль</button></nav>
+<nav class="bottom-nav"><button class="active" onclick="renderHome()">Питание</button><button onclick="openCabinetPlans()">История</button><button onclick="openCabinet()">Личный кабинет</button></nav>
 
 <script>
 'use strict';
@@ -127,6 +127,21 @@ const steps=[
 ];
 function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function setScreen(name){localStorage.setItem('zhurka_screen',name);}
+function profileData(){return {goal:state.goal,sex:state.sex,age:state.age,height:state.height,weight:state.weight,activity:state.activity,restrictions:state.restrictions,format:state.format};}
+async function saveProfileData(){
+  if(!authToken) return;
+  try{await fetch('api/self-serve/profile/save',{method:'POST',headers:H,body:JSON.stringify({token:authToken,tg_user:{},data:profileData()})});}catch(e){}
+}
+async function loadRemoteProfile(){
+  if(!authToken) return;
+  try{
+    const r=await fetch('api/self-serve/profile/get',{method:'POST',headers:H,body:JSON.stringify({token:authToken,tg_user:{}})});
+    const d=await r.json();
+    if(d.name){authName=d.name;localStorage.setItem('zhurka_name',authName);}
+    if(d.email){authEmail=d.email;localStorage.setItem('zhurka_email',authEmail);}
+    if(d.profile&&typeof d.profile==='object'){Object.assign(state,d.profile);localStorage.setItem('zhurka_state',JSON.stringify(state));}
+  }catch(e){}
+}
 function saveActivePlan(){if(currentDays&&currentTarget)localStorage.setItem('zhurka_active_plan',JSON.stringify({days:currentDays,target:currentTarget,title:currentPlanTitle,back:currentBack}));}
 function loadActivePlan(){try{const p=JSON.parse(localStorage.getItem('zhurka_active_plan')||'null');if(p?.days){currentDays=p.days;currentTarget=p.target;currentPlanTitle=p.title||'План на неделю';currentBack=p.back||'renderResult()';}}catch(e){}}
 function saveNextWeek(){
@@ -214,7 +229,7 @@ async function emailAuth(kind){
     const r=await fetch('api/self-serve/'+kind,{method:'POST',headers:H,body:JSON.stringify({email,password,name})});
     const d=await r.json();
     if(!r.ok) throw new Error(d.detail||'Не удалось войти');
-    authToken=d.token; authName=d.name||email; authEmail=email; localStorage.setItem('zhurka_token',authToken); localStorage.setItem('zhurka_name',authName); localStorage.setItem('zhurka_email',authEmail);
+    authToken=d.token; authName=d.name||email; authEmail=d.email||email; localStorage.setItem('zhurka_token',authToken); localStorage.setItem('zhurka_name',authName); localStorage.setItem('zhurka_email',authEmail);
     buildPlan();
   }catch(e){alert(e.message||'Не удалось войти');}
 }
@@ -239,6 +254,7 @@ async function saveCurrentPlan(){
   currentPlanTitle='План на неделю';
   currentBack='renderResult()';
   saveActivePlan();
+  await saveProfileData();
   const now=new Date();
   const title=now.toLocaleDateString('ru-RU',{day:'2-digit',month:'long'});
   const entry={id:Date.now(),title,created_at:now.toISOString(),target:currentTarget,days:currentDays,format:state.format};
@@ -324,14 +340,15 @@ function dayCard(day,i){
 }
 function openDrawer(html){$('drawer').innerHTML=html;$('backdrop').classList.add('show');$('drawer').classList.add('show');}
 function closeDrawer(){$('backdrop').classList.remove('show');$('drawer').classList.remove('show');}
-function openCabinet(){
+async function openCabinet(){
   const plans=savedPlans();
   if(authToken){
+    await loadRemoteProfile();
     closeDrawer();
     renderCabinetPage();
     return;
   }
-  openDrawer(`<div class="drawer-head"><h2>Профиль</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Создайте профиль, чтобы планы сохранялись не только в этом браузере</p><div class="step-actions"><button class="btn" onclick="showCabinetAuthForm('register')">Создать профиль</button><button class="btn secondary" onclick="closeDrawer()">Продолжить как гость</button></div><button class="btn soft auth-login" onclick="showCabinetAuthForm('login')">Уже есть аккаунт</button>`);
+  openDrawer(`<div class="drawer-head"><h2>Личный кабинет</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Создайте профиль, чтобы планы сохранялись не только в этом браузере</p><div class="step-actions"><button class="btn" onclick="showCabinetAuthForm('register')">Создать профиль</button><button class="btn secondary" onclick="closeDrawer()">Продолжить как гость</button></div><button class="btn soft auth-login" onclick="showCabinetAuthForm('login')">Уже есть аккаунт</button>`);
 }
 function logout(){authToken='';authName='';authEmail='';localStorage.removeItem('zhurka_token');localStorage.removeItem('zhurka_name');localStorage.removeItem('zhurka_email');closeDrawer();renderHome();}
 function cabinetHistoryList(plans){
@@ -405,7 +422,8 @@ function renderCabinetPage(){
   const plans=savedPlans();
   view.innerHTML=`<section class="cabinet-grid"><div class="cabinet-main"><section class="card"><div class="cabinet-title">${esc(authName||'Профиль')}</div><p class="lead">Можно посмотреть питание на следующую неделю без повторного заполнения анкеты</p><div class="step-actions"><button class="btn" onclick="openPersonalData()">Данные</button><button class="btn secondary" onclick="logout()">Выйти</button></div></section></div><aside class="cabinet-side">${currentWeekBlock(plans)}${nextWeekBlock()}</aside></section>`;
 }
-function openPersonalData(){
+async function openPersonalData(){
+  await loadRemoteProfile();
   const activity=ACTIVITY.find(([v])=>v===state.activity);
   const goal={loss:'Похудеть',maintain:'Поддерживать',gain:'Набрать',unknown:'Пока не знаю'}[state.goal]||'Не указана';
   const sex={female:'Женский',male:'Мужской'}[state.sex]||'Не указан';
@@ -420,6 +438,7 @@ async function buildNextWeekPlan(){
   const wait=new Promise(r=>setTimeout(r,2600));
   const target=profileTarget();
   nextWeekTarget=target;
+  await saveProfileData();
   const b={kcal:+target.kcal,protein:+target.protein,fat:+target.fat,carbs:+target.carbs,meal_count:3,restrictions:state.restrictions||null,days_count:7};
   try{const r=await(await fetch('api/self-serve/week',{method:'POST',headers:H,body:JSON.stringify(b)})).json();nextWeekDays=r.days||fallbackDays();}
   catch(e){nextWeekDays=fallbackDays();}
@@ -444,7 +463,7 @@ async function profileAuth(kind){
     const r=await fetch('api/self-serve/'+kind,{method:'POST',headers:H,body:JSON.stringify({email,password,name})});
     const d=await r.json();
     if(!r.ok) throw new Error(d.detail||'Не удалось войти');
-    authToken=d.token; authName=d.name||email; authEmail=email; localStorage.setItem('zhurka_token',authToken); localStorage.setItem('zhurka_name',authName); localStorage.setItem('zhurka_email',authEmail);
+    authToken=d.token; authName=d.name||email; authEmail=d.email||email; localStorage.setItem('zhurka_token',authToken); localStorage.setItem('zhurka_name',authName); localStorage.setItem('zhurka_email',authEmail);
     closeDrawer(); renderCabinetPage();
   }catch(e){alert(e.message||'Не удалось войти');}
 }
@@ -548,10 +567,11 @@ function restoreState(){
   loadActivePlan();
   loadNextWeek();
 }
-function boot(){
+async function boot(){
   restoreState();
   const token=new URLSearchParams(location.search).get('reset_token');
   if(token){renderResetPassword(token);return;}
+  if(authToken) await loadRemoteProfile();
   const screen=localStorage.getItem('zhurka_screen')||'home';
   if(screen==='step') return renderStep();
   if(screen==='auth') return renderAuthChoice();
