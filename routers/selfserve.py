@@ -176,6 +176,138 @@ def _fit_day(meals, target_kcal):
         _set_portion(d, choice[i])
 
 
+_VARIETY_MARKERS = (
+    ("творог", "творожное"), ("творож", "творожное"), ("сырник", "творожное"),
+    ("запекан", "творожное"), ("йогурт", "творожное"),
+    ("омлет", "яйца"), ("яйц", "яйца"), ("скрэмбл", "яйца"),
+    ("куриц", "курица"), ("курин", "курица"), ("цыпл", "курица"),
+    ("индейк", "индейка"), ("говядин", "говядина"), ("свинин", "свинина"),
+    ("лосос", "рыба"), ("семг", "рыба"), ("сёмг", "рыба"), ("форел", "рыба"),
+    ("треск", "рыба"), ("тунец", "рыба"), ("тунц", "рыба"), ("рыб", "рыба"),
+    ("кревет", "морепродукты"), ("кальмар", "морепродукты"),
+    ("фасол", "бобовые"), ("нут", "бобовые"), ("чечев", "бобовые"), ("фалафель", "бобовые"),
+    ("суп", "суп"), ("борщ", "суп"), ("щи", "суп"), ("солян", "суп"),
+    ("салат", "салат"), ("боул", "боул"), ("поке", "боул"),
+    ("паста", "паста"), ("макарон", "паста"), ("спагет", "паста"), ("лапш", "паста"),
+    ("рис", "рис"), ("плов", "рис"), ("греч", "гречка"), ("булгур", "булгур"),
+    ("киноа", "киноа"), ("картоф", "картофель"), ("пюре", "картофель"),
+    ("сэндвич", "сэндвич"), ("ролл", "ролл"), ("лаваш", "ролл"),
+)
+
+_VARIETY_LIMITS = {
+    "творожное": 2, "яйца": 2, "курица": 3, "индейка": 2, "говядина": 2,
+    "рыба": 3, "морепродукты": 2, "бобовые": 2, "суп": 2, "салат": 3,
+    "боул": 2, "паста": 2, "рис": 2, "гречка": 2, "булгур": 2,
+    "киноа": 2, "картофель": 2, "сэндвич": 2, "ролл": 2,
+}
+
+
+def _dish_name_key(name: str) -> str:
+    return " ".join((name or "").lower().replace("ё", "е").split())
+
+
+def _dish_variety_key(name: str) -> str:
+    n = _dish_name_key(name)
+    for marker, key in _VARIETY_MARKERS:
+        if marker in n:
+            return key
+    return n.split(",")[0][:32] if n else "другое"
+
+
+def _meal_type_key(meal: dict) -> str:
+    raw = (meal.get("meal_type") or meal.get("meal_label") or "lunch").lower()
+    return _MEAL_TYPE_MAP.get(raw, raw if raw in MEAL_TYPE_QUERIES else "lunch")
+
+
+def _dish_kbju(dish: dict) -> dict:
+    n = dish.get("nutrition") or {}
+    return {
+        "kcal": float(n.get("calories") or n.get("kcal") or 450),
+        "protein": float(n.get("protein") or 25),
+        "fat": float(n.get("fat") or 15),
+        "carbs": float(n.get("carbohydrates") or n.get("carbs") or 45),
+    }
+
+
+def _enriched_full_kcal(item: dict) -> float:
+    try:
+        n = item["nutrition_variants"][0]
+        return float(n["calories"]) * float(item.get("weight_g") or 100) / 100
+    except (KeyError, IndexError, ValueError, TypeError):
+        return 0.0
+
+
+async def _find_variety_replacement(meal: dict, dish: dict, restrictions: str | None, exclude_xml_ids: set[str]):
+    meal_type = _meal_type_key(meal)
+    queries = MEAL_TYPE_QUERIES.get(meal_type, MEAL_TYPE_QUERIES["lunch"])
+    selected_queries = random.sample(queries, min(8, len(queries)))
+    target = _dish_kbju(dish)
+    enriched = await fetch_enriched_items(
+        queries=selected_queries,
+        preference=restrictions or None,
+        meal_type=meal_type,
+        max_candidates=24,
+    )
+    old_key = _dish_variety_key(dish.get("name", ""))
+    candidates = [
+        item for item in enriched
+        if str(item.get("xml_id", "")) not in exclude_xml_ids
+        and _dish_variety_key(item.get("name", "")) != old_key
+    ]
+    if not candidates:
+        return None
+    selected = await run_gpt_selection(
+        enriched_items=candidates,
+        P=target["protein"], F=target["fat"], C=target["carbs"], K=target["kcal"],
+        preference=restrictions or None,
+        count=min(6, len(candidates)),
+        meal_label=meal.get("meal_label") or meal_type,
+    )
+    pool = selected or candidates
+    item = min(pool, key=lambda it: abs(_enriched_full_kcal(it) - target["kcal"]))
+    return format_item_dict(item, item.get("weight_g", 0))
+
+
+async def improve_week_variety(days: list, restrictions: str | None = None, max_replacements: int = 6) -> list:
+    """Мягкий редактор недели: заменяет очевидные повторы после первичного подбора."""
+    used_xml_ids = {
+        str(dish.get("xml_id"))
+        for day in days for meal in day.get("meals", []) for dish in meal.get("dishes", [])
+        if dish.get("xml_id")
+    }
+    exact_seen: set[str] = set()
+    category_counts: dict[str, int] = {}
+    replacements = 0
+
+    for day in days:
+        for meal in day.get("meals", []):
+            for idx, dish in enumerate(meal.get("dishes", [])):
+                name_key = _dish_name_key(dish.get("name", ""))
+                category = _dish_variety_key(dish.get("name", ""))
+                category_count = category_counts.get(category, 0)
+                category_limit = _VARIETY_LIMITS.get(category, 2)
+                should_replace = name_key in exact_seen or category_count >= category_limit
+                if should_replace and replacements < max_replacements and not dish.get("carryover"):
+                    try:
+                        repl = await _find_variety_replacement(meal, dish, restrictions, used_xml_ids)
+                    except Exception as e:
+                        print(f"[variety] replacement failed: {e!r}")
+                        repl = None
+                    if repl:
+                        meal["dishes"][idx] = repl
+                        dish = repl
+                        replacements += 1
+                        used_xml_ids.add(str(repl.get("xml_id")))
+                        name_key = _dish_name_key(repl.get("name", ""))
+                        category = _dish_variety_key(repl.get("name", ""))
+                exact_seen.add(name_key)
+                category_counts[category] = category_counts.get(category, 0) + 1
+
+    if replacements:
+        print(f"[variety] replacements: {replacements}")
+    return days
+
+
 @router.post("/week")
 async def selfserve_week(b: WeekBody):
     days = await generate_week(
@@ -185,6 +317,9 @@ async def selfserve_week(b: WeekBody):
         start=date.today(),
         days_count=max(1, min(7, b.days_count)),
     )
+    for day in days:
+        _fit_day(day.get("meals", []), b.kcal)
+    days = await improve_week_variety(days, b.restrictions or None)
     for day in days:
         _fit_day(day.get("meals", []), b.kcal)
     return {"days": days, "coverage": coverage_report(days)}

@@ -38,6 +38,7 @@
   .auth-card{max-width:620px;margin:auto}.auth-fields{display:grid;gap:10px;margin-top:16px}.auth-tabs{display:flex;gap:8px;margin:16px 0 8px}.auth-tabs button{flex:1}.auth-login{display:block;margin:10px auto 0}.forgot-link{border:0;background:transparent;color:var(--muted);font-weight:800;text-align:center;padding:2px 0 8px}
   .dish-photo{width:72px;height:72px;border-radius:14px;object-fit:cover;background:var(--plum-soft);border:1px solid var(--border);flex:0 0 auto}
   .dish-detail{display:flex;gap:12px;align-items:flex-start;margin-top:12px}
+  .dish-link{color:inherit;text-decoration:none}.dish-link:hover b{text-decoration:underline}
   .btn{border:0;background:var(--action);color:#fff;border-radius:999px;padding:15px 22px;font-weight:800;font-size:1rem}
   .btn.secondary{background:transparent;color:var(--action);border:1.5px solid var(--action)}
   .btn.soft{background:var(--plum-soft);color:var(--action)}
@@ -255,6 +256,14 @@ function humanPortion(raw){
   return `Съесть ${String(Math.round(num*100)/100).replace('.',',')} порции`;
 }
 function portionText(d){
+  const pieces=String(d?.name||'').match(/(\d+)\s*(?:шт|штук|штуки|штука)\b/i);
+  if(pieces){
+    const portion=Number(String(d?.portion??d?.serving??1).replace(',','.'));
+    const count=Math.max(1,Math.round(+pieces[1]*(Number.isFinite(portion)?portion:1)));
+    return `Съесть ${count} ${pieceWord(count)}`;
+  }
+  const label=d?.portion_label||d?.portion_hint||d?.serving_text;
+  if(label) return `Съесть: ${esc(label)}`;
   const raw=d?.portion??d?.serving??d?.portion_text??d?.amount??d?.quantity;
   const portion=humanPortion(raw);
   if(portion) return portion;
@@ -262,6 +271,12 @@ function portionText(d){
   if(weight) return `Съесть всю порцию: ${esc(weight)} г`;
   const grams=String(d?.name||'').match(/(\d+)\s*г\b/i);
   return grams?`Съесть всю порцию: ${grams[1]} г`:'Съесть всю порцию';
+}
+function pieceWord(n){
+  const mod10=n%10, mod100=n%100;
+  if(mod10===1&&mod100!==11) return 'штуку';
+  if(mod10>=2&&mod10<=4&&(mod100<12||mod100>14)) return 'штуки';
+  return 'штук';
 }
 function renderPlan(){
   if(!currentDays) currentDays=fallbackDays();
@@ -323,7 +338,7 @@ async function buildNextWeekPlan(){
 function makeSavedWeekCart(i){const p=savedPlans()[i]; if(!p)return; currentDays=p.days; currentTarget=p.target; makeWeekCart();}
 function openCabinetPlans(){
   const plans=savedPlans();
-  openDrawer(`<div class="drawer-head"><h2>История</h2><button class="x" onclick="closeDrawer()">×</button></div>${plans.length?`<div class="radio-list">${plans.map((p,i)=>`<button class="radio" onclick="closeDrawer();openSavedPlan(${i})">${esc(historyTitle(p))}<span style="display:block;color:var(--muted);font-size:.84rem;margin-top:4px">${esc(historyMeta(p))}</span></button>`).join('')}</div>`:'<p class="muted">Пока нет сохранённых планов</p>'}<button class="back-mini" style="margin-top:16px" onclick="openCabinet()">Назад</button>`);
+  openDrawer(`<div class="drawer-head"><h2>История</h2><button class="x" onclick="closeDrawer()">×</button></div>${plans.length?`<div class="radio-list">${plans.map((p,i)=>`<button class="radio" onclick="closeDrawer();openSavedPlan(${i})">${esc(historyTitle(p))}<span style="display:block;color:var(--muted);font-size:.84rem;margin-top:4px">${esc(historyMeta(p))}</span></button>`).join('')}</div>`:'<p class="muted">Пока нет сохранённых планов</p>'}`);
 }
 function showCabinetAuthForm(kind){
   openDrawer(`<div class="drawer-head"><h2>${kind==='register'?'Создать профиль':'Войти'}</h2><button class="x" onclick="closeDrawer()">×</button></div><div class="auth-fields">${kind==='register'?'<input id="authName" placeholder="Имя"/>':''}<input id="authEmail" type="email" placeholder="Почта"/><input id="authPass" type="password" placeholder="Пароль"/>${kind==='login'?'<button class="forgot-link" onclick="forgotPassword()">Не помню пароль</button>':''}<button class="btn" onclick="profileAuth('${kind}')">${kind==='register'?'Создать профиль':'Войти'}</button></div><button class="back-mini" style="margin-top:16px" onclick="openCabinet()">Назад</button>`);
@@ -342,7 +357,7 @@ async function profileAuth(kind){
 function openDetails(i){
   const day=currentDays[i];
   const total=dayTotals(day);
-  openDrawer(`<div class="drawer-head"><div><h2>${dayLabel(i)}</h2><span class="day-kbju">${kbjuText(total)}</span></div><button class="x" onclick="closeDrawer()">×</button></div>${(day.meals||[]).map((m,mi)=>`<div class="day" style="box-shadow:none;margin-bottom:12px"><b>${esc(m.meal_label)}</b>${(m.dishes||[]).map(d=>dishDetailHtml(d)).join('')}<button class="btn soft" style="margin-top:10px;padding:10px 14px" onclick="openReplaceReason(${i},${mi})">Заменить</button></div>`).join('')}`);
+  openDrawer(`<div class="drawer-head"><div><h2>${dayLabel(i)}</h2><span class="day-kbju">${kbjuText(total)}</span></div><button class="x" onclick="closeDrawer()">×</button></div>${(day.meals||[]).map((m,mi)=>`<div class="day" style="box-shadow:none;margin-bottom:12px"><b>${esc(m.meal_label)}</b>${(m.dishes||[]).map(d=>dishDetailHtml(d)).join('')}<div class="day-actions"><button class="btn soft" style="padding:10px 14px" onclick="openReplaceReason(${i},${mi})">Заменить</button><button class="btn secondary" style="padding:10px 14px" onclick="orderMeal(${i},${mi})">Заказать ${esc(String(m.meal_label||'приём').toLowerCase())}</button></div></div>`).join('')}`);
 }
 function openInBody(){
   openDrawer(`<div class="drawer-head"><h2>Отчёт InBody</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Загрузите отчёт InBody, чтобы Журка точнее оценила состав тела и уточнила дневные калории</p><div class="auth-fields"><input type="file" accept=".pdf,image/*"/><button class="btn" onclick="showInBodySuccess()">Загрузить отчёт</button></div><p class="muted" style="margin-top:14px">Пока это заготовка сценария: после подключения обработки отчёта калории будут пересчитаны автоматически</p>`);
@@ -353,7 +368,10 @@ function showInBodySuccess(){
 function dishDetailHtml(d){
   const n=nutritionOf(d), img=d.image_url?`<img class="dish-photo" src="${esc(d.image_url)}" alt="">`:`<div class="dish-photo"></div>`;
   const price=d.price?` · ${d.price} ₽`:'';
-  return `<div class="dish-detail">${img}<div class="muted"><b style="color:var(--ink)">${esc(d.name)}</b><br/>${Math.round(n.kcal)} ккал${price}<br/>Б ${Math.round(n.protein)} · Ж ${Math.round(n.fat)} · У ${Math.round(n.carbs)}<br/>${portionText(d)}</div></div>`;
+  const href=d.url?esc(d.url):'';
+  const photo=href?`<a class="dish-link" href="${href}" target="_blank" rel="noopener">${img}</a>`:img;
+  const name=href?`<a class="dish-link" href="${href}" target="_blank" rel="noopener"><b style="color:var(--ink)">${esc(d.name)}</b></a>`:`<b style="color:var(--ink)">${esc(d.name)}</b>`;
+  return `<div class="dish-detail">${photo}<div class="muted">${name}<br/>${Math.round(n.kcal)} ккал${price}<br/>Б ${Math.round(n.protein)} · Ж ${Math.round(n.fat)} · У ${Math.round(n.carbs)}<br/>${portionText(d)}</div></div>`;
 }
 function openReplaceMeal(i){
   replaceCtx={dayIdx:i};
@@ -395,6 +413,16 @@ async function makeWeekCart(){
   openDrawer(`<div class="drawer-head"><h2>Собираю корзину</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Журка собирает продукты и готовые блюда на неделю</p>`);
   try{const r=await(await fetch('api/self-serve/cart',{method:'POST',headers:H,body:JSON.stringify({days:currentDays})})).json();openDrawer(`<div class="drawer-head"><h2>Корзина готова</h2><button class="x" onclick="closeDrawer()">×</button></div>${r.cart_url?`<p class="muted">Товаров: ${r.count}</p><div class="memory-note">${esc(r.cart_url)}</div>`:'<p class="muted">Не удалось собрать корзину, попробуйте ещё раз</p>'}`)}
   catch(e){openDrawer(`<div class="drawer-head"><h2>Что-то не получилось</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Попробуйте ещё раз</p>`)}
+}
+async function orderMeal(dayIdx,mealIdx){
+  const meal=currentDays?.[dayIdx]?.meals?.[mealIdx];
+  if(!meal) return;
+  const xml_ids=(meal.dishes||[]).filter(d=>d.in_cart!==false).map(d=>d.xml_id).filter(Boolean);
+  openDrawer(`<div class="drawer-head"><h2>Собираю ${esc(String(meal.meal_label||'приём').toLowerCase())}</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Журка добавляет товары выбранного приёма</p>`);
+  try{
+    const r=await(await fetch('api/self-serve/cart',{method:'POST',headers:H,body:JSON.stringify({xml_ids})})).json();
+    openDrawer(`<div class="drawer-head"><h2>Корзина готова</h2><button class="x" onclick="closeDrawer()">×</button></div>${r.cart_url?`<p class="muted">Товаров: ${r.count}</p><div class="memory-note">${esc(r.cart_url)}</div>`:'<p class="muted">Не удалось собрать корзину, попробуйте ещё раз</p>'}`);
+  }catch(e){openDrawer(`<div class="drawer-head"><h2>Что-то не получилось</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Попробуйте ещё раз</p>`)}
 }
 function fallbackDays(){
   const data=[['Омлет с овощами','Курица + киноа','Паста с лососем'],['Йогурт + ягоды','Индейка + булгур','Боул с тунцом'],['Творог с фруктами','Говядина + рис','Рыба + овощи'],['Каша с орехами','Курица + гречка','Паста с томатами'],['Сырники','Индейка + киноа','Лосось + картофель'],['Омлет','Боул с курицей','Ризотто с грибами'],['Йогурт','Курица + булгур','Паста с креветками']];
