@@ -1,7 +1,11 @@
 """B2C self-serve — человек без тренера сам собирает себе рацион."""
 import os
 import random
-from datetime import date, datetime, timezone
+import smtplib
+import ssl
+from datetime import date, datetime, timedelta, timezone
+from email.message import EmailMessage
+from urllib.parse import urlencode
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from pydantic import BaseModel
@@ -286,6 +290,59 @@ class LoginBody(BaseModel):
     password: str
 
 
+class ForgotPasswordBody(BaseModel):
+    email: str
+    return_url: str = ""
+
+
+class ResetPasswordBody(BaseModel):
+    token: str
+    password: str
+
+
+def _reset_token(user: User) -> str:
+    now = datetime.now(timezone.utc)
+    payload = {
+        "sub": str(user.id),
+        "purpose": "password_reset",
+        "iat": int(now.timestamp()),
+        "exp": int((now + timedelta(hours=2)).timestamp()),
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def _send_password_reset_email(email: str, reset_link: str) -> bool:
+    host = os.getenv("SMTP_HOST")
+    password = os.getenv("SMTP_PASSWORD")
+    sender = os.getenv("SMTP_FROM") or os.getenv("SMTP_USER")
+    if not host or not password or not sender:
+        return False
+
+    port = int(os.getenv("SMTP_PORT", "465"))
+    user = os.getenv("SMTP_USER") or sender
+    msg = EmailMessage()
+    msg["Subject"] = "Восстановление пароля Журка"
+    msg["From"] = sender
+    msg["To"] = email
+    msg.set_content(
+        "Здравствуйте\n\n"
+        "Чтобы восстановить пароль в Журке, откройте ссылку:\n"
+        f"{reset_link}\n\n"
+        "Ссылка действует 2 часа\n"
+    )
+
+    if port == 465:
+        with smtplib.SMTP_SSL(host, port, context=ssl.create_default_context()) as smtp:
+            smtp.login(user, password)
+            smtp.send_message(msg)
+    else:
+        with smtplib.SMTP(host, port) as smtp:
+            smtp.starttls(context=ssl.create_default_context())
+            smtp.login(user, password)
+            smtp.send_message(msg)
+    return True
+
+
 @router.post("/register")
 async def selfserve_register(b: RegisterBody, db: AsyncSession = Depends(get_db)):
     email = (b.email or "").strip().lower()
@@ -311,6 +368,41 @@ async def selfserve_login(b: LoginBody, db: AsyncSession = Depends(get_db)):
     if not user or not user.hashed_password or not verify_password(b.password, user.hashed_password):
         raise HTTPException(401, "Неверная почта или пароль")
     return {"token": create_token(user.id), "name": user.name}
+
+
+@router.post("/forgot-password")
+async def selfserve_forgot_password(b: ForgotPasswordBody, db: AsyncSession = Depends(get_db)):
+    email = (b.email or "").strip().lower()
+    if not email or "@" not in email:
+        raise HTTPException(400, "Введите корректную почту")
+
+    user = (await db.execute(select(User).where(User.email == email))).scalar_one_or_none()
+    sent = False
+    if user:
+        base_url = (b.return_url or os.getenv("PASSWORD_RESET_URL") or os.getenv("PUBLIC_BASE_URL") or "https://zhurka-pitanie.ru/meal-plan").strip()
+        sep = "&" if "?" in base_url else "?"
+        reset_link = f"{base_url}{sep}{urlencode({'reset_token': _reset_token(user)})}"
+        sent = _send_password_reset_email(email, reset_link)
+    return {"ok": True, "sent": sent}
+
+
+@router.post("/reset-password")
+async def selfserve_reset_password(b: ResetPasswordBody, db: AsyncSession = Depends(get_db)):
+    if len(b.password) < 6:
+        raise HTTPException(400, "Пароль не короче 6 символов")
+    try:
+        payload = jwt.decode(b.token, SECRET_KEY, algorithms=[ALGORITHM])
+    except Exception:
+        raise HTTPException(400, "Ссылка недействительна или устарела")
+    if payload.get("purpose") != "password_reset":
+        raise HTTPException(400, "Ссылка недействительна")
+    user_id = int(payload.get("sub"))
+    user = (await db.execute(select(User).where(User.id == user_id))).scalar_one_or_none()
+    if not user:
+        raise HTTPException(404, "Пользователь не найден")
+    user.hashed_password = hash_password(b.password)
+    await db.commit()
+    return {"ok": True}
 
 
 class AuthBody(BaseModel):

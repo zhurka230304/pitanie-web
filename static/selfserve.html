@@ -35,7 +35,7 @@
   .steps-note{border:1px solid var(--border);border-radius:18px;background:rgba(232,238,240,.36);padding:16px 18px;color:var(--muted);line-height:1.45;margin:0 0 22px}.steps-note b{display:block;color:var(--muted);margin-bottom:4px}
   .history-strip{margin-top:18px;border:1px solid var(--border);border-radius:22px;background:rgba(255,253,248,.58);padding:16px;display:flex;gap:10px;align-items:center;justify-content:space-between;color:var(--muted)}
   .history-items{display:flex;gap:8px;flex-wrap:wrap}.history-pill{border:1px solid var(--border);border-radius:999px;padding:7px 10px;background:var(--surface);font-size:.86rem;font-weight:750;color:var(--muted)}
-  .auth-card{max-width:620px;margin:auto}.auth-fields{display:grid;gap:10px;margin-top:16px}.auth-tabs{display:flex;gap:8px;margin:16px 0 8px}.auth-tabs button{flex:1}.auth-login{display:block;margin:10px auto 0}
+  .auth-card{max-width:620px;margin:auto}.auth-fields{display:grid;gap:10px;margin-top:16px}.auth-tabs{display:flex;gap:8px;margin:16px 0 8px}.auth-tabs button{flex:1}.auth-login{display:block;margin:10px auto 0}.forgot-link{border:0;background:transparent;color:var(--muted);font-weight:800;text-align:center;padding:2px 0 8px}
   .dish-photo{width:72px;height:72px;border-radius:14px;object-fit:cover;background:var(--plum-soft);border:1px solid var(--border);flex:0 0 auto}
   .dish-detail{display:flex;gap:12px;align-items:flex-start;margin-top:12px}
   .btn{border:0;background:var(--action);color:#fff;border-radius:999px;padding:15px 22px;font-weight:800;font-size:1rem}
@@ -167,7 +167,17 @@ function renderAuthChoice(){
   view.innerHTML=`<section class="card auth-card"><button class="back-mini" onclick="step=steps.length-1;renderStep()">Назад</button><h2 style="font-size:2rem;margin-bottom:10px">Продолжить как гость или создать профиль?</h2><p class="lead" style="margin-bottom:0">Можно создать профиль, чтобы планы сохранялись в личном кабинете, или продолжить без регистрации, в этом случае история сохранится только в этом браузере</p><div class="auth-tabs"><button class="btn" onclick="showAuthForm('register')">Создать профиль</button><button class="btn secondary" onclick="buildPlan()">Продолжить как гость</button></div><button class="btn soft auth-login" onclick="showAuthForm('login')">Уже есть аккаунт</button><div id="authArea"></div></section>`;
 }
 function showAuthForm(kind){
-  $('authArea').innerHTML=`<div class="auth-fields">${kind==='register'?'<input id="authName" placeholder="Имя"/>':''}<input id="authEmail" type="email" placeholder="Почта"/><input id="authPass" type="password" placeholder="Пароль"/><button class="btn" onclick="emailAuth('${kind}')">${kind==='register'?'Создать аккаунт':'Войти'} и получить питание</button></div>`;
+  $('authArea').innerHTML=`<div class="auth-fields">${kind==='register'?'<input id="authName" placeholder="Имя"/>':''}<input id="authEmail" type="email" placeholder="Почта"/><input id="authPass" type="password" placeholder="Пароль"/>${kind==='login'?'<button class="forgot-link" onclick="forgotPassword()">Не помню пароль</button>':''}<button class="btn" onclick="emailAuth('${kind}')">${kind==='register'?'Создать аккаунт':'Войти'} и получить питание</button></div>`;
+}
+async function forgotPassword(){
+  const email=$('authEmail')?.value.trim();
+  if(!email){alert('Введите почту, чтобы восстановить пароль');return;}
+  try{
+    const r=await fetch('api/self-serve/forgot-password',{method:'POST',headers:H,body:JSON.stringify({email,return_url:location.origin+location.pathname})});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.detail||'Не удалось отправить письмо');
+    alert('Если такая почта зарегистрирована, мы отправили ссылку для восстановления');
+  }catch(e){alert(e.message||'Не удалось отправить письмо');}
 }
 async function emailAuth(kind){
   const email=$('authEmail').value.trim(), password=$('authPass').value, name=$('authName')?$('authName').value.trim():'';
@@ -316,7 +326,7 @@ function openCabinetPlans(){
   openDrawer(`<div class="drawer-head"><h2>История</h2><button class="x" onclick="closeDrawer()">×</button></div>${plans.length?`<div class="radio-list">${plans.map((p,i)=>`<button class="radio" onclick="closeDrawer();openSavedPlan(${i})">${esc(historyTitle(p))}<span style="display:block;color:var(--muted);font-size:.84rem;margin-top:4px">${esc(historyMeta(p))}</span></button>`).join('')}</div>`:'<p class="muted">Пока нет сохранённых планов</p>'}<button class="back-mini" style="margin-top:16px" onclick="openCabinet()">Назад</button>`);
 }
 function showCabinetAuthForm(kind){
-  openDrawer(`<div class="drawer-head"><h2>${kind==='register'?'Создать профиль':'Войти'}</h2><button class="x" onclick="closeDrawer()">×</button></div><div class="auth-fields">${kind==='register'?'<input id="authName" placeholder="Имя"/>':''}<input id="authEmail" type="email" placeholder="Почта"/><input id="authPass" type="password" placeholder="Пароль"/><button class="btn" onclick="profileAuth('${kind}')">${kind==='register'?'Создать профиль':'Войти'}</button></div><button class="back-mini" style="margin-top:16px" onclick="openCabinet()">Назад</button>`);
+  openDrawer(`<div class="drawer-head"><h2>${kind==='register'?'Создать профиль':'Войти'}</h2><button class="x" onclick="closeDrawer()">×</button></div><div class="auth-fields">${kind==='register'?'<input id="authName" placeholder="Имя"/>':''}<input id="authEmail" type="email" placeholder="Почта"/><input id="authPass" type="password" placeholder="Пароль"/>${kind==='login'?'<button class="forgot-link" onclick="forgotPassword()">Не помню пароль</button>':''}<button class="btn" onclick="profileAuth('${kind}')">${kind==='register'?'Создать профиль':'Войти'}</button></div><button class="back-mini" style="margin-top:16px" onclick="openCabinet()">Назад</button>`);
 }
 async function profileAuth(kind){
   const email=$('authEmail').value.trim(), password=$('authPass').value, name=$('authName')?$('authName').value.trim():'';
@@ -390,7 +400,27 @@ function fallbackDays(){
   const data=[['Омлет с овощами','Курица + киноа','Паста с лососем'],['Йогурт + ягоды','Индейка + булгур','Боул с тунцом'],['Творог с фруктами','Говядина + рис','Рыба + овощи'],['Каша с орехами','Курица + гречка','Паста с томатами'],['Сырники','Индейка + киноа','Лосось + картофель'],['Омлет','Боул с курицей','Ризотто с грибами'],['Йогурт','Курица + булгур','Паста с креветками']];
   return data.map((d,idx)=>({plan_date:String(idx),meals:['Завтрак','Обед','Ужин'].map((label,i)=>({meal_label:label,meal_type:label,dishes:[{name:d[i],nutrition:{calories:[420,650,680][i],protein:[25,45,38][i],fat:[18,20,26][i],carbohydrates:[35,70,78][i]},in_cart:true}]}))}));
 }
-renderHome();
+function renderResetPassword(token){
+  view.innerHTML=`<section class="card auth-card"><h2 style="font-size:2rem;margin-bottom:10px">Новый пароль</h2><p class="lead" style="margin-bottom:0">Придумайте новый пароль для входа в Журку</p><div class="auth-fields"><input id="newPass" type="password" placeholder="Новый пароль"/><button class="btn" onclick="resetPassword('${esc(token)}')">Сохранить пароль</button></div></section>`;
+}
+async function resetPassword(token){
+  const password=$('newPass').value;
+  if(!password||password.length<6){alert('Пароль не короче 6 символов');return;}
+  try{
+    const r=await fetch('api/self-serve/reset-password',{method:'POST',headers:H,body:JSON.stringify({token,password})});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.detail||'Не удалось сохранить пароль');
+    history.replaceState({},'',location.pathname);
+    alert('Пароль обновлён');
+    renderAuthChoice();
+    showAuthForm('login');
+  }catch(e){alert(e.message||'Не удалось сохранить пароль');}
+}
+function boot(){
+  const token=new URLSearchParams(location.search).get('reset_token');
+  token?renderResetPassword(token):renderHome();
+}
+boot();
 </script>
 </body>
 </html>
