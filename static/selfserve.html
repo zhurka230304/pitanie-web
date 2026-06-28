@@ -93,7 +93,7 @@
         <button class="brand-line" onclick="renderHome()" aria-label="На главную"><span class="bird-logo" aria-hidden="true"></span><div><div class="brand">Журка</div><div class="brand-subtitle">Перестаньте думать, что съесть</div></div></button>
         <div class="header-actions">
           <button class="header-link" onclick="openCabinetPlans()">История планов</button>
-          <button class="header-link" onclick="openCabinet()">Личный кабинет</button>
+          <button class="header-link" onclick="openCabinet()">Профиль</button>
         </div>
       </header>
       <div id="view"></div>
@@ -331,7 +331,7 @@ function openCabinet(){
     renderCabinetPage();
     return;
   }
-  openDrawer(`<div class="drawer-head"><h2>Личный кабинет</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Создайте профиль, чтобы планы сохранялись не только в этом браузере</p><div class="step-actions"><button class="btn" onclick="showCabinetAuthForm('register')">Создать профиль</button><button class="btn secondary" onclick="closeDrawer()">Продолжить как гость</button></div><button class="btn soft auth-login" onclick="showCabinetAuthForm('login')">Уже есть аккаунт</button>`);
+  openDrawer(`<div class="drawer-head"><h2>Профиль</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Создайте профиль, чтобы планы сохранялись не только в этом браузере</p><div class="step-actions"><button class="btn" onclick="showCabinetAuthForm('register')">Создать профиль</button><button class="btn secondary" onclick="closeDrawer()">Продолжить как гость</button></div><button class="btn soft auth-login" onclick="showCabinetAuthForm('login')">Уже есть аккаунт</button>`);
 }
 function logout(){authToken='';authName='';authEmail='';localStorage.removeItem('zhurka_token');localStorage.removeItem('zhurka_name');localStorage.removeItem('zhurka_email');closeDrawer();renderHome();}
 function cabinetHistoryList(plans){
@@ -403,13 +403,13 @@ function makeNextWeekCart(){
 function renderCabinetPage(){
   setScreen('cabinet');
   const plans=savedPlans();
-  view.innerHTML=`<section class="cabinet-grid"><div class="cabinet-main"><section class="card"><div class="kicker">Личный кабинет</div><div class="cabinet-title">${esc(authName||'Профиль')}</div><p class="lead">Можно посмотреть питание на следующую неделю без повторного заполнения анкеты</p><div class="step-actions"><button class="btn" onclick="openPersonalData()">Личные данные</button><button class="btn secondary" onclick="logout()">Выйти</button></div></section></div><aside class="cabinet-side">${currentWeekBlock(plans)}${nextWeekBlock()}</aside></section>`;
+  view.innerHTML=`<section class="cabinet-grid"><div class="cabinet-main"><section class="card"><div class="cabinet-title">${esc(authName||'Профиль')}</div><p class="lead">Можно посмотреть питание на следующую неделю без повторного заполнения анкеты</p><div class="step-actions"><button class="btn" onclick="openPersonalData()">Данные</button><button class="btn secondary" onclick="logout()">Выйти</button></div></section></div><aside class="cabinet-side">${currentWeekBlock(plans)}${nextWeekBlock()}</aside></section>`;
 }
 function openPersonalData(){
   const activity=ACTIVITY.find(([v])=>v===state.activity);
   const goal={loss:'Похудеть',maintain:'Поддерживать',gain:'Набрать',unknown:'Пока не знаю'}[state.goal]||'Не указана';
   const sex={female:'Женский',male:'Мужской'}[state.sex]||'Не указан';
-  openDrawer(`<div class="drawer-head"><h2>Личные данные</h2><button class="x" onclick="closeDrawer()">×</button></div><div class="radio-list"><div class="radio">Почта<span style="display:block;color:var(--muted);font-size:.9rem;margin-top:4px">${esc(authEmail||'Не указана')}</span></div><div class="radio">Пароль<span style="display:block;color:var(--muted);font-size:.9rem;margin-top:4px">Сохранён безопасно, его можно изменить через восстановление</span></div><div class="radio">Цель<span style="display:block;color:var(--muted);font-size:.9rem;margin-top:4px">${esc(goal)}</span></div><div class="radio">Пол и возраст<span style="display:block;color:var(--muted);font-size:.9rem;margin-top:4px">${esc(sex)}, ${esc(state.age||'не указан')}</span></div><div class="radio">Рост и вес<span style="display:block;color:var(--muted);font-size:.9rem;margin-top:4px">${esc(state.height||'не указан')} см, ${esc(state.weight||'не указан')} кг</span></div><div class="radio">Активность<span style="display:block;color:var(--muted);font-size:.9rem;margin-top:4px">${esc(activity?activity[1]:'Не указана')}</span></div><div class="radio">Что исключить<span style="display:block;color:var(--muted);font-size:.9rem;margin-top:4px">${esc(state.restrictions||'Ничего')}</span></div></div><div class="step-actions"><button class="btn" onclick="requestPasswordReset('${esc(authEmail)}')">Не помню пароль</button><button class="btn secondary" onclick="closeDrawer()">Закрыть</button></div>`);
+  openDrawer(`<div class="drawer-head"><h2>Данные</h2><button class="x" onclick="closeDrawer()">×</button></div><div class="radio-list"><div class="radio">Почта<span style="display:block;color:var(--muted);font-size:.9rem;margin-top:4px">${esc(authEmail||'Не указана')}</span></div><div class="radio">Пароль<span style="display:block;color:var(--muted);font-size:.9rem;margin-top:4px">Сохранён безопасно, его можно изменить через восстановление</span></div><div class="radio">Цель<span style="display:block;color:var(--muted);font-size:.9rem;margin-top:4px">${esc(goal)}</span></div><div class="radio">Пол и возраст<span style="display:block;color:var(--muted);font-size:.9rem;margin-top:4px">${esc(sex)}, ${esc(state.age||'не указан')}</span></div><div class="radio">Рост и вес<span style="display:block;color:var(--muted);font-size:.9rem;margin-top:4px">${esc(state.height||'не указан')} см, ${esc(state.weight||'не указан')} кг</span></div><div class="radio">Активность<span style="display:block;color:var(--muted);font-size:.9rem;margin-top:4px">${esc(activity?activity[1]:'Не указана')}</span></div><div class="radio">Что исключить<span style="display:block;color:var(--muted);font-size:.9rem;margin-top:4px">${esc(state.restrictions||'Ничего')}</span></div></div><div class="step-actions"><button class="btn" onclick="requestPasswordReset('${esc(authEmail)}')">Не помню пароль</button><button class="btn secondary" onclick="closeDrawer()">Закрыть</button></div>`);
 }
 function profileTarget(){
   const p=savedPlans()[0], t=currentTarget||p?.target||{};
