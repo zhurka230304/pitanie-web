@@ -391,10 +391,16 @@ async def _enrich_harvard_addons(days: list, restrictions: str | None = None) ->
                 if not item:
                     continue
                 resolved = format_item_dict(item, item.get("weight_g", 0))
+                if resolved.get("name"):
+                    dish["name"] = resolved["name"]
                 for key in ("xml_id", "image_url", "url", "price"):
                     if resolved.get(key):
                         dish[key] = resolved[key]
                 dish["in_cart"] = True
+            meal["dishes"] = [
+                dish for dish in meal.get("dishes", [])
+                if not dish.get("harvard_addon") or dish.get("xml_id")
+            ]
     return days
 
 

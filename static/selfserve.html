@@ -244,10 +244,17 @@ async function buildPlan(){
     catch(e){target={kcal:1750,protein:120,fat:60,carbs:180};}
     currentTarget=target;
     const b={kcal:+target.kcal,protein:+target.protein,fat:+target.fat,carbs:+target.carbs,meal_count:3,restrictions:state.restrictions||null,days_count:7};
-    try{const r=await(await fetch('api/self-serve/week',{method:'POST',headers:H,body:JSON.stringify(b)})).json();currentDays=r.days||fallbackDays();}
-    catch(e){currentDays=fallbackDays();}
+    try{
+      const r=await(await fetch('api/self-serve/week',{method:'POST',headers:H,body:JSON.stringify(b)})).json();
+      if(!r.days?.length) throw new Error('Журка не смогла подобрать питание');
+      currentDays=r.days;
+    }catch(e){await wait; renderPlanError(e.message||'Не удалось подобрать питание'); return;}
     await wait; saveCurrentPlan(); renderResult();
-  }catch(e){await wait; currentTarget={kcal:1750,protein:120,fat:60,carbs:180}; currentDays=fallbackDays(); saveCurrentPlan(); renderResult();}
+  }catch(e){await wait; renderPlanError(e.message||'Не удалось подобрать питание');}
+}
+function renderPlanError(message){
+  setScreen('home');
+  view.innerHTML=`<section class="card auth-card"><h2 style="font-size:2rem;margin-bottom:10px">Не получилось подобрать питание</h2><p class="lead">${esc(message||'Попробуйте ещё раз чуть позже')}</p><div class="step-actions"><button class="btn" onclick="buildPlan()">Попробовать ещё раз</button><button class="btn secondary" onclick="renderHome()">На главную</button></div></section>`;
 }
 async function saveCurrentPlan(){
   if(!currentDays||!currentTarget) return;
@@ -329,7 +336,7 @@ function pieceWord(n){
   return 'штук';
 }
 function renderPlan(){
-  if(!currentDays) currentDays=fallbackDays();
+  if(!currentDays?.length){renderPlanError('План не найден');return;}
   setScreen('plan');
   saveActivePlan();
   view.innerHTML=`<section><button class="back-mini" onclick="${currentBack}">Назад</button><div class="day-head" style="margin-bottom:18px"><div><h1 style="font-size:2rem;margin:0">${esc(currentPlanTitle)}</h1></div><button class="btn" onclick="makeWeekCart()">Собрать корзину на неделю</button></div><div class="day-list">${currentDays.map(dayCard).join('')}</div></section>`;
@@ -458,8 +465,11 @@ async function buildNextWeekPlan(){
   nextWeekTarget=target;
   await saveProfileData();
   const b={kcal:+target.kcal,protein:+target.protein,fat:+target.fat,carbs:+target.carbs,meal_count:3,restrictions:state.restrictions||null,days_count:7};
-  try{const r=await(await fetch('api/self-serve/week',{method:'POST',headers:H,body:JSON.stringify(b)})).json();nextWeekDays=r.days||fallbackDays();}
-  catch(e){nextWeekDays=fallbackDays();}
+  try{
+    const r=await(await fetch('api/self-serve/week',{method:'POST',headers:H,body:JSON.stringify(b)})).json();
+    if(!r.days?.length) throw new Error('Журка не смогла подобрать питание');
+    nextWeekDays=r.days;
+  }catch(e){await wait; renderPlanError(e.message||'Не удалось подобрать питание'); return;}
   await wait;
   saveNextWeek();
   renderNextWeekSummary();
@@ -532,8 +542,10 @@ async function replaceDish(reason){
   openDrawer(`<div class="drawer-head"><h2>Заменяю</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Журка подбирает другой вариант</p>`);
   try{
     const res=await fetch('api/self-serve/replace-dish',{method:'POST',headers:H,body:JSON.stringify({meal_label:meal.meal_label,meal_type:meal.meal_type||meal.meal_label,kbju:{kcal:n.calories||500,protein:n.protein||30,fat:n.fat||15,carbs:n.carbohydrates||50},restrictions:state.restrictions||null,exclude_xml_ids:(meal.dishes||[]).map(x=>x.xml_id).filter(Boolean)})});
-    const data=await res.json(); if(data.dish) meal.dishes[0]=data.dish;
-  }catch(e){ meal.dishes[0]={name:'Индейка с булгуром',nutrition:{calories:520,protein:38,fat:16,carbohydrates:54},in_cart:true}; }
+    const data=await res.json();
+    if(!data.dish) throw new Error('Не удалось найти замену');
+    meal.dishes[0]=data.dish;
+  }catch(e){openDrawer(`<div class="drawer-head"><h2>Не получилось заменить</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">${esc(e.message||'Попробуйте выбрать другую причину или повторить позже')}</p>`);return;}
   const newName=shortDishName(meal.dishes[0].name);
   const memory=memoryText(reason,meal.meal_label,old?.name);
   openDrawer(`<div class="drawer-head"><h2>Заменили ${meal.meal_label.toLowerCase()}</h2><button class="x" onclick="closeDrawer()">×</button></div><p>Новый вариант: <b>${esc(newName)}</b></p><div class="memory-note"><b style="color:var(--ink)">Что запомнить?</b><br/>${esc(memory)}<div class="step-actions"><button class="btn" onclick="saveMemory('${esc(memory)}')">Да, запомнить</button><button class="btn secondary" onclick="closeDrawer();renderPlan()">Только сейчас</button></div></div>`);
@@ -554,10 +566,6 @@ async function orderMeal(dayIdx,mealIdx){
     const r=await(await fetch('api/self-serve/cart',{method:'POST',headers:H,body:JSON.stringify({xml_ids})})).json();
     openDrawer(`<div class="drawer-head"><h2>Корзина готова</h2><button class="x" onclick="closeDrawer()">×</button></div>${r.cart_url?`<p class="muted">Товаров: ${r.count}</p><div class="memory-note">${esc(r.cart_url)}</div>`:'<p class="muted">Не удалось собрать корзину, попробуйте ещё раз</p>'}`);
   }catch(e){openDrawer(`<div class="drawer-head"><h2>Что-то не получилось</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Попробуйте ещё раз</p>`)}
-}
-function fallbackDays(){
-  const data=[['Омлет с овощами','Курица + киноа','Паста с лососем'],['Йогурт + ягоды','Индейка + булгур','Боул с тунцом'],['Творог с фруктами','Говядина + рис','Рыба + овощи'],['Каша с орехами','Курица + гречка','Паста с томатами'],['Сырники','Индейка + киноа','Лосось + картофель'],['Омлет','Боул с курицей','Ризотто с грибами'],['Йогурт','Курица + булгур','Паста с креветками']];
-  return data.map((d,idx)=>({plan_date:String(idx),meals:['Завтрак','Обед','Ужин'].map((label,i)=>({meal_label:label,meal_type:label,dishes:[{name:d[i],nutrition:{calories:[420,650,680][i],protein:[25,45,38][i],fat:[18,20,26][i],carbohydrates:[35,70,78][i]},in_cart:true}]}))}));
 }
 function renderResetPassword(token){
   view.innerHTML=`<section class="card auth-card"><h2 style="font-size:2rem;margin-bottom:10px">Новый пароль</h2><p class="lead" style="margin-bottom:0">Придумайте новый пароль для входа в Журку</p><div class="auth-fields"><input id="newPass" type="password" placeholder="Новый пароль"/><button class="btn" onclick="resetPassword('${esc(token)}')">Сохранить пароль</button></div></section>`;
