@@ -255,15 +255,16 @@ def _has_any(text: str, words: tuple[str, ...]) -> bool:
     return any(w in text for w in words)
 
 
-def _is_allowed_harvard_dish(dish: dict) -> bool:
-    """Жёсткий фильтр качества: без жареного, фритюра и переработанного мяса."""
-    if dish.get("harvard_addon"):
-        return True
+def _is_hard_banned_dish(dish: dict) -> bool:
     name = _dish_name_key(dish.get("name", ""))
     if _has_any(name, _BANNED_DISH_WORDS):
-        return False
+        return True
     if _has_any(name, _FRIED_CONTEXT_WORDS) and not _has_any(name, ("запеч", "духов", "гриль")):
-        return False
+        return True
+    return False
+
+
+def _passes_fat_balance(dish: dict) -> bool:
     n = dish.get("nutrition") or {}
     protein = n.get("protein")
     fat = n.get("fat")
@@ -271,6 +272,23 @@ def _is_allowed_harvard_dish(dish: dict) -> bool:
     if all(isinstance(x, (int, float)) for x in (protein, fat, carbs)):
         return fat < protein and fat < carbs
     return True
+
+
+def _fat_balance_score(dish: dict) -> float:
+    n = dish.get("nutrition") or {}
+    protein = float(n.get("protein") or 0)
+    fat = float(n.get("fat") or 0)
+    carbs = float(n.get("carbohydrates") or n.get("carbs") or 0)
+    if fat <= 0:
+        return 0
+    return max(0, fat - protein) + max(0, fat - carbs)
+
+
+def _is_allowed_harvard_dish(dish: dict) -> bool:
+    """Жёсткий фильтр качества: без жареного, фритюра и переработанного мяса."""
+    if dish.get("harvard_addon"):
+        return True
+    return not _is_hard_banned_dish(dish) and _passes_fat_balance(dish)
 
 
 def _harvard_groups(dish: dict) -> set[str]:
@@ -331,7 +349,11 @@ def _apply_harvard_plate(days: list) -> list:
     for day_idx, day in enumerate(days):
         for meal_idx, meal in enumerate(day.get("meals", [])):
             meal_type = _meal_type_key(meal)
-            dishes = [d for d in meal.get("dishes", []) if _is_allowed_harvard_dish(d)]
+            source_dishes = [d for d in meal.get("dishes", []) if not d.get("harvard_addon")]
+            hard_allowed = [d for d in source_dishes if not _is_hard_banned_dish(d)]
+            dishes = [d for d in hard_allowed if _passes_fat_balance(d)]
+            if not dishes and hard_allowed:
+                dishes = [min(hard_allowed, key=_fat_balance_score)]
             groups = set()
             has_fish = False
             for dish in dishes:
