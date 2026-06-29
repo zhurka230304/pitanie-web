@@ -309,7 +309,37 @@ def _is_allowed_harvard_dish(dish: dict) -> bool:
     """Жёсткий фильтр качества: без жареного, фритюра и переработанного мяса."""
     if dish.get("harvard_addon"):
         return True
-    return not _is_hard_banned_dish(dish) and _passes_fat_balance(dish)
+    return not _is_hard_banned_dish(dish)
+
+
+def _wide_meal_queries(meal_type: str) -> list[str]:
+    queries = list(MEAL_TYPE_QUERIES.get(meal_type, MEAL_TYPE_QUERIES["lunch"]))
+    extras = []
+    if meal_type == "breakfast":
+        extras = ["овсянка", "творог", "ягоды", "орехи", "яйца", "омлет", "цельнозерновой хлеб"]
+    elif meal_type in ("lunch", "dinner"):
+        extras = [
+            "гречка", "булгур", "киноа", "бурый рис", "овощи на пару",
+            "салат овощной", "куриное филе", "рыба запеченная", "нут", "фасоль",
+            "оливковое масло", "авокадо",
+        ]
+    else:
+        extras = ["фрукты", "ягоды", "орехи", "йогурт", "творог"]
+    return list(dict.fromkeys(queries + extras))
+
+
+def _quality_candidates(items: list, exclude_xml_ids: set[str] | None = None) -> list:
+    exclude_xml_ids = exclude_xml_ids or set()
+    hard_allowed = [
+        item for item in items
+        if str(item.get("xml_id", "")) not in exclude_xml_ids
+        and _is_allowed_harvard_dish(format_item_dict(item, item.get("weight_g", 0)))
+    ]
+    balanced = [
+        item for item in hard_allowed
+        if _passes_fat_balance(format_item_dict(item, item.get("weight_g", 0)))
+    ]
+    return balanced or hard_allowed
 
 
 def _harvard_groups(dish: dict) -> set[str]:
@@ -412,9 +442,7 @@ def _apply_harvard_plate(days: list) -> list:
             meal_type = _meal_type_key(meal)
             source_dishes = [d for d in meal.get("dishes", []) if not d.get("harvard_addon")]
             hard_allowed = [d for d in source_dishes if not _is_hard_banned_dish(d)]
-            dishes = [d for d in hard_allowed if _passes_fat_balance(d)]
-            if not dishes and hard_allowed:
-                dishes = [min(hard_allowed, key=_fat_balance_score)]
+            dishes = sorted(hard_allowed, key=_fat_balance_score)
             groups = set()
             has_fish = False
             for dish in dishes:
@@ -506,21 +534,19 @@ def _enriched_full_kcal(item: dict) -> float:
 
 async def _find_variety_replacement(meal: dict, dish: dict, restrictions: str | None, exclude_xml_ids: set[str]):
     meal_type = _meal_type_key(meal)
-    queries = MEAL_TYPE_QUERIES.get(meal_type, MEAL_TYPE_QUERIES["lunch"])
-    selected_queries = random.sample(queries, min(8, len(queries)))
+    selected_queries = _wide_meal_queries(meal_type)
     target = _dish_kbju(dish)
     enriched = await fetch_enriched_items(
         queries=selected_queries,
         preference=restrictions or None,
         meal_type=meal_type,
-        max_candidates=24,
+        max_candidates=80,
     )
     old_key = _dish_variety_key(dish.get("name", ""))
     candidates = [
-        item for item in enriched
+        item for item in _quality_candidates(enriched, exclude_xml_ids)
         if str(item.get("xml_id", "")) not in exclude_xml_ids
         and _dish_variety_key(item.get("name", "")) != old_key
-        and _is_allowed_harvard_dish(format_item_dict(item, item.get("weight_g", 0)))
     ]
     if not candidates:
         return None
@@ -580,22 +606,30 @@ async def improve_week_variety(days: list, restrictions: str | None = None, max_
 
 @router.post("/week")
 async def selfserve_week(b: WeekBody):
-    days = await generate_week(
-        P=b.protein or 0, F=b.fat or 0, C=b.carbs or 0, K=b.kcal,
-        restrictions=(b.restrictions or None),
-        meal_count=max(2, min(5, b.meal_count)),
-        start=date.today(),
-        days_count=max(1, min(7, b.days_count)),
-    )
-    days = _apply_harvard_plate(days)
-    for day in days:
-        _fit_day(day.get("meals", []), b.kcal)
-    days = await improve_week_variety(days, b.restrictions or None)
-    days = _apply_harvard_plate(days)
-    days = await _enrich_harvard_addons(days, b.restrictions or None)
-    for day in days:
-        _fit_day(day.get("meals", []), b.kcal)
-    return {"days": days, "coverage": coverage_report(days)}
+    try:
+        days = await generate_week(
+            P=b.protein or 0, F=b.fat or 0, C=b.carbs or 0, K=b.kcal,
+            restrictions=(b.restrictions or None),
+            meal_count=max(2, min(5, b.meal_count)),
+            start=date.today(),
+            days_count=max(1, min(7, b.days_count)),
+        )
+        days = _apply_harvard_plate(days)
+        for day in days:
+            _fit_day(day.get("meals", []), b.kcal)
+        days = await improve_week_variety(days, b.restrictions or None)
+        days = _apply_harvard_plate(days)
+        days = await _enrich_harvard_addons(days, b.restrictions or None)
+        for day in days:
+            _fit_day(day.get("meals", []), b.kcal)
+        if not any(meal.get("dishes") for day in days for meal in day.get("meals", [])):
+            raise HTTPException(404, "Не удалось найти подходящие блюда")
+        return {"days": days, "coverage": coverage_report(days)}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[selfserve_week] failed: {e!r}")
+        raise HTTPException(502, "Не удалось подобрать питание. Попробуйте ещё раз")
 
 
 class CartBody(BaseModel):
@@ -655,8 +689,7 @@ async def selfserve_replace_dish(b: ReplaceDishBody):
     if meal_type_key not in MEAL_TYPE_QUERIES:
         meal_type_key = "lunch"
 
-    queries = MEAL_TYPE_QUERIES.get(meal_type_key, MEAL_TYPE_QUERIES["lunch"])
-    selected_queries = random.sample(queries, min(6, len(queries)))
+    selected_queries = _wide_meal_queries(meal_type_key)
     target = b.kbju or {}
     kcal = float(target.get("kcal") or target.get("calories") or 500)
     protein = float(target.get("protein") or 30)
@@ -668,12 +701,9 @@ async def selfserve_replace_dish(b: ReplaceDishBody):
         queries=selected_queries,
         preference=b.restrictions or None,
         meal_type=b.meal_type,
+        max_candidates=80,
     )
-    enriched = [
-        i for i in enriched
-        if str(i.get("xml_id", "")) not in exclude_set
-        and _is_allowed_harvard_dish(format_item_dict(i, i.get("weight_g", 0)))
-    ]
+    enriched = _quality_candidates(enriched, exclude_set)
     if not enriched:
         raise HTTPException(404, "Не удалось найти замену, попробуйте ещё раз")
 

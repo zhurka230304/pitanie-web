@@ -37,8 +37,8 @@ _LABEL_TO_TYPE = {
 
 WEEKDAYS_RU = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"]  # date.weekday(): 0 = пн
 
-POOL_QUERIES_PER_TYPE = 10   # поисковых запросов на тип приёма (на всю неделю)
-POOL_MAX_CANDIDATES = 28     # кандидатов на обогащение КБЖУ
+POOL_QUERIES_PER_TYPE = 10   # fallback: поисковых запросов на тип приёма, если пул пустой
+POOL_MAX_CANDIDATES = 80     # кандидатов на обогащение КБЖУ
 NO_REPEAT_DAYS = 2           # блюдо не повторяется ближайшие N дней
 KCAL_CAP_RATIO = 1.25        # жёсткий потолок: приём не больше цели по ккал +25%
 COVERAGE_MIN_DAYS = 3        # слой пищевых групп включается от этого горизонта
@@ -226,7 +226,11 @@ async def generate_week(
 
     async def build_pool(mt: str):
         qpool = MEAL_TYPE_QUERIES[mt]
-        queries = random.sample(qpool, min(POOL_QUERIES_PER_TYPE, len(qpool)))
+        # Берём весь пул запросов ВкусВилла для типа приёма, а не случайный срез.
+        # Иначе неделя строится из слишком узкого набора и фильтры легко оставляют пустоту.
+        queries = list(dict.fromkeys(qpool))
+        if not queries:
+            queries = random.sample(qpool, min(POOL_QUERIES_PER_TYPE, len(qpool)))
         # покрывающие запросы (рыба, бобовые, ягоды) добавляются всегда
         if days_count >= COVERAGE_MIN_DAYS:
             for q in COVERAGE_QUERIES.get(mt, []):

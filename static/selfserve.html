@@ -234,18 +234,26 @@ async function emailAuth(kind){
   }catch(e){alert(e.message||'Не удалось войти');}
 }
 function targetPayload(){return {sex:state.sex,weight:+state.weight,height:+state.height,age:+state.age,activity:state.activity,goal:state.goal==='unknown'?'maintain':state.goal};}
+async function apiJson(url,payload){
+  const res=await fetch(url,{method:'POST',headers:H,body:JSON.stringify(payload)});
+  const text=await res.text();
+  let data={};
+  try{data=text?JSON.parse(text):{};}catch(e){throw new Error('Сервер вернул ошибку. Попробуйте ещё раз');}
+  if(!res.ok) throw new Error(data.detail||'Сервер не смог выполнить запрос');
+  return data;
+}
 async function buildPlan(){
   localStorage.setItem('zhurka_state',JSON.stringify(state));
   renderLoading();
   const wait=new Promise(r=>setTimeout(r,3600));
   try{
     let target;
-    try{target=await(await fetch('api/self-serve/kbju',{method:'POST',headers:H,body:JSON.stringify(targetPayload())})).json();}
+    try{target=await apiJson('api/self-serve/kbju',targetPayload());}
     catch(e){target={kcal:1750,protein:120,fat:60,carbs:180};}
     currentTarget=target;
     const b={kcal:+target.kcal,protein:+target.protein,fat:+target.fat,carbs:+target.carbs,meal_count:3,restrictions:state.restrictions||null,days_count:7};
     try{
-      const r=await(await fetch('api/self-serve/week',{method:'POST',headers:H,body:JSON.stringify(b)})).json();
+      const r=await apiJson('api/self-serve/week',b);
       if(!r.days?.length) throw new Error('Журка не смогла подобрать питание');
       currentDays=r.days;
     }catch(e){await wait; renderPlanError(e.message||'Не удалось подобрать питание'); return;}
@@ -466,7 +474,7 @@ async function buildNextWeekPlan(){
   await saveProfileData();
   const b={kcal:+target.kcal,protein:+target.protein,fat:+target.fat,carbs:+target.carbs,meal_count:3,restrictions:state.restrictions||null,days_count:7};
   try{
-    const r=await(await fetch('api/self-serve/week',{method:'POST',headers:H,body:JSON.stringify(b)})).json();
+    const r=await apiJson('api/self-serve/week',b);
     if(!r.days?.length) throw new Error('Журка не смогла подобрать питание');
     nextWeekDays=r.days;
   }catch(e){await wait; renderPlanError(e.message||'Не удалось подобрать питание'); return;}
@@ -541,8 +549,7 @@ async function replaceDish(reason){
   tempMemory.push({day:dayLabel(dayIdx),meal:meal.meal_label,reason});
   openDrawer(`<div class="drawer-head"><h2>Заменяю</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Журка подбирает другой вариант</p>`);
   try{
-    const res=await fetch('api/self-serve/replace-dish',{method:'POST',headers:H,body:JSON.stringify({meal_label:meal.meal_label,meal_type:meal.meal_type||meal.meal_label,kbju:{kcal:n.calories||500,protein:n.protein||30,fat:n.fat||15,carbs:n.carbohydrates||50},restrictions:state.restrictions||null,exclude_xml_ids:(meal.dishes||[]).map(x=>x.xml_id).filter(Boolean)})});
-    const data=await res.json();
+    const data=await apiJson('api/self-serve/replace-dish',{meal_label:meal.meal_label,meal_type:meal.meal_type||meal.meal_label,kbju:{kcal:n.calories||500,protein:n.protein||30,fat:n.fat||15,carbs:n.carbohydrates||50},restrictions:state.restrictions||null,exclude_xml_ids:(meal.dishes||[]).map(x=>x.xml_id).filter(Boolean)});
     if(!data.dish) throw new Error('Не удалось найти замену');
     meal.dishes[0]=data.dish;
   }catch(e){openDrawer(`<div class="drawer-head"><h2>Не получилось заменить</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">${esc(e.message||'Попробуйте выбрать другую причину или повторить позже')}</p>`);return;}
@@ -554,7 +561,7 @@ function saveMemory(reason){permanentMemory.push(reason);localStorage.setItem('z
 async function makeWeekCart(){
   if(!currentDays) return;
   openDrawer(`<div class="drawer-head"><h2>Собираю корзину</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Журка собирает продукты и готовые блюда на неделю</p>`);
-  try{const r=await(await fetch('api/self-serve/cart',{method:'POST',headers:H,body:JSON.stringify({days:currentDays})})).json();openDrawer(`<div class="drawer-head"><h2>Корзина готова</h2><button class="x" onclick="closeDrawer()">×</button></div>${r.cart_url?`<p class="muted">Товаров: ${r.count}</p><div class="memory-note">${esc(r.cart_url)}</div>`:'<p class="muted">Не удалось собрать корзину, попробуйте ещё раз</p>'}`)}
+  try{const r=await apiJson('api/self-serve/cart',{days:currentDays});openDrawer(`<div class="drawer-head"><h2>Корзина готова</h2><button class="x" onclick="closeDrawer()">×</button></div>${r.cart_url?`<p class="muted">Товаров: ${r.count}</p><div class="memory-note">${esc(r.cart_url)}</div>`:'<p class="muted">Не удалось собрать корзину, попробуйте ещё раз</p>'}`)}
   catch(e){openDrawer(`<div class="drawer-head"><h2>Что-то не получилось</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Попробуйте ещё раз</p>`)}
 }
 async function orderMeal(dayIdx,mealIdx){
@@ -563,7 +570,7 @@ async function orderMeal(dayIdx,mealIdx){
   const xml_ids=(meal.dishes||[]).filter(d=>d.in_cart!==false).map(d=>d.xml_id).filter(Boolean);
   openDrawer(`<div class="drawer-head"><h2>Собираю ${esc(String(meal.meal_label||'приём').toLowerCase())}</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Журка добавляет товары выбранного приёма</p>`);
   try{
-    const r=await(await fetch('api/self-serve/cart',{method:'POST',headers:H,body:JSON.stringify({xml_ids})})).json();
+    const r=await apiJson('api/self-serve/cart',{xml_ids});
     openDrawer(`<div class="drawer-head"><h2>Корзина готова</h2><button class="x" onclick="closeDrawer()">×</button></div>${r.cart_url?`<p class="muted">Товаров: ${r.count}</p><div class="memory-note">${esc(r.cart_url)}</div>`:'<p class="muted">Не удалось собрать корзину, попробуйте ещё раз</p>'}`);
   }catch(e){openDrawer(`<div class="drawer-head"><h2>Что-то не получилось</h2><button class="x" onclick="closeDrawer()">×</button></div><p class="muted">Попробуйте ещё раз</p>`)}
 }
