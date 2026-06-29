@@ -208,6 +208,27 @@ _HEALTHY_FAT_WORDS = (
     "авокадо", "тахини",
 )
 _FISH_WORDS = ("рыб", "лосос", "семг", "сёмг", "форел", "треск", "тунец")
+_ADDON_QUERY = {
+    "Ягоды свежие, 100 г": "ягоды свежие",
+    "Яблоко, 1 штука": "яблоки",
+    "Овсяная каша цельнозерновая, 150 г": "овсяная каша",
+    "Хлеб цельнозерновой, 1 ломтик": "хлеб цельнозерновой",
+    "Творог 5%, 100 г": "творог 5%",
+    "Яйцо варёное, 1 штука": "яйцо куриное",
+    "Грецкие орехи, 15 г": "грецкие орехи",
+    "Семечки тыквенные, 15 г": "семечки тыквенные",
+    "Огурцы и томаты, 200 г": "огурцы томаты",
+    "Зелёный салат с овощами, 200 г": "салат овощной",
+    "Брокколи на пару, 180 г": "брокколи",
+    "Гречка отварная, 120 г": "гречка отварная",
+    "Булгур отварной, 120 г": "булгур",
+    "Киноа отварная, 120 г": "киноа",
+    "Куриное филе гриль без масла, 100 г": "куриное филе гриль",
+    "Нут отварной, 120 г": "нут отварной",
+    "Оливковое масло, 1 чайная ложка": "оливковое масло",
+    "Авокадо, 50 г": "авокадо",
+    "Рыба запечённая, 100 г": "рыба запеченная",
+}
 
 _HARVARD_ADDONS = {
     "breakfast": {
@@ -323,6 +344,7 @@ def _addon(group: str, meal_type: str, seed: int) -> dict:
         "in_cart": False,
         "fixed_portion": True,
         "harvard_addon": True,
+        "addon_query": _ADDON_QUERY.get(name, name),
     }
 
 
@@ -340,7 +362,40 @@ def _fish_addon() -> dict:
         "in_cart": False,
         "fixed_portion": True,
         "harvard_addon": True,
+        "addon_query": _ADDON_QUERY["Рыба запечённая, 100 г"],
     }
+
+
+async def _enrich_harvard_addons(days: list, restrictions: str | None = None) -> list:
+    cache: dict[str, dict | None] = {}
+    for day in days:
+        for meal in day.get("meals", []):
+            meal_type = _meal_type_key(meal)
+            for dish in meal.get("dishes", []):
+                query = dish.get("addon_query")
+                if not dish.get("harvard_addon") or not query or dish.get("xml_id"):
+                    continue
+                if query not in cache:
+                    try:
+                        found = await fetch_enriched_items(
+                            queries=[query],
+                            preference=restrictions or None,
+                            meal_type=meal_type,
+                            max_candidates=3,
+                        )
+                    except Exception as e:
+                        print(f"[harvard] addon search failed for {query}: {e!r}")
+                        found = []
+                    cache[query] = found[0] if found else None
+                item = cache.get(query)
+                if not item:
+                    continue
+                resolved = format_item_dict(item, item.get("weight_g", 0))
+                for key in ("xml_id", "image_url", "url", "price"):
+                    if resolved.get(key):
+                        dish[key] = resolved[key]
+                dish["in_cart"] = True
+    return days
 
 
 def _apply_harvard_plate(days: list) -> list:
@@ -531,6 +586,7 @@ async def selfserve_week(b: WeekBody):
         _fit_day(day.get("meals", []), b.kcal)
     days = await improve_week_variety(days, b.restrictions or None)
     days = _apply_harvard_plate(days)
+    days = await _enrich_harvard_addons(days, b.restrictions or None)
     for day in days:
         _fit_day(day.get("meals", []), b.kcal)
     return {"days": days, "coverage": coverage_report(days)}
