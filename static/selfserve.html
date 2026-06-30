@@ -130,13 +130,12 @@ function setScreen(name){localStorage.setItem('zhurka_screen',name);}
 function profileData(){return {goal:state.goal,sex:state.sex,age:state.age,height:state.height,weight:state.weight,activity:state.activity,restrictions:state.restrictions,format:state.format};}
 async function saveProfileData(){
   if(!authToken) return;
-  try{await fetch('api/self-serve/profile/save',{method:'POST',headers:H,body:JSON.stringify({token:authToken,tg_user:{},data:profileData()})});}catch(e){}
+  try{await apiJson('api/self-serve/profile/save',{token:authToken,tg_user:{},data:profileData()});}catch(e){}
 }
 async function loadRemoteProfile(){
   if(!authToken) return;
   try{
-    const r=await fetch('api/self-serve/profile/get',{method:'POST',headers:H,body:JSON.stringify({token:authToken,tg_user:{}})});
-    const d=await r.json();
+    const d=await apiJson('api/self-serve/profile/get',{token:authToken,tg_user:{}});
     if(d.name){authName=d.name;localStorage.setItem('zhurka_name',authName);}
     if(d.email){authEmail=d.email;localStorage.setItem('zhurka_email',authEmail);}
     if(d.profile&&typeof d.profile==='object'){Object.assign(state,d.profile);localStorage.setItem('zhurka_state',JSON.stringify(state));}
@@ -216,9 +215,7 @@ async function forgotPassword(){
 async function requestPasswordReset(email){
   if(!email){alert('Почта не указана');return;}
   try{
-    const r=await fetch('api/self-serve/forgot-password',{method:'POST',headers:H,body:JSON.stringify({email,return_url:location.origin+location.pathname})});
-    const d=await r.json();
-    if(!r.ok) throw new Error(d.detail||'Не удалось отправить письмо');
+    await apiJson('api/self-serve/forgot-password',{email,return_url:location.origin+location.pathname});
     alert('Если такая почта зарегистрирована, мы отправили ссылку для восстановления');
   }catch(e){alert(e.message||'Не удалось отправить письмо');}
 }
@@ -226,9 +223,7 @@ async function emailAuth(kind){
   const email=$('authEmail').value.trim(), password=$('authPass').value, name=$('authName')?$('authName').value.trim():'';
   if(!email||!password){alert('Введите почту и пароль');return;}
   try{
-    const r=await fetch('api/self-serve/'+kind,{method:'POST',headers:H,body:JSON.stringify({email,password,name})});
-    const d=await r.json();
-    if(!r.ok) throw new Error(d.detail||'Не удалось войти');
+    const d=await apiJson('api/self-serve/'+kind,{email,password,name});
     authToken=d.token; authName=d.name||email; authEmail=d.email||email; localStorage.setItem('zhurka_token',authToken); localStorage.setItem('zhurka_name',authName); localStorage.setItem('zhurka_email',authEmail);
     buildPlan();
   }catch(e){alert(e.message||'Не удалось войти');}
@@ -496,9 +491,7 @@ async function profileAuth(kind){
   const email=$('authEmail').value.trim(), password=$('authPass').value, name=$('authName')?$('authName').value.trim():'';
   if(!email||!password){alert('Введите почту и пароль');return;}
   try{
-    const r=await fetch('api/self-serve/'+kind,{method:'POST',headers:H,body:JSON.stringify({email,password,name})});
-    const d=await r.json();
-    if(!r.ok) throw new Error(d.detail||'Не удалось войти');
+    const d=await apiJson('api/self-serve/'+kind,{email,password,name});
     authToken=d.token; authName=d.name||email; authEmail=d.email||email; localStorage.setItem('zhurka_token',authToken); localStorage.setItem('zhurka_name',authName); localStorage.setItem('zhurka_email',authEmail);
     closeDrawer(); renderCabinetPage();
   }catch(e){alert(e.message||'Не удалось войти');}
@@ -581,9 +574,7 @@ async function resetPassword(token){
   const password=$('newPass').value;
   if(!password||password.length<6){alert('Пароль не короче 6 символов');return;}
   try{
-    const r=await fetch('api/self-serve/reset-password',{method:'POST',headers:H,body:JSON.stringify({token,password})});
-    const d=await r.json();
-    if(!r.ok) throw new Error(d.detail||'Не удалось сохранить пароль');
+    await apiJson('api/self-serve/reset-password',{token,password});
     history.replaceState({},'',location.pathname);
     alert('Пароль обновлён');
     renderAuthChoice();

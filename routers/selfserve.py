@@ -176,299 +176,8 @@ def _fit_day(meals, target_kcal):
         _set_portion(d, choice[i])
 
 
-_BANNED_DISH_WORDS = (
-    "жарен", "обжар", "фритюр", "фри", "наггетс", "чебурек",
-    "колбас", "сосиск", "бекон", "ветчин", "карбонад", "сервелат",
-    "копчен", "копчён", "салями",
-)
-
-_FRIED_CONTEXT_WORDS = ("паниров", "кляр")
-
-_VEG_FRUIT_WORDS = (
-    "салат", "огур", "томат", "помид", "зелень", "капуст", "брокк",
-    "цветн", "морков", "перец", "свекл", "тыкв", "кабач", "баклаж",
-    "овощ", "шпинат", "руккол", "авокадо", "яблок", "груш", "ягод",
-    "клубник", "малин", "черник", "землян", "апельс", "мандари",
-)
-_STARCH_NOT_VEG_WORDS = ("картоф", "батат", "пюре")
-_WHOLE_GRAIN_WORDS = (
-    "греч", "булгур", "киноа", "перлов", "овсян", "овес", "овёс",
-    "бурый рис", "нешлиф", "цельнозер", "цельнозлаков", "полба",
-    "ячмен", "нут", "фасол", "чечев",
-)
-_REFINED_CARB_WORDS = ("белый рис", "белый хлеб")
-_PROTEIN_WORDS = (
-    "куриц", "курин", "цыпл", "индейк", "рыб", "лосос", "семг",
-    "сёмг", "форел", "треск", "тунец", "кревет", "морепродукт",
-    "яйц", "омлет", "творог", "йогурт", "фасол", "нут", "чечев",
-    "тофу", "сыр",
-)
-_HEALTHY_FAT_WORDS = (
-    "оливк", "масло", "орех", "миндаль", "грецк", "семеч", "кунжут",
-    "авокадо", "тахини",
-)
-_FISH_WORDS = ("рыб", "лосос", "семг", "сёмг", "форел", "треск", "тунец")
-_ADDON_QUERY = {
-    "Ягоды свежие, 100 г": "ягоды свежие",
-    "Яблоко, 1 штука": "яблоки",
-    "Овсяная каша цельнозерновая, 150 г": "овсяная каша",
-    "Хлеб цельнозерновой, 1 ломтик": "хлеб цельнозерновой",
-    "Творог 5%, 100 г": "творог 5%",
-    "Яйцо варёное, 1 штука": "яйцо куриное",
-    "Грецкие орехи, 15 г": "грецкие орехи",
-    "Семечки тыквенные, 15 г": "семечки тыквенные",
-    "Огурцы и томаты, 200 г": "огурцы томаты",
-    "Зелёный салат с овощами, 200 г": "салат овощной",
-    "Брокколи на пару, 180 г": "брокколи",
-    "Гречка отварная, 120 г": "гречка отварная",
-    "Булгур отварной, 120 г": "булгур",
-    "Киноа отварная, 120 г": "киноа",
-    "Куриное филе гриль без масла, 100 г": "куриное филе гриль",
-    "Нут отварной, 120 г": "нут отварной",
-    "Оливковое масло, 1 чайная ложка": "оливковое масло",
-    "Авокадо, 50 г": "авокадо",
-    "Рыба запечённая, 100 г": "рыба запеченная",
-}
-
-_HARVARD_ADDONS = {
-    "breakfast": {
-        "veg_fruit": [
-            ("Ягоды свежие, 100 г", 52, 1, 0.3, 12, "Съесть всю порцию"),
-            ("Яблоко, 1 штука", 80, 0.4, 0.4, 20, "Съесть 1 штуку"),
-        ],
-        "grain": [
-            ("Овсяная каша цельнозерновая, 150 г", 165, 5, 4, 27, "Съесть всю порцию"),
-            ("Хлеб цельнозерновой, 1 ломтик", 85, 3, 1.5, 15, "Съесть 1 ломтик"),
-        ],
-        "protein": [
-            ("Творог 5%, 100 г", 121, 17, 5, 2, "Съесть всю порцию"),
-            ("Яйцо варёное, 1 штука", 78, 6, 5, 1, "Съесть 1 штуку"),
-        ],
-        "fat": [
-            ("Грецкие орехи, 15 г", 98, 2, 10, 2, "Съесть небольшую горсть"),
-            ("Семечки тыквенные, 15 г", 84, 4, 7, 2, "Съесть 1 столовую ложку"),
-        ],
-    },
-    "default": {
-        "veg_fruit": [
-            ("Огурцы и томаты, 200 г", 42, 2, 0.4, 8, "Съесть большую порцию"),
-            ("Зелёный салат с овощами, 200 г", 48, 3, 0.6, 9, "Съесть половину тарелки"),
-            ("Брокколи на пару, 180 г", 63, 5, 1, 12, "Съесть всю порцию"),
-        ],
-        "grain": [
-            ("Гречка отварная, 120 г", 132, 5, 1.5, 26, "Съесть 3/4 стакана"),
-            ("Булгур отварной, 120 г", 112, 4, 0.4, 24, "Съесть 3/4 стакана"),
-            ("Киноа отварная, 120 г", 144, 5, 2.3, 25, "Съесть 3/4 стакана"),
-        ],
-        "protein": [
-            ("Куриное филе гриль без масла, 100 г", 165, 31, 4, 0, "Съесть порцию с ладонь"),
-            ("Нут отварной, 120 г", 197, 11, 3, 33, "Съесть 3/4 стакана"),
-        ],
-        "fat": [
-            ("Оливковое масло, 1 чайная ложка", 45, 0, 5, 0, "Добавить 1 чайную ложку"),
-            ("Авокадо, 50 г", 80, 1, 7, 4, "Съесть 1/4 авокадо"),
-        ],
-    },
-}
-
-
-def _has_any(text: str, words: tuple[str, ...]) -> bool:
-    return any(w in text for w in words)
-
-
-def _is_hard_banned_dish(dish: dict) -> bool:
-    name = _dish_name_key(dish.get("name", ""))
-    if _has_any(name, _BANNED_DISH_WORDS):
-        return True
-    if _has_any(name, _FRIED_CONTEXT_WORDS) and not _has_any(name, ("запеч", "духов", "гриль")):
-        return True
-    return False
-
-
-def _passes_fat_balance(dish: dict) -> bool:
-    n = dish.get("nutrition") or {}
-    protein = n.get("protein")
-    fat = n.get("fat")
-    carbs = n.get("carbohydrates") or n.get("carbs")
-    if all(isinstance(x, (int, float)) for x in (protein, fat, carbs)):
-        return fat < protein and fat < carbs
-    return True
-
-
-def _fat_balance_score(dish: dict) -> float:
-    n = dish.get("nutrition") or {}
-    protein = float(n.get("protein") or 0)
-    fat = float(n.get("fat") or 0)
-    carbs = float(n.get("carbohydrates") or n.get("carbs") or 0)
-    if fat <= 0:
-        return 0
-    return max(0, fat - protein) + max(0, fat - carbs)
-
-
-def _is_allowed_harvard_dish(dish: dict) -> bool:
-    """Жёсткий фильтр качества: без жареного, фритюра и переработанного мяса."""
-    if dish.get("harvard_addon"):
-        return True
-    return not _is_hard_banned_dish(dish)
-
-
 def _wide_meal_queries(meal_type: str) -> list[str]:
-    queries = list(MEAL_TYPE_QUERIES.get(meal_type, MEAL_TYPE_QUERIES["lunch"]))
-    extras = []
-    if meal_type == "breakfast":
-        extras = ["овсянка", "творог", "ягоды", "орехи", "яйца", "омлет", "цельнозерновой хлеб"]
-    elif meal_type in ("lunch", "dinner"):
-        extras = [
-            "гречка", "булгур", "киноа", "бурый рис", "овощи на пару",
-            "салат овощной", "куриное филе", "рыба запеченная", "нут", "фасоль",
-            "оливковое масло", "авокадо",
-        ]
-    else:
-        extras = ["фрукты", "ягоды", "орехи", "йогурт", "творог"]
-    return list(dict.fromkeys(queries + extras))
-
-
-def _quality_candidates(items: list, exclude_xml_ids: set[str] | None = None) -> list:
-    exclude_xml_ids = exclude_xml_ids or set()
-    hard_allowed = [
-        item for item in items
-        if str(item.get("xml_id", "")) not in exclude_xml_ids
-        and _is_allowed_harvard_dish(format_item_dict(item, item.get("weight_g", 0)))
-    ]
-    balanced = [
-        item for item in hard_allowed
-        if _passes_fat_balance(format_item_dict(item, item.get("weight_g", 0)))
-    ]
-    return balanced or hard_allowed
-
-
-def _harvard_groups(dish: dict) -> set[str]:
-    name = _dish_name_key(dish.get("name", ""))
-    groups: set[str] = set()
-    if _has_any(name, _VEG_FRUIT_WORDS) and not _has_any(name, _STARCH_NOT_VEG_WORDS):
-        groups.add("veg_fruit")
-    if _has_any(name, _WHOLE_GRAIN_WORDS) or _has_any(name, _STARCH_NOT_VEG_WORDS):
-        groups.add("grain")
-    if _has_any(name, _PROTEIN_WORDS):
-        groups.add("protein")
-    if _has_any(name, _HEALTHY_FAT_WORDS):
-        groups.add("fat")
-    if _has_any(name, _REFINED_CARB_WORDS):
-        groups.discard("grain")
-    return groups
-
-
-def _addon(group: str, meal_type: str, seed: int) -> dict:
-    bucket = "breakfast" if meal_type == "breakfast" else "default"
-    name, kcal, protein, fat, carbs, label = _HARVARD_ADDONS[bucket][group][seed % len(_HARVARD_ADDONS[bucket][group])]
-    return {
-        "name": name,
-        "nutrition": {
-            "calories": kcal,
-            "protein": protein,
-            "fat": fat,
-            "carbohydrates": carbs,
-        },
-        "portion": 1,
-        "portion_label": label,
-        "in_cart": False,
-        "fixed_portion": True,
-        "harvard_addon": True,
-        "addon_query": _ADDON_QUERY.get(name, name),
-    }
-
-
-def _fish_addon() -> dict:
-    return {
-        "name": "Рыба запечённая, 100 г",
-        "nutrition": {
-            "calories": 145,
-            "protein": 22,
-            "fat": 6,
-            "carbohydrates": 0,
-        },
-        "portion": 1,
-        "portion_label": "Съесть порцию с ладонь",
-        "in_cart": False,
-        "fixed_portion": True,
-        "harvard_addon": True,
-        "addon_query": _ADDON_QUERY["Рыба запечённая, 100 г"],
-    }
-
-
-async def _enrich_harvard_addons(days: list, restrictions: str | None = None) -> list:
-    cache: dict[str, dict | None] = {}
-    for day in days:
-        for meal in day.get("meals", []):
-            meal_type = _meal_type_key(meal)
-            for dish in meal.get("dishes", []):
-                query = dish.get("addon_query")
-                if not dish.get("harvard_addon") or not query or dish.get("xml_id"):
-                    continue
-                if query not in cache:
-                    try:
-                        found = await fetch_enriched_items(
-                            queries=[query],
-                            preference=restrictions or None,
-                            meal_type=meal_type,
-                            max_candidates=3,
-                        )
-                    except Exception as e:
-                        print(f"[harvard] addon search failed for {query}: {e!r}")
-                        found = []
-                    cache[query] = found[0] if found else None
-                item = cache.get(query)
-                if not item:
-                    continue
-                resolved = format_item_dict(item, item.get("weight_g", 0))
-                if resolved.get("name"):
-                    dish["name"] = resolved["name"]
-                for key in ("xml_id", "image_url", "url", "price"):
-                    if resolved.get(key):
-                        dish[key] = resolved[key]
-                dish["in_cart"] = True
-            meal["dishes"] = [
-                dish for dish in meal.get("dishes", [])
-                if not dish.get("harvard_addon") or dish.get("xml_id")
-            ]
-    return days
-
-
-def _apply_harvard_plate(days: list) -> list:
-    fish_meals = 0
-    first_dinner_without_fish = None
-    for day_idx, day in enumerate(days):
-        for meal_idx, meal in enumerate(day.get("meals", [])):
-            meal_type = _meal_type_key(meal)
-            source_dishes = [d for d in meal.get("dishes", []) if not d.get("harvard_addon")]
-            hard_allowed = [d for d in source_dishes if not _is_hard_banned_dish(d)]
-            dishes = sorted(hard_allowed, key=_fat_balance_score)
-            groups = set()
-            has_fish = False
-            for dish in dishes:
-                groups.update(_harvard_groups(dish))
-                if _has_any(_dish_name_key(dish.get("name", "")), _FISH_WORDS):
-                    has_fish = True
-                    fish_meals += 1
-            if meal_type == "dinner" and not has_fish and first_dinner_without_fish is None:
-                first_dinner_without_fish = meal
-
-            required = ["veg_fruit", "grain", "protein"]
-            if meal_type == "breakfast":
-                required = ["veg_fruit", "grain", "protein"]
-            for group in required:
-                if group not in groups:
-                    dishes.append(_addon(group, meal_type, day_idx + meal_idx))
-                    groups.add(group)
-
-            if "fat" not in groups and len(dishes) < 4:
-                dishes.append(_addon("fat", meal_type, day_idx + meal_idx))
-
-            meal["dishes"] = dishes
-            meal["plate_principle"] = "Гарвардская тарелка"
-    if fish_meals == 0 and first_dinner_without_fish is not None:
-        first_dinner_without_fish.setdefault("dishes", []).append(_fish_addon())
-    return days
+    return list(dict.fromkeys(MEAL_TYPE_QUERIES.get(meal_type, MEAL_TYPE_QUERIES["lunch"])))
 
 
 _VARIETY_MARKERS = (
@@ -544,7 +253,7 @@ async def _find_variety_replacement(meal: dict, dish: dict, restrictions: str | 
     )
     old_key = _dish_variety_key(dish.get("name", ""))
     candidates = [
-        item for item in _quality_candidates(enriched, exclude_xml_ids)
+        item for item in enriched
         if str(item.get("xml_id", "")) not in exclude_xml_ids
         and _dish_variety_key(item.get("name", "")) != old_key
     ]
@@ -576,8 +285,6 @@ async def improve_week_variety(days: list, restrictions: str | None = None, max_
     for day in days:
         for meal in day.get("meals", []):
             for idx, dish in enumerate(meal.get("dishes", [])):
-                if dish.get("harvard_addon"):
-                    continue
                 name_key = _dish_name_key(dish.get("name", ""))
                 category = _dish_variety_key(dish.get("name", ""))
                 category_count = category_counts.get(category, 0)
@@ -614,12 +321,9 @@ async def selfserve_week(b: WeekBody):
             start=date.today(),
             days_count=max(1, min(7, b.days_count)),
         )
-        days = _apply_harvard_plate(days)
         for day in days:
             _fit_day(day.get("meals", []), b.kcal)
         days = await improve_week_variety(days, b.restrictions or None)
-        days = _apply_harvard_plate(days)
-        days = await _enrich_harvard_addons(days, b.restrictions or None)
         for day in days:
             _fit_day(day.get("meals", []), b.kcal)
         if not any(meal.get("dishes") for day in days for meal in day.get("meals", [])):
@@ -703,7 +407,7 @@ async def selfserve_replace_dish(b: ReplaceDishBody):
         meal_type=b.meal_type,
         max_candidates=80,
     )
-    enriched = _quality_candidates(enriched, exclude_set)
+    enriched = [i for i in enriched if str(i.get("xml_id", "")) not in exclude_set]
     if not enriched:
         raise HTTPException(404, "Не удалось найти замену, попробуйте ещё раз")
 
